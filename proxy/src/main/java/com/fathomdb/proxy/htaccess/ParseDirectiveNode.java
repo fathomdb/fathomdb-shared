@@ -20,12 +20,14 @@ public class ParseDirectiveNode extends ParseNode {
 
 	@Override
 	public Directive compile() {
-		if (Objects.equals(key, "ExpiresDefault")) {
+		if (Objects.equal(key, "ExpiresDefault")) {
 			return ExpiresDefault.parse(this);
-		} else if (Objects.equals(key, "ExpiresActive")) {
+		} else if (Objects.equal(key, "ExpiresActive")) {
 			return ExpiresActive.parse(this);
-		} else if (Objects.equals(key, "Header")) {
+		} else if (Objects.equal(key, "Header")) {
 			return HeaderDirective.parse(this);
+		} else if (Objects.equal(key, "DirectoryIndex")) {
+			return DirectoryIndexDirective.parse(this);
 		} else {
 			throw new IllegalArgumentException("Unknown directive: " + key);
 		}
