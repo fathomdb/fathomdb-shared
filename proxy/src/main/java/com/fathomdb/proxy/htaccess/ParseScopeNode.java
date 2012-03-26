@@ -1,8 +1,8 @@
 package com.fathomdb.proxy.htaccess;
 
 import java.util.List;
-import java.util.Objects;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 public class ParseScopeNode extends ParseNode {
@@ -33,7 +33,7 @@ public class ParseScopeNode extends ParseNode {
 
 	public Directive compile() {
 		ScopeDirective directive;
-		if (Objects.equals(key, "Files")) {
+		if (Objects.equal(key, "Files")) {
 			directive = FilesDirective.parse(this);
 		} else {
 			throw new IllegalArgumentException("Unknown directive: " + key);

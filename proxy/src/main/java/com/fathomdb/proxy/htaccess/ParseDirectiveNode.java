@@ -1,6 +1,6 @@
 package com.fathomdb.proxy.htaccess;
 
-import java.util.Objects;
+import com.google.common.base.Objects;
 
 public class ParseDirectiveNode extends ParseNode {
 

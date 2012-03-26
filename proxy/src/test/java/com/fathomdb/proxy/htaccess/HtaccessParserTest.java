@@ -8,20 +8,34 @@ import org.junit.Test;
 public class HtaccessParserTest {
 
 	@Test
-	public void test() throws IOException {
-		InputStream is = getClass().getResourceAsStream("htaccess1");
-		
-		HtaccessParser parser = new HtaccessParser(is);
-		
-		parser.parse();
-		
-		ParseScopeNode root = parser.getRoot();
-		
+	public void test1() throws IOException {
+		ParseScopeNode root = parse("htaccess1");
+		dump(root);
+	}
+	@Test
+	public void test2() throws IOException {
+		ParseScopeNode root = parse("htaccess2");
+		dump(root);
+	}
+
+	private void dump(ParseScopeNode root) {
 		for (ParseNode child : root.getChildren()) {
 			Directive directive = child.compile();
 			System.out.println(directive);
 		}
-		//System.out.println(root);
+		// System.out.println(root);
+	}
+
+	private ParseScopeNode parse(String s) throws IOException {
+
+		InputStream is = getClass().getResourceAsStream(s);
+
+		HtaccessParser parser = new HtaccessParser(is);
+
+		parser.parse();
+
+		ParseScopeNode root = parser.getRoot();
+		return root;
 	}
 
 }
