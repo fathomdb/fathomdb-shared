@@ -17,51 +17,47 @@ package com.fathomdb.proxy.http.client;
 
 import static org.jboss.netty.channel.Channels.*;
 
-import javax.net.ssl.SSLEngine;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 //import org.jboss.netty.example.securechat.SecureChatSslContextFactory;
 import org.jboss.netty.handler.codec.http.HttpClientCodec;
 import org.jboss.netty.handler.codec.http.HttpContentDecompressor;
-import org.jboss.netty.handler.logging.LoggingHandler;
-import org.jboss.netty.handler.ssl.SslHandler;
-import org.jboss.netty.logging.InternalLogLevel;
 
 public class HttpProxyClientPipelineFactory implements ChannelPipelineFactory {
 
-    private final boolean ssl;
+	private final boolean ssl;
 
-    public HttpProxyClientPipelineFactory(boolean ssl) {
-        this.ssl = ssl;
-    }
+	public HttpProxyClientPipelineFactory(boolean ssl) {
+		this.ssl = ssl;
+	}
 
-    @Override
-    public ChannelPipeline getPipeline() throws Exception {
-        // Create a default pipeline implementation.
-        ChannelPipeline pipeline = pipeline();
+	@Override
+	public ChannelPipeline getPipeline() throws Exception {
+		// Create a default pipeline implementation.
+		ChannelPipeline pipeline = pipeline();
 
-//        pipeline.addLast("log", new LoggingHandler(InternalLogLevel.INFO));
-        // Enable HTTPS if necessary.
-        if (ssl) {
-        	throw new UnsupportedOperationException();
-        	
-//            SSLEngine engine =
-//                SecureChatSslContextFactory.getClientContext().createSSLEngine();
-//            engine.setUseClientMode(true);
-//
-//            pipeline.addLast("ssl", new SslHandler(engine));
-        }
+		// pipeline.addLast("log", new LoggingHandler(InternalLogLevel.INFO));
+		// Enable HTTPS if necessary.
+		if (ssl) {
+			throw new UnsupportedOperationException();
 
-        pipeline.addLast("codec", new HttpClientCodec());
+			// SSLEngine engine =
+			// SecureChatSslContextFactory.getClientContext().createSSLEngine();
+			// engine.setUseClientMode(true);
+			//
+			// pipeline.addLast("ssl", new SslHandler(engine));
+		}
 
-        // Remove the following line if you don't want automatic content decompression.
-        pipeline.addLast("inflater", new HttpContentDecompressor());
+		pipeline.addLast("codec", new HttpClientCodec());
 
-        // Uncomment the following line if you don't want to handle HttpChunks.
-        //pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
+		// Remove the following line if you don't want automatic content
+		// decompression.
+		pipeline.addLast("inflater", new HttpContentDecompressor());
 
-        pipeline.addLast("handler", new HttpProxyClientHandler());
-        return pipeline;
-    }
+		// Uncomment the following line if you don't want to handle HttpChunks.
+		// pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
+
+		pipeline.addLast("handler", new HttpProxyClientHandler());
+		return pipeline;
+	}
 }

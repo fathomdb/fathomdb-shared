@@ -2,9 +2,7 @@ package com.fathomdb.proxy.openstack;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Stack;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
