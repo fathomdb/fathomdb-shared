@@ -18,7 +18,7 @@ import com.fathomdb.proxy.objectdata.ObjectDataSink;
 /**
  * It would be nice to use the same codebase as the main OpenStack Java binding.
  * However, this is pretty specialized for Swift & Async
-*/
+ */
 public class OpenstackClient {
 	final OpenstackClientPool openstackClientPool;
 	private final OpenstackCredentials credentials;
@@ -34,6 +34,7 @@ public class OpenstackClient {
 
 	KeystoneResponseListener keystoneAuthentication;
 	ObjectListener httpListener;
+	ContainerListResponseListener directoryListingListener;
 
 	public ChannelFuture authenticate() {
 		URI authUrl = credentials.getAuthUrl();
@@ -77,11 +78,15 @@ public class OpenstackClient {
 			String password = credentials.getPassword();
 			String tenantName = credentials.getTenant();
 			String postBody = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-					+ "<auth xmlns=\"http://docs.openstack.org/identity/api/v2.0\" tenantName=\""
-					+ tenantName
-					+ "\">"
-					+ "<passwordCredentials username=\""
-					+ username + "\" password=\"" + password + "\"/></auth>";
+					+ "<auth xmlns=\"http://docs.openstack.org/identity/api/v2.0\"";
+			if (tenantName != null) {
+				postBody += " tenantName=\"" + tenantName + "\">";
+			} else {
+				postBody += ">";
+			}
+
+			postBody += "<passwordCredentials username=\"" + username
+					+ "\" password=\"" + password + "\"/></auth>";
 
 			ChannelBuffer contentBuffer = ChannelBuffers.copiedBuffer(postBody,
 					CharsetUtil.UTF_8);
@@ -112,6 +117,40 @@ public class OpenstackClient {
 		return null;
 	}
 
+	public ChannelFuture getDirectoryListing(String path) {
+		if (directoryListingListener == null) {
+			String containerName = path;
+			if (containerName.startsWith("/"))
+				containerName = containerName.substring(1);
+			int slashIndex = containerName.indexOf('/');
+			if (slashIndex != -1) {
+				containerName = containerName.substring(0, slashIndex);
+			}
+
+			URI swiftUrl = keystoneAuthentication.getSwiftUrl();
+			String fullPath = swiftUrl.getPath();
+			fullPath += "/" + containerName + "/";
+			HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1,
+					HttpMethod.GET, fullPath);
+			request.setHeader(HttpHeaders.Names.HOST,
+					HttpClientConnection.getHostHeader(swiftUrl));
+			request.setHeader("X-Auth-Token",
+					keystoneAuthentication.getTokenId());
+
+			request.setHeader(HttpHeaders.Names.CONTENT_TYPE,
+					"application/json");
+			request.setHeader(HttpHeaders.Names.ACCEPT, "application/json");
+
+			directoryListingListener = new ContainerListResponseListener(
+					swiftHttpClient.getChannel(),
+					new DebugObjectMetadataListener());
+			swiftHttpClient.doRequest(request, directoryListingListener);
+
+			return directoryListingListener.getFuture();
+		}
+		return null;
+	}
+
 	public ChannelFuture readObject(String path, ObjectDataSink listener) {
 		ChannelFuture future = authenticate();
 		if (future != null)
@@ -121,22 +160,28 @@ public class OpenstackClient {
 		if (future != null)
 			return future;
 
+		future = getDirectoryListing(path);
+		if (future != null)
+			return future;
+
 		if (httpListener == null) {
 			URI swiftUrl = keystoneAuthentication.getSwiftUrl();
 			String fullPath = swiftUrl.getPath();
 			fullPath += "/" + path;
 			HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1,
 					HttpMethod.GET, fullPath);
-			request.setHeader(HttpHeaders.Names.HOST, HttpClientConnection.getHostHeader(swiftUrl));
-			request.setHeader("X-Auth-Token", keystoneAuthentication.getTokenId());
+			request.setHeader(HttpHeaders.Names.HOST,
+					HttpClientConnection.getHostHeader(swiftUrl));
+			request.setHeader("X-Auth-Token",
+					keystoneAuthentication.getTokenId());
 			request.setHeader(HttpHeaders.Names.USER_AGENT, "Java Proxy");
-			
 
 			// TODO: Use keep-alive
-//			request.setHeader(HttpHeaders.Names.CONNECTION,
-//					HttpHeaders.Values.KEEP_ALIVE);
+			// request.setHeader(HttpHeaders.Names.CONNECTION,
+			// HttpHeaders.Values.KEEP_ALIVE);
 
-			httpListener = new ObjectListener(swiftHttpClient.getChannel(), listener);
+			httpListener = new ObjectListener(swiftHttpClient.getChannel(),
+					listener);
 			swiftHttpClient.doRequest(request, httpListener);
 
 			return httpListener.getFuture();

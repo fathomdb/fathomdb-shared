@@ -24,6 +24,13 @@ public class KeystoneResponseListener extends RestResponseListener {
 	static class Endpoint {
 		public String region;
 		public URI publicUrl;
+
+		@Override
+		public String toString() {
+			return "Endpoint [region=" + region + ", publicUrl=" + publicUrl
+					+ "]";
+		}
+
 	}
 
 	public KeystoneResponseListener(Channel channel) {
@@ -84,9 +91,25 @@ public class KeystoneResponseListener extends RestResponseListener {
 
 		xmlReader.close();
 
+		Endpoint best = null;
 		for (Endpoint endpoint : endpoints) {
-			swiftUrl = endpoint.publicUrl;
+			if (best == null) {
+				best = endpoint;
+				continue;
+			}
+
+			 if (best.publicUrl.getHost().contains("cdn1.clouddrive.com")) {
+				best = endpoint;
+				continue;
+			}
 		}
+
+		if (best == null) {
+			throw new IllegalArgumentException("Swift endpoint not found");
+		}
+
+		swiftUrl = best.publicUrl;
+
 	}
 
 	public URI getSwiftUrl() {

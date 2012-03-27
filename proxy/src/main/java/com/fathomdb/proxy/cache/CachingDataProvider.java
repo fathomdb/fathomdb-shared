@@ -11,7 +11,7 @@ import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
-public class CachingDataProvider implements ObjectDataProvider {
+public class CachingDataProvider extends ObjectDataProvider {
 	static final Logger log = Logger.getLogger(CachingDataProvider.class);
 
 	final CacheFile cache;
@@ -42,10 +42,12 @@ public class CachingDataProvider implements ObjectDataProvider {
 				if (found != null) {
 					ByteBuffer buffer = found.buffer;
 
-					sink.beginData(buffer.remaining());
-					sink.gotData(ChannelBuffers.wrappedBuffer(buffer));
-					sink.endData();
-					return null;
+					if (missHandler.isStillValid(found)) {
+						sink.beginData(buffer.remaining());
+						sink.gotData(ChannelBuffers.wrappedBuffer(buffer));
+						sink.endData();
+						return null;
+					}
 				}
 			} finally {
 				if (found != null)

@@ -42,14 +42,26 @@ public class HttpProxyServer {
 		CacheFile cache = CacheFile.open(new File("cachedata000"));
 		log.info("Opened cache file: " + cache);
 
-		URI authUrl;
-		try {
-			authUrl = new URI("http://192.168.100.1:5000/v2.0/tokens");
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("Error parsing uri", e);
+		OpenstackCredentials openstackCredentials;
+		if (false) {
+			URI authUrl;
+			try {
+				authUrl = new URI("http://192.168.100.1:5000/v2.0/tokens");
+			} catch (URISyntaxException e) {
+				throw new IllegalArgumentException("Error parsing uri", e);
+			}
+			openstackCredentials = new OpenstackCredentials("admin", "admin",
+					"admin", authUrl);
+		} else {
+			URI authUrl;
+			try {
+				authUrl = new URI("https://identity.api.rackspacecloud.com/v2.0/tokens");
+			} catch (URISyntaxException e) {
+				throw new IllegalArgumentException("Error parsing uri", e);
+			}
+			openstackCredentials = new OpenstackCredentials(System.getProperty("user"), System.getProperty("key"), System.getProperty("tenant"), authUrl);
 		}
-		OpenstackCredentials openstackCredentials = new OpenstackCredentials(
-				"admin", "admin", "admin", authUrl);
+
 		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(
 				cache, httpClientPool, openstackClientPool,
 				openstackCredentials);
@@ -71,7 +83,7 @@ public class HttpProxyServer {
 		if (args.length > 0) {
 			port = Integer.parseInt(args[0]);
 		} else {
-			port = 8080;
+			port = 8888;
 		}
 		new HttpProxyServer(port).run();
 	}

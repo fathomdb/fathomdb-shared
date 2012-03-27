@@ -28,29 +28,9 @@ public class HttpClientConnection {
 	}
 
 	public ChannelFuture connect() {
-		// private final URI uri;
-		//
-		// String scheme = uri.getScheme() == null ? "http" : uri.getScheme();
-		// String host = uri.getHost() == null ? "localhost" : uri.getHost();
-		// int port = uri.getPort();
-		// if (port == -1) {
-		// if (scheme.equalsIgnoreCase("http")) {
-		// port = 80;
-		// } else if (scheme.equalsIgnoreCase("https")) {
-		// port = 443;
-		// }
-		// }
-
-		// if (!scheme.equalsIgnoreCase("http")
-		// && !scheme.equalsIgnoreCase("https")) {
-		// System.err.println("Only HTTP(S) is supported.");
-		// return;
-		// }
-
 		boolean ssl = scheme == HttpScheme.HTTPS;
 
-		// Start the connection attempt.
-		this.connectFuture = client.bootstrap.connect(new InetSocketAddress(
+		this.connectFuture = client.getClientBootstrap(ssl).connect(new InetSocketAddress(
 				host, port));
 
 		return connectFuture;
@@ -70,7 +50,7 @@ public class HttpClientConnection {
 				.get(HttpProxyClientHandler.class);
 		httpProxyClientHandler.setTarget(target);
 
-		log.debug("Client sending request: " + request);
+		log.info("Client sending request: " + request);
 
 		// Send the HTTP request.
 		channel.write(request);

@@ -5,6 +5,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.util.CharsetUtil;
 
 import com.fathomdb.proxy.http.client.HttpResponseListener;
@@ -24,7 +25,19 @@ public abstract class RestResponseListener extends TaskWithFuture implements
 	@Override
 	public void gotData(HttpResponse response, HttpChunk chunk, boolean isLast) {
 		String responseData = null;
+
 		if (chunk == null) {
+			HttpResponseStatus httpStatus = response.getStatus();
+			int httpStatusCode = httpStatus.getCode();
+
+			switch (httpStatusCode) {
+			case 200:
+				break;
+
+			default:
+				throw new IllegalStateException("Error authenticating");
+			}
+
 			ChannelBuffer content = response.getContent();
 			if (content.readable()) {
 				responseData = content.toString(CharsetUtil.UTF_8);

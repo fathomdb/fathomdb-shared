@@ -10,7 +10,7 @@ import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
-public class OpenstackDataProvider implements ObjectDataProvider {
+public class OpenstackDataProvider extends ObjectDataProvider {
 	static final Logger log = Logger.getLogger(OpenstackDataProvider.class);
 
 	final OpenstackClientPool openstackClientPool;
@@ -30,7 +30,12 @@ public class OpenstackDataProvider implements ObjectDataProvider {
 		String hostAndPort = request.getHeader("Host");
 		HttpMethod method = request.getMethod();
 
-		final String objectPath = "bucketshop" + requestURI;
+		String containerName = System.getProperty("container");
+		if (containerName == null) {
+			containerName = "bucketshop";
+		}
+		
+		final String objectPath = containerName + requestURI;
 
 		log.debug("HandleRequest " + method + " " + hostAndPort + " "
 				+ requestURI);
@@ -48,7 +53,7 @@ public class OpenstackDataProvider implements ObjectDataProvider {
 
 		if (method.equals(HttpMethod.GET)) {
 			// Prepare the HTTP request.
-			upstreamRequest = new OpenstackStorageRequest(requestURI);
+			upstreamRequest = new OpenstackStorageRequest(objectPath);
 		}
 
 		if (upstreamRequest == null) {

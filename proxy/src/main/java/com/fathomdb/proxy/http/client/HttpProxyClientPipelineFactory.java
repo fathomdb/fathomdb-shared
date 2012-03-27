@@ -17,11 +17,15 @@ package com.fathomdb.proxy.http.client;
 
 import static org.jboss.netty.channel.Channels.*;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 //import org.jboss.netty.example.securechat.SecureChatSslContextFactory;
 import org.jboss.netty.handler.codec.http.HttpClientCodec;
 import org.jboss.netty.handler.codec.http.HttpContentDecompressor;
+import org.jboss.netty.handler.ssl.SslHandler;
 
 public class HttpProxyClientPipelineFactory implements ChannelPipelineFactory {
 
@@ -39,13 +43,10 @@ public class HttpProxyClientPipelineFactory implements ChannelPipelineFactory {
 		// pipeline.addLast("log", new LoggingHandler(InternalLogLevel.INFO));
 		// Enable HTTPS if necessary.
 		if (ssl) {
-			throw new UnsupportedOperationException();
+			SSLEngine engine = SSL.getContext().createSSLEngine();
+			engine.setUseClientMode(true);
 
-			// SSLEngine engine =
-			// SecureChatSslContextFactory.getClientContext().createSSLEngine();
-			// engine.setUseClientMode(true);
-			//
-			// pipeline.addLast("ssl", new SslHandler(engine));
+			pipeline.addLast("ssl", new SslHandler(engine));
 		}
 
 		pipeline.addLast("codec", new HttpClientCodec());

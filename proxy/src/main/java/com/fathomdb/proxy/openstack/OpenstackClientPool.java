@@ -1,6 +1,5 @@
 package com.fathomdb.proxy.openstack;
 
-import com.fathomdb.proxy.http.HttpScheme;
 import com.fathomdb.proxy.http.client.HttpClientPool;
 
 public class OpenstackClientPool {

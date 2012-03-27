@@ -1,5 +1,6 @@
 package com.fathomdb.proxy.cache;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -9,11 +10,11 @@ import com.google.common.collect.Lists;
 
 public class ZoneAllocator {
 	static final Logger log = Logger.getLogger(ZoneAllocator.class);
-	
+
 	static final int FAIL = -1;
 
 	static final int PAGE_SIZE = 4096;
-	
+
 	static class FreeRange {
 		int start;
 		int end;
@@ -39,7 +40,6 @@ public class ZoneAllocator {
 		}
 
 		public void remove(int start, int end) {
-
 			FreeRange found = null;
 			// TODO: Use binary search
 			for (FreeRange free : freeList) {
@@ -55,7 +55,7 @@ public class ZoneAllocator {
 			if (found == null)
 				throw new IllegalStateException();
 
-			if (found.start < start || found.end < end)
+			if (found.start > start || found.end < end)
 				throw new IllegalStateException();
 
 			// Truncate or split the range
@@ -100,18 +100,27 @@ public class ZoneAllocator {
 				return FAIL;
 			}
 
-			FreeRange range = freeList.get(0);
-			int assigned = range.start;
-			range.start += size;
-			if (range.start == range.end) {
-				freeList.remove(0);
+			Iterator<FreeRange> rangeIterator = freeList.iterator();
+			while (rangeIterator.hasNext()) {
+				FreeRange range = rangeIterator.next();
+				int assigned = range.start;
+
+				if ((range.start + size) <= range.end) {
+					range.start += size;
+					if (range.start == range.end) {
+						rangeIterator.remove();
+					}
+
+					if (range.start > range.end) {
+						throw new IllegalStateException();
+					}
+
+					return assigned;
+
+				}
 			}
 
-			if (range.start > range.end) {
-				throw new IllegalStateException();
-			}
-
-			return assigned;
+			return FAIL;
 		}
 
 		@Override
@@ -180,17 +189,19 @@ public class ZoneAllocator {
 		}
 
 		// Make sure allocation is a multiple of page_size
-		allocationSize = PAGE_SIZE * ((allocationSize + PAGE_SIZE - 1) / PAGE_SIZE);
-		
+		allocationSize = PAGE_SIZE
+				* ((allocationSize + PAGE_SIZE - 1) / PAGE_SIZE);
+
 		int allocated = freeList.allocate(allocationSize);
 		if (allocated == FAIL)
 			return null;
 
-		// Everything is allocated in pages, so everything should end up page aligned
+		// Everything is allocated in pages, so everything should end up page
+		// aligned
 		if ((allocated % PAGE_SIZE) != 0) {
 			log.warn("Allocation not page-size aligned");
 		}
-		
+
 		return new FreeRange(allocated, allocated + allocationSize);
 	}
 
