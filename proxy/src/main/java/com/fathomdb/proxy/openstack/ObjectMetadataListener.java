@@ -6,6 +6,6 @@ public interface ObjectMetadataListener {
 			long objectBytes, String objectContentType,
 			String objectLastModified);
 
-	void endObjects();
+	Object endObjects();
 
 }

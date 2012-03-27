@@ -13,7 +13,7 @@ public class HttpProxyClientHandler extends SimpleChannelUpstreamHandler {
 	private boolean readingChunks;
 	private HttpResponse chunkedResponse;
 
-	private HttpResponseListener target;
+	private HttpResponseHandler target;
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
@@ -76,7 +76,7 @@ public class HttpProxyClientHandler extends SimpleChannelUpstreamHandler {
 		}
 	}
 
-	public void setTarget(HttpResponseListener target) {
+	public void setTarget(HttpResponseHandler target) {
 		this.target = target;
 	}
 }

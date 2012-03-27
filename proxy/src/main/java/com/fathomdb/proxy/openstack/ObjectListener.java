@@ -1,22 +1,17 @@
 package com.fathomdb.proxy.openstack;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 
-import com.fathomdb.proxy.http.client.HttpResponseListener;
-import com.fathomdb.proxy.http.client.TaskWithFuture;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
-public class ObjectListener extends TaskWithFuture implements
-		HttpResponseListener {
+public class ObjectListener extends OpenstackResponseHandler {
 
 	private final ObjectDataSink sink;
 
-	public ObjectListener(Channel channel, ObjectDataSink sink) {
-		super(channel);
+	public ObjectListener(ObjectDataSink sink) {
 		this.sink = sink;
 	}
 
@@ -27,7 +22,7 @@ public class ObjectListener extends TaskWithFuture implements
 			// TODO: Send header??
 			long contentLength = HttpHeaders.getContentLength(response, -1);
 			sink.beginData(contentLength);
-			
+
 			ChannelBuffer content = response.getContent();
 			if (content.readable()) {
 				sink.gotData(content);
@@ -43,7 +38,7 @@ public class ObjectListener extends TaskWithFuture implements
 
 		if (isLast) {
 			sink.endData();
-			future.setSuccess();
+			getFuture().setSuccess();
 		}
 	}
 }

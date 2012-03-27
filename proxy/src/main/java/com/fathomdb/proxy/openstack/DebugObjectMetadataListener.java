@@ -14,8 +14,9 @@ public class DebugObjectMetadataListener implements ObjectMetadataListener {
 	}
 
 	@Override
-	public void endObjects() {
+	public Object endObjects() {
 		System.out.println("No more results");
+		return null;
 	}
 
 }

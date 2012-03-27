@@ -8,11 +8,11 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.util.CharsetUtil;
 
-import com.fathomdb.proxy.http.client.HttpResponseListener;
+import com.fathomdb.proxy.http.client.HttpResponseHandler;
 import com.fathomdb.proxy.http.client.TaskWithFuture;
 
 public abstract class RestResponseListener extends TaskWithFuture implements
-		HttpResponseListener {
+		HttpResponseHandler {
 
 	static final Logger log = Logger.getLogger(RestResponseListener.class);
 
@@ -64,9 +64,9 @@ public abstract class RestResponseListener extends TaskWithFuture implements
 				log.debug("Got response: " + responseBuffer.toString());
 				gotResponse(response, responseBuffer.toString());
 
-				future.setSuccess();
+				setSuccess();
 			} catch (Throwable e) {
-				future.setFailure(e);
+				setFailure(e);
 			}
 		}
 	}

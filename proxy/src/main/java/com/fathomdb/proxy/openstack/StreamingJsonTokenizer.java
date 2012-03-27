@@ -291,7 +291,7 @@ public class StreamingJsonTokenizer {
 
 			CoderResult result = decoder.decode(parse, charBuffer, isLast);
 
-			int newPosition = charBuffer.position();
+/*			int newPosition = charBuffer.position();
 
 			if (newPosition != oldPosition) {
 				CharBuffer duplicate = charBuffer.duplicate();
@@ -300,7 +300,8 @@ public class StreamingJsonTokenizer {
 				String s = duplicate.toString();
 				System.out.println(s);
 			}
-
+*/
+			
 			if (result.isUnderflow()) {
 				// We've processed the entire input buffer. This is good news.
 				if (parse.remaining() != 0) {

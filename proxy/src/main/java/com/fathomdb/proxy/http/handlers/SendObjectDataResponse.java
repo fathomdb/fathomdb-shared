@@ -23,7 +23,7 @@ public class SendObjectDataResponse extends TaskWithFuture implements
 	@Override
 	public void gotData(ChannelBuffer content) {
 		HttpChunk chunk = new DefaultHttpChunk(content);
-		channel.write(chunk);
+		getChannel().write(chunk);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class SendObjectDataResponse extends TaskWithFuture implements
 			response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, contentLength);
 		}
 
-		channel.write(response);
+		getChannel().write(response);
 	}
 
 	@Override

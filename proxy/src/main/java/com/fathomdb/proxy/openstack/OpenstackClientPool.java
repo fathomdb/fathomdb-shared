@@ -10,8 +10,8 @@ public class OpenstackClientPool {
 		this.httpClientPool = httpClientPool;
 	}
 
-	public OpenstackClient getClient(OpenstackCredentials credentials) {
-		return new OpenstackClient(this, credentials);
+	public OpenstackSession getClient(OpenstackCredentials credentials) {
+		return new OpenstackSession(this, credentials);
 	}
 
 }

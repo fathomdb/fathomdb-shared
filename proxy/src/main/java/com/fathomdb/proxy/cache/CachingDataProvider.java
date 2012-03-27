@@ -3,7 +3,6 @@ package com.fathomdb.proxy.cache;
 import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 
 import com.fathomdb.proxy.cache.CacheFile.CacheLock;
@@ -15,53 +14,84 @@ public class CachingDataProvider extends ObjectDataProvider {
 	static final Logger log = Logger.getLogger(CachingDataProvider.class);
 
 	final CacheFile cache;
-	final ObjectDataProvider missHandler;
+	final ObjectDataProvider missHandlerProvider;
 
-	public CachingDataProvider(CacheFile cache, ObjectDataProvider missHandler) {
+	public CachingDataProvider(CacheFile cache,
+			ObjectDataProvider missHandlerProvider) {
 		this.cache = cache;
-		this.missHandler = missHandler;
+		this.missHandlerProvider = missHandlerProvider;
 	}
 
-	@Override
-	public ChannelFuture handle(GenericRequest request, ObjectDataSink sink) {
-		final String requestURI = request.getRequestURI();
-		String hostAndPort = request.getHeader("Host");
-		HttpMethod method = request.getMethod();
-
-		HashKey cacheKey = null;
-
-		if (method.equals(HttpMethod.GET)) {
-			// TODO: Make this more robust
-			String keyString = hostAndPort + ":" + requestURI;
-			cacheKey = new HashKey(keyString.getBytes());
+	class Handler extends ObjectDataProvider.Handler {
+		public Handler(GenericRequest request) {
+			super(request);
 		}
 
-		if (cacheKey != null) {
-			CacheLock found = cache.lookup(cacheKey);
-			try {
-				if (found != null) {
-					ByteBuffer buffer = found.buffer;
+		ObjectDataProvider.Handler missHandler;
 
-					if (missHandler.isStillValid(found)) {
-						sink.beginData(buffer.remaining());
-						sink.gotData(ChannelBuffers.wrappedBuffer(buffer));
-						sink.endData();
-						return null;
+		ObjectDataProvider.Handler getMissHandler() {
+			if (missHandler == null) {
+				missHandler = missHandlerProvider.buildHandler(request);
+			}
+			return missHandler;
+		}
+
+		@Override
+		public void handle(ObjectDataSink sink) {
+			final String requestURI = request.getRequestURI();
+			String hostAndPort = request.getHeader("Host");
+			HttpMethod method = request.getMethod();
+
+			HashKey cacheKey = null;
+
+			if (method.equals(HttpMethod.GET)) {
+				// TODO: Make this more robust
+				String keyString = hostAndPort + ":" + requestURI;
+				cacheKey = new HashKey(keyString.getBytes());
+			}
+
+			if (cacheKey != null) {
+				CacheLock found = cache.lookup(cacheKey);
+				try {
+					if (found != null) {
+						
+						ByteBuffer buffer = found.buffer;
+
+						if (getMissHandler().isStillValid(found)) {
+							log.info("Cache HIT on " + cacheKey);
+							
+							sink.beginData(buffer.remaining());
+							sink.gotData(ChannelBuffers.wrappedBuffer(buffer));
+							sink.endData();
+							return;
+						}
+						else {
+							log.info("Cache OUTOFDATE on " + cacheKey + " (hit but no longer valid)");
+						}
+					} else {
+						log.info("Cache MISS on " + cacheKey);
 					}
+				} finally {
+					if (found != null)
+						found.close();
 				}
-			} finally {
-				if (found != null)
-					found.close();
+			}
+
+			if (cacheKey == null) {
+				// Can't cache
+				getMissHandler().handle(sink);
+			} else {
+				getMissHandler().handle(
+						new ObjectDataSinkSplitter(new CachingObjectDataSink(
+								cache, cacheKey), sink));
 			}
 		}
 
-		if (cacheKey == null) {
-			// Can't cache
-			return missHandler.handle(request, sink);
-		} else {
-			return missHandler.handle(request, new ObjectDataSinkSplitter(
-					new CachingObjectDataSink(cache, cacheKey), sink));
-		}
+	}
+
+	@Override
+	public Handler buildHandler(GenericRequest request) {
+		return new Handler(request);
 	}
 
 }

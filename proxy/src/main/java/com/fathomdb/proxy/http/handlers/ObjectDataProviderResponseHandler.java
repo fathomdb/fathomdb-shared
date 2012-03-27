@@ -6,7 +6,8 @@ import org.jboss.netty.channel.ChannelFuture;
 import com.fathomdb.proxy.http.handlers.RequestHandler;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
-import com.fathomdb.proxy.openstack.Futures;
+import com.fathomdb.proxy.objectdata.ObjectDataProvider.Handler;
+import com.fathomdb.proxy.openstack.EasyAsync;
 
 public class ObjectDataProviderResponseHandler implements RequestHandler {
 	static final Logger log = Logger
@@ -19,15 +20,19 @@ public class ObjectDataProviderResponseHandler implements RequestHandler {
 	}
 
 	@Override
-	public ChannelFuture handleRequest(GenericRequest request) {
+	public ChannelFuture handleRequest(final GenericRequest request) {
 		Channel channel = request.getChannel();
 		final SendObjectDataResponse response = new SendObjectDataResponse(
 				channel);
 
-		ChannelFuture future = provider.handle(request, response);
-		boolean cancellable = false;
-		return Futures.on(channel, cancellable).then(future)
-				.then(response.getFuture());
+		final Handler handler = provider.buildHandler(request);
+		
+		return new EasyAsync(channel, false) {
+			@Override
+			protected void poll() throws Exception {
+				handler.handle(response);
+			}
+		}.start();
 	}
 
 }

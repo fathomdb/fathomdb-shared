@@ -6,7 +6,12 @@ import java.net.URI;
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpVersion;
+
 import com.fathomdb.proxy.http.HttpScheme;
 
 public class HttpClientConnection {
@@ -30,13 +35,13 @@ public class HttpClientConnection {
 	public ChannelFuture connect() {
 		boolean ssl = scheme == HttpScheme.HTTPS;
 
-		this.connectFuture = client.getClientBootstrap(ssl).connect(new InetSocketAddress(
-				host, port));
+		this.connectFuture = client.getClientBootstrap(ssl).connect(
+				new InetSocketAddress(host, port));
 
 		return connectFuture;
 	}
 
-	public void doRequest(HttpRequest request, HttpResponseListener target) {
+	public void doRequest(HttpRequest request, HttpResponseHandler listener) {
 		Channel channel = getChannel();
 
 		// Set some example cookies.
@@ -48,7 +53,7 @@ public class HttpClientConnection {
 
 		HttpProxyClientHandler httpProxyClientHandler = channel.getPipeline()
 				.get(HttpProxyClientHandler.class);
-		httpProxyClientHandler.setTarget(target);
+		httpProxyClientHandler.setTarget(listener);
 
 		log.info("Client sending request: " + request);
 
@@ -87,5 +92,6 @@ public class HttpClientConnection {
 		String hostAndPort = url.getHost() + ":" + port;
 		return hostAndPort;
 	}
+
 
 }

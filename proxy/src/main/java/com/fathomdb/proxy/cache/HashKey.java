@@ -56,5 +56,11 @@ public class HashKey {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "HashKey [key=" + new String(key) + "]";
+	}
+
+	
 	
 }

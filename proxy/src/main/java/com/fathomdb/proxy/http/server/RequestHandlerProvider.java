@@ -7,7 +7,6 @@ import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.cache.CachingDataProvider;
 import com.fathomdb.proxy.http.client.HttpClientPool;
 import com.fathomdb.proxy.http.handlers.ObjectDataProviderResponseHandler;
-import com.fathomdb.proxy.http.handlers.ProxyRequestHandler;
 import com.fathomdb.proxy.http.handlers.RequestHandler;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
 import com.fathomdb.proxy.openstack.OpenstackCredentials;

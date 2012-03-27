@@ -1,21 +1,20 @@
 package com.fathomdb.proxy.openstack;
 
 import java.nio.ByteBuffer;
-import java.util.List;
 
 import org.jboss.netty.channel.Channel;
-import com.fathomdb.proxy.openstack.fs.OpenstackFile;
-import com.google.common.collect.Lists;
 
-public class ContainerListResponseListener extends
-		StreamingRestResponseListener {
+import com.fathomdb.proxy.openstack.fs.OpenstackItem;
+
+public class ContainerListResponseHandler extends
+		StreamingRestResponseHandler {
 	final StreamingJsonParser parser;
 	final ObjectListJsonHandler handler;
 	final ObjectMetadataListener listener;
 
-	public ContainerListResponseListener(Channel channel,
-			ObjectMetadataListener listener) {
-		super(channel);
+	Object result;
+	
+	public ContainerListResponseHandler(ObjectMetadataListener listener) {
 		this.listener = listener;
 
 		handler = new ObjectListJsonHandler();
@@ -165,7 +164,7 @@ public class ContainerListResponseListener extends
 
 		@Override
 		public void endDocument() {
-			listener.endObjects();
+			result = listener.endObjects();
 		}
 
 	}
@@ -174,5 +173,12 @@ public class ContainerListResponseListener extends
 	protected void gotData(ByteBuffer byteBuffer, boolean isLast) {
 		parser.feed(byteBuffer, isLast);
 	}
+
+	@Override
+	protected Object getResult() {
+		return result;
+	}
+
+
 
 }
