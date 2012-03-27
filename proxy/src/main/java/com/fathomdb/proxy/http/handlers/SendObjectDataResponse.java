@@ -15,20 +15,42 @@ public class SendObjectDataResponse extends TaskWithFuture implements
 		super(channel);
 	}
 
+	// There's a pain-point / catch here...
+	// we don't do GZIP compression unless the initial response has content
+	// So we need to hold back the response until the first bit of data comes
+	int dataCount = 0;
+	HttpResponse response;
+
 	@Override
 	public void gotData(ChannelBuffer content) {
-		HttpChunk chunk = new DefaultHttpChunk(content);
-		getChannel().write(chunk);
+		if (dataCount == 0) {
+			sendResponse(response, content);
+		} else {
+			HttpChunk chunk = new DefaultHttpChunk(content);
+			getChannel().write(chunk);
+		}
+
+		dataCount++;
 	}
 
 	@Override
 	public void beginResponse(HttpResponse response) {
-		getChannel().write(response);
+		this.response = response;
 	}
 
 	@Override
 	public void endData() {
-
+		if (dataCount == 0) {
+			sendResponse(response, null);
+		}
 	}
 
+	public void sendResponse(HttpResponse response, ChannelBuffer content) {
+		if (content != null) {
+			if (response.getContent() != null && response.getContent().readable())
+				throw new IllegalStateException();
+			response.setContent(content);
+		}
+		getChannel().write(response);
+	}
 }
