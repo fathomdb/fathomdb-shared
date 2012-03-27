@@ -63,7 +63,7 @@ public class HtaccessParser implements Closeable {
 		}
 	}
 
-	void parse() throws IOException {
+	public void parse() throws IOException {
 		while (true) {
 			String line = readConfigLine();
 			if (line == null)

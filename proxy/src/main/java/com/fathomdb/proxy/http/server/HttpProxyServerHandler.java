@@ -40,8 +40,11 @@ public class HttpProxyServerHandler extends SimpleChannelUpstreamHandler {
 	private final StringBuilder buf = new StringBuilder();
 	private RequestHandlerProvider requestHandlerProvider;
 
-	public HttpProxyServerHandler(RequestHandlerProvider requestHandlerProvider) {
+	private HttpEndpoint endpoint;
+
+	public HttpProxyServerHandler(HttpEndpoint endpoint, RequestHandlerProvider requestHandlerProvider) {
 		super();
+		this.endpoint = endpoint;
 		this.requestHandlerProvider = requestHandlerProvider;
 	}
 
@@ -95,7 +98,7 @@ public class HttpProxyServerHandler extends SimpleChannelUpstreamHandler {
 				// writeResponse(e);
 
 				GenericRequest singleChunkRequest = new SingleChunkHttpRequest(
-						e.getChannel(), request);
+						e.getChannel(), endpoint, request);
 				handleRequest(singleChunkRequest);
 			}
 		} else {

@@ -10,8 +10,10 @@ import com.fathomdb.proxy.objectdata.ObjectDataSink;
 public class ObjectListener extends OpenstackResponseHandler {
 
 	private final ObjectDataSink sink;
+	private final HttpResponse sendResponse;
 
-	public ObjectListener(ObjectDataSink sink) {
+	public ObjectListener(HttpResponse sendResponse, ObjectDataSink sink) {
+		this.sendResponse = sendResponse;
 		this.sink = sink;
 	}
 
@@ -19,10 +21,13 @@ public class ObjectListener extends OpenstackResponseHandler {
 	public void gotData(HttpResponse response, HttpChunk chunk, boolean isLast)
 			throws Exception {
 		if (chunk == null) {
-			// TODO: Send header??
 			long contentLength = HttpHeaders.getContentLength(response, -1);
-			sink.beginData(contentLength);
-
+			if (contentLength >= 0) {
+				sendResponse.setHeader(HttpHeaders.Names.CONTENT_LENGTH, contentLength);
+			}
+			
+			sink.beginResponse(sendResponse);
+			
 			ChannelBuffer content = response.getContent();
 			if (content.readable()) {
 				sink.gotData(content);

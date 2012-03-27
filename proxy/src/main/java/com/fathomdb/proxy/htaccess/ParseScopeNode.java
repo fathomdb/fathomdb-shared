@@ -31,9 +31,12 @@ public class ParseScopeNode extends ParseNode {
 				+ ", children=" + children + "]";
 	}
 
-	public Directive compile() {
+	public ScopeDirective compile() {
 		ScopeDirective directive;
-		if (Objects.equal(key, "Files")) {
+		
+		if (key == null) {
+			directive = new RootDirective(this);
+		} else if (Objects.equal(key, "Files")) {
 			directive = FilesDirective.parse(this);
 		} else {
 			throw new IllegalArgumentException("Unknown directive: " + key);

@@ -97,6 +97,10 @@ public class CacheFile {
 		public void close() {
 			locks.remove(this);
 		}
+		
+		public ByteBuffer getBuffer() {
+			return buffer;
+		}
 	}
 
 	CacheLock readEntry(CacheFileEntry entry) {
@@ -114,7 +118,7 @@ public class CacheFile {
 		return lock;
 	}
 
-	CacheLock lookup(HashKey key) {
+	public CacheLock lookup(HashKey key) {
 		CacheFileEntry entry;
 		synchronized (entries) {
 			entry = entries.get(key);

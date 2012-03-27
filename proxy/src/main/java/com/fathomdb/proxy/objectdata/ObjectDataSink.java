@@ -1,12 +1,13 @@
 package com.fathomdb.proxy.objectdata;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.handler.codec.http.HttpResponse;
 
 public interface ObjectDataSink {
 
 	void gotData(ChannelBuffer content);
 
-	void beginData(long contentLength);
+	void beginResponse(HttpResponse response);
 
 	void endData();
 

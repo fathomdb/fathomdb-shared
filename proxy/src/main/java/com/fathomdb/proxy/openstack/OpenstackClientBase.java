@@ -11,7 +11,6 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 
 import com.fathomdb.proxy.http.HttpScheme;
 import com.fathomdb.proxy.http.client.HttpClientConnection;
-import com.fathomdb.proxy.http.client.HttpResponseHandler;
 
 public abstract class OpenstackClientBase {
 	final HttpScheme scheme;
@@ -58,7 +57,7 @@ public abstract class OpenstackClientBase {
 		}
 
 		if (!httpClient.isConnected()) {
-			throw new AsyncFutureException(httpClient.connect());
+			throw new AsyncFutureException(httpClient.connect(), "Http client connection");
 		}
 
 		return httpClient;

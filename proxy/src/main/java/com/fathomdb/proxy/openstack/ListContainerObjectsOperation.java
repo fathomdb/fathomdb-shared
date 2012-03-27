@@ -62,7 +62,7 @@ public class ListContainerObjectsOperation {
 			containerListingResponse = swift
 					.doRequest(request, responseHandler);
 
-			throw new AsyncFutureException(containerListingResponse.getFuture());
+			throw new AsyncFutureException(containerListingResponse.getFuture(), "Swift container listing");
 		}
 
 		OpenstackItem root = (OpenstackItem) containerListingResponse

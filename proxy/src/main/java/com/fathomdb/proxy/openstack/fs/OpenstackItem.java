@@ -2,10 +2,10 @@ package com.fathomdb.proxy.openstack.fs;
 
 import java.util.Map;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 
 public class OpenstackItem {
-
 	private final String name;
 	private final String hash;
 	private final long length;
@@ -29,6 +29,19 @@ public class OpenstackItem {
 
 	public OpenstackItem getChild(String key) {
 		return children.get(key);
+	}
+
+	public boolean isDirectory() {
+		if (length > 0)
+			return false;
+
+		if (contentType == null || Objects.equal(contentType, "application/x-directory"))
+			return true;
+		return false;
+	}
+
+	public String getContentType() {
+		return contentType;
 	}
 
 }

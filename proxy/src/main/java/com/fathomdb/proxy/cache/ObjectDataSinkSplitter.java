@@ -1,6 +1,7 @@
 package com.fathomdb.proxy.cache;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.handler.codec.http.HttpResponse;
 
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
@@ -24,15 +25,15 @@ public class ObjectDataSinkSplitter implements ObjectDataSink {
 	}
 
 	@Override
-	public void beginData(long contentLength) {
-		for (ObjectDataSink child : children)
-			child.beginData(contentLength);
-	}
-
-	@Override
 	public void endData() {
 		for (ObjectDataSink child : children)
 			child.endData();
+	}
+
+	@Override
+	public void beginResponse(HttpResponse response) {
+		for (ObjectDataSink child : children)
+			child.beginResponse(response);
 	}
 
 }

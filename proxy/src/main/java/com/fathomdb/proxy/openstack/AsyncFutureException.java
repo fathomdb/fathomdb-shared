@@ -11,8 +11,8 @@ public class AsyncFutureException extends RuntimeException {
 		return future;
 	}
 
-	public AsyncFutureException(ChannelFuture future) {
-		super();
+	public AsyncFutureException(ChannelFuture future, String message) {
+		super(message);
 		this.future = future;
 	}
 

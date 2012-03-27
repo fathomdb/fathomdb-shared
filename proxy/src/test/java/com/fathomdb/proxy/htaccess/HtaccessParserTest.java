@@ -19,15 +19,17 @@ public class HtaccessParserTest {
 	}
 
 	private void dump(ParseScopeNode root) {
-		for (ParseNode child : root.getChildren()) {
-			Directive directive = child.compile();
-			System.out.println(directive);
-		}
+		Directive directive = root.compile();
+		System.out.println(directive);
+		
+		// for (ParseNode child : root.getChildren()) {
+		// Directive directive = child.compile();
+		// System.out.println(directive);
+		// }
 		// System.out.println(root);
 	}
 
 	private ParseScopeNode parse(String s) throws IOException {
-
 		InputStream is = getClass().getResourceAsStream(s);
 
 		HtaccessParser parser = new HtaccessParser(is);

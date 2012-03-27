@@ -8,6 +8,10 @@ public class ScopeDirective extends Directive {
 
 	final List<Directive> children = Lists.newArrayList();
 
+	public Iterable<Directive> getChildren() {
+		return children;
+	}
+
 	protected ScopeDirective(ParseNode node) {
 		super(node);
 	}

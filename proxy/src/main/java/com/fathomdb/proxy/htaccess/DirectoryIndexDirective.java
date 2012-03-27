@@ -1,5 +1,6 @@
 package com.fathomdb.proxy.htaccess;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -41,8 +42,13 @@ public class DirectoryIndexDirective extends Directive {
 
 	@Override
 	public String toString() {
-		return "DirectoryIndexDirective [urls=" + Joiner.on(',').join(urls) + super.toStringHelper()
-				+ "]";
+		return "DirectoryIndexDirective [urls=" + Joiner.on(',').join(urls)
+				+ super.toStringHelper() + "]";
+	}
+
+	public Iterable<String> getDirectoryIndexUrls() {
+		// TODO: Where the array => iterable function ??
+		return Arrays.asList(urls);
 	}
 
 }

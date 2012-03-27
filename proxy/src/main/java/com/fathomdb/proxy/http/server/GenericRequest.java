@@ -20,4 +20,6 @@ public interface GenericRequest {
 
 	List<Entry<String, String>> getHeaders();
 
+	String toAbsolute(String relativePath);
+
 }

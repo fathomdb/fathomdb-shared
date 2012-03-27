@@ -3,6 +3,8 @@ package com.fathomdb.proxy.cache;
 import java.nio.ByteBuffer;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpResponse;
 
 import com.fathomdb.proxy.cache.CacheFile.Allocation;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
@@ -41,7 +43,9 @@ public class CachingObjectDataSink implements ObjectDataSink {
 	}
 
 	@Override
-	public void beginData(long contentLength) {
+	public void beginResponse(HttpResponse response) {
+		long contentLength = HttpHeaders.getContentLength(response, -1);
+
 		if (contentLength == -1) {
 			// Unknown content length
 		} else {

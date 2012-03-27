@@ -23,6 +23,8 @@ import org.jboss.netty.handler.codec.http.HttpContentCompressor;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
+import com.fathomdb.proxy.http.HttpScheme;
+
 public class HttpProxyServerPipelineFactory implements ChannelPipelineFactory {
 	final RequestHandlerProvider requestHandlerProvider;
 
@@ -49,7 +51,9 @@ public class HttpProxyServerPipelineFactory implements ChannelPipelineFactory {
 		// Remove the following line if you don't want automatic content
 		// compression.
 		pipeline.addLast("deflater", new HttpContentCompressor());
-		pipeline.addLast("handler", new HttpProxyServerHandler(
+		
+		HttpEndpoint httpEndpoint = new HttpEndpoint(HttpScheme.HTTP);
+		pipeline.addLast("handler", new HttpProxyServerHandler(httpEndpoint,
 				requestHandlerProvider));
 		return pipeline;
 	}

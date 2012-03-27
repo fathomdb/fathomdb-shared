@@ -65,7 +65,7 @@ public class KeystoneAuthenticationOperation {
 					contentBuffer.readableBytes());
 			connection.doRequest(authRequest, keystoneAuthentication);
 
-			throw new AsyncFutureException(keystoneAuthentication.getFuture());
+			throw new AsyncFutureException(keystoneAuthentication.getFuture(), "Keystone authentication");
 		}
 
 		return keystoneAuthentication;
