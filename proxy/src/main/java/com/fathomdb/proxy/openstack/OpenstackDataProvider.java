@@ -115,13 +115,14 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 					if (!path.isEmpty() && !path.endsWith("/")) {
 						// We need to send a redirect. See DirectorySlash in
 						// Apache for a great explanation
-						
+
 						// The root (empty path) appears to be a special case
-						
+
 						response = buildError(HttpResponseStatus.MOVED_PERMANENTLY);
 						// TODO: Does this need to be absolute??
 						String redirectRelative = "/" + path + "/";
-						//String redirectAbsolute = request.toAbsolute(redirectRelative);
+						// String redirectAbsolute =
+						// request.toAbsolute(redirectRelative);
 						response.setHeader(HttpHeaders.Names.LOCATION,
 								redirectRelative);
 					} else {
@@ -137,6 +138,10 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 							OpenstackItem child = pathItem
 									.getChild(documentIndex);
 							if (child != null) {
+								// Note that the rule chain is the same, because
+								// it lives in the same directory!
+								ruleChain = rules;
+
 								path = path + documentIndex;
 								pathItem = child;
 								found = true;
@@ -155,11 +160,29 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			return resolved;
 		}
 
+		ServerRuleChain ruleChain;
+
+		ServerRuleChain getRules() {
+			if (ruleChain == null) {
+				Resolved resolved = resolve();
+				OpenstackItem root = getDirectoryRoot();
+
+				if (serverRuleResolver == null) {
+					serverRuleResolver = new ServerRuleResolver(root);
+				}
+
+				ServerRuleChain rules = serverRuleResolver
+						.resolveServerRules(resolved.path);
+				ruleChain = rules;
+			}
+			return ruleChain;
+		}
+
 		private HttpResponse buildError(HttpResponseStatus status) {
 			DefaultHttpResponse response = new DefaultHttpResponse(
 					HttpVersion.HTTP_1_1, status);
 
-//			response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, 0);
+			// response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, 0);
 
 			String responseBody = "Error " + status;
 			response.setContent(ChannelBuffers.copiedBuffer(responseBody,
@@ -167,7 +190,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
 			response.setHeader(CONTENT_LENGTH, response.getContent()
 					.readableBytes());
-			
+
 			return response;
 		}
 
@@ -239,6 +262,8 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 				response.setHeader(HttpHeaders.Names.CONTENT_TYPE, contentType);
 			}
 
+			getRules().addCacheHeaders(response);
+			
 			sink.beginResponse(response);
 			if (contentLength > 0) {
 				sink.gotData(ChannelBuffers.wrappedBuffer(buffer));
@@ -314,6 +339,8 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 							contentType);
 				}
 
+				getRules().addCacheHeaders(response);
+				
 				downloadOperation = new DownloadObjectOperation(session,
 						getContainerName() + "/" + resolved.path, response,
 						downloadTo);

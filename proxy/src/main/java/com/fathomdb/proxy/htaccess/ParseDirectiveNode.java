@@ -22,6 +22,8 @@ public class ParseDirectiveNode extends ParseNode {
 	public Directive compile() {
 		if (Objects.equal(key, "ExpiresDefault")) {
 			return ExpiresDefault.parse(this);
+		} else if (Objects.equal(key, "ExpiresByType")) {
+			return ExpiresByType.parse(this);
 		} else if (Objects.equal(key, "ExpiresActive")) {
 			return ExpiresActive.parse(this);
 		} else if (Objects.equal(key, "Header")) {
