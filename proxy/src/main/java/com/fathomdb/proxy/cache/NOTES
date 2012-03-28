@@ -1,0 +1,35 @@
+Ideas for new format
+(NOT IMPLEMENTED)
+
+The problem is that we'd really have to update it in place.
+
+
+Format V2 looks like this:
+
+Header that describes the data in the file
+Data blocks
+
+
+The header gets 32MB out of 1GB, fixed (i.e. data starts at 32MB)
+
+The header comprises a bunch of rows that look like this:
+
+int128 md5
+int32 scope
+int24 startpos / 256
+int8 unused
+int32 length
+int16 lastused
+int16 flags
+
+Each scope is typically a different website, and is a unit of trust.  Nothing can be served from one scope to another.
+An MD5 collision can't occur across scopes.
+
+The files are each data blocks that look like this:
+
+int32 headerLength
+int16 path
+<N> path
+<...> headerData
+
+Data itself
