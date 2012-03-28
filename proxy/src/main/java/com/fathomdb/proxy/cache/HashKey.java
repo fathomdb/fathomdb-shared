@@ -3,6 +3,8 @@ package com.fathomdb.proxy.cache;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import com.fathomdb.proxy.utils.Hex;
+
 public class HashKey {
 	final byte[] key;
 	final int hash;
@@ -58,7 +60,7 @@ public class HashKey {
 
 	@Override
 	public String toString() {
-		return "HashKey [key=" + new String(key) + "]";
+		return "HashKey [key=" + Hex.toHex(key) + "]";
 	}
 
 	

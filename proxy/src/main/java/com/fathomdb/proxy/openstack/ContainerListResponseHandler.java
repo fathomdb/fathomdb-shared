@@ -2,18 +2,15 @@ package com.fathomdb.proxy.openstack;
 
 import java.nio.ByteBuffer;
 
-import org.jboss.netty.channel.Channel;
+import com.fathomdb.proxy.utils.Hex;
 
-import com.fathomdb.proxy.openstack.fs.OpenstackItem;
-
-public class ContainerListResponseHandler extends
-		StreamingRestResponseHandler {
+public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 	final StreamingJsonParser parser;
 	final ObjectListJsonHandler handler;
 	final ObjectMetadataListener listener;
 
 	Object result;
-	
+
 	public ContainerListResponseHandler(ObjectMetadataListener listener) {
 		this.listener = listener;
 
@@ -31,7 +28,7 @@ public class ContainerListResponseHandler extends
 
 		long objectBytes = -1;
 		String objectName = null;
-		String objectHash = null;
+		byte[] objectHash = null;
 		String objectContentType = null;
 		String objectLastModified = null;
 
@@ -83,8 +80,7 @@ public class ContainerListResponseHandler extends
 				break;
 			}
 			case OBJECT_HASH: {
-				// TODO: From hex?
-				objectHash = value;
+				objectHash = Hex.fromHex(value);
 				state = State.OBJECT;
 				break;
 			}
@@ -137,7 +133,6 @@ public class ContainerListResponseHandler extends
 		public void gotKey(String localName) {
 			switch (state) {
 
-				
 			case OBJECT: {
 				if (localName.equals("name")) {
 					state = State.OBJECT_NAME;
@@ -152,9 +147,9 @@ public class ContainerListResponseHandler extends
 				} else {
 					throw new IllegalStateException();
 				}
-				
+
 				return;
-//				break;
+				// break;
 			}
 			}
 
@@ -178,7 +173,5 @@ public class ContainerListResponseHandler extends
 	protected Object getResult() {
 		return result;
 	}
-
-
 
 }

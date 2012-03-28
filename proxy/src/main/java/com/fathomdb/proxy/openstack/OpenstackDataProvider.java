@@ -212,24 +212,22 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			return current;
 		}
 
-		HashKey getCacheKey(String resolvedPath) {
-			HashKey cacheKey = null;
-
-			// TODO: Make this more robust
-			String hostAndPort = request.getHeader("Host");
-			String keyString = hostAndPort + ":" + resolvedPath;
-			cacheKey = new HashKey(keyString.getBytes());
-
-			return cacheKey;
+		HashKey getCacheKey(Resolved resolved) {
+			if (resolved.pathItem == null)
+				return null;
+			return resolved.pathItem.getContentHash();
 		}
 
 		public boolean isStillValid(Resolved resolved, CacheLock found) {
-			if (found != null) {
-				// TODO: Check MD5
-				return true;
-			}
+			// We rely on a hashed file system for expiration etc
+			return true;
 
-			return false;
+			// if (found != null) {
+			// // TODO: Check MD5
+			// return true;
+			// }
+			//
+			// return false;
 		}
 
 		ListContainerObjectsOperation listContainerObjects;
@@ -263,7 +261,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			}
 
 			getRules().addCacheHeaders(response);
-			
+
 			sink.beginResponse(response);
 			if (contentLength > 0) {
 				sink.gotData(ChannelBuffers.wrappedBuffer(buffer));
@@ -295,27 +293,28 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 				return;
 			}
 
-			HashKey cacheKey = getCacheKey(resolved.path);
+			HashKey cacheKey = getCacheKey(resolved);
 
 			if (!didCacheLookup && cacheKey != null) {
 				didCacheLookup = true;
 
 				found = cache.lookup(cacheKey);
 				if (found == null) {
-					log.info("Cache MISS on " + cacheKey);
+					log.info("Cache MISS on " + resolved.path + " " + cacheKey);
 				}
 			}
 
 			if (found != null) {
 				try {
 					if (isStillValid(resolved, found)) {
-						log.info("Cache HIT on " + cacheKey);
+						log.info("Cache HIT on " + resolved.path + " "
+								+ cacheKey);
 
 						sendCachedResponse(sink, resolved, found);
 						return;
 					} else {
-						log.info("Cache OUTOFDATE on " + cacheKey
-								+ " (hit but no longer valid)");
+						log.info("Cache OUTOFDATE on " + resolved.path + " "
+								+ cacheKey + " (hit but no longer valid)");
 					}
 				} finally {
 					found.close();
@@ -340,7 +339,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 				}
 
 				getRules().addCacheHeaders(response);
-				
+
 				downloadOperation = new DownloadObjectOperation(session,
 						getContainerName() + "/" + resolved.path, response,
 						downloadTo);

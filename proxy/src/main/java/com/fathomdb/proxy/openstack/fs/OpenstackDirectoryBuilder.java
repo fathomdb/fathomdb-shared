@@ -1,5 +1,6 @@
 package com.fathomdb.proxy.openstack.fs;
 
+import com.fathomdb.proxy.cache.HashKey;
 import com.fathomdb.proxy.openstack.ObjectMetadataListener;
 import com.google.common.base.Splitter;
 
@@ -8,7 +9,7 @@ public class OpenstackDirectoryBuilder implements ObjectMetadataListener {
 	final OpenstackItem root = new OpenstackItem(null);
 
 	@Override
-	public void gotObjectDetails(String objectName, String objectHash,
+	public void gotObjectDetails(String objectName, byte[] objectHash,
 			long objectBytes, String objectContentType,
 			String objectLastModified) {
 		OpenstackItem current = root;
@@ -30,7 +31,7 @@ public class OpenstackDirectoryBuilder implements ObjectMetadataListener {
 			}
 		}
 
-		OpenstackItem item = new OpenstackItem(fileName, objectHash,
+		OpenstackItem item = new OpenstackItem(fileName, new HashKey(objectHash),
 				objectBytes, objectContentType, objectLastModified);
 		current.children.put(fileName, item);
 	}

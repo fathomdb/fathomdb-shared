@@ -1,15 +1,17 @@
 package com.fathomdb.proxy.openstack;
 
+import com.fathomdb.proxy.utils.Hex;
+
 public class DebugObjectMetadataListener implements ObjectMetadataListener {
 
 	@Override
-	public void gotObjectDetails(String objectName, String objectHash,
+	public void gotObjectDetails(String objectName, byte[] objectHash,
 			long objectBytes, String objectContentType,
 			String objectLastModified) {
 		// )
 		// OpenstackFile item = new OpenstackFile(items.add(item);
 		System.out.println("Got object details: " + objectName + " "
-				+ objectHash + " " + objectBytes + " " + objectContentType
+				+ Hex.toHex(objectHash) + " " + objectBytes + " " + objectContentType
 				+ " " + objectLastModified);
 	}
 

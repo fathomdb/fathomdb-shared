@@ -30,7 +30,7 @@ public class CacheFile {
 
 	static final int VERSION = 1;
 
-	// TODO: Remove this limitation
+	// TODO: Remove this limitation ?
 	static final int RESERVED_HEADER_SIZE = 32 * 1024 * 1024;
 	static final int FILE_LENGTH = 1024 * 1024 * 1024;
 
