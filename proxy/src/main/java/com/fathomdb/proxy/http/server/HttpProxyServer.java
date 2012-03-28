@@ -17,6 +17,7 @@ import com.fathomdb.proxy.http.config.FilesystemHostConfigProvider;
 import com.fathomdb.proxy.http.config.HostConfigProvider;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
 import com.fathomdb.proxy.openstack.OpenstackCredentials;
+import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
 
 public class HttpProxyServer {
 	static final Logger log = Logger.getLogger(HttpProxyServer.class);
@@ -44,10 +45,16 @@ public class HttpProxyServer {
 		CacheFile cache = CacheFile.open(new File("cachedata000"));
 		log.info("Opened cache file: " + cache);
 
-		HostConfigProvider configProvider = new FilesystemHostConfigProvider(new File("hosts"));
+		OpenstackDirectoryCache openstackContainerMetadataCache = new OpenstackDirectoryCache(
+				openstackClientPool);
+		openstackContainerMetadataCache.initialize();
+
+		HostConfigProvider configProvider = new FilesystemHostConfigProvider(
+				new File("hosts"));
 		configProvider.initialize();
-		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(configProvider,
-				cache, httpClientPool, openstackClientPool);
+		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(
+				configProvider, openstackContainerMetadataCache, cache,
+				httpClientPool, openstackClientPool);
 		// Set up the event pipeline factory.
 		bootstrap.setPipelineFactory(new HttpProxyServerPipelineFactory(
 				requestHandlerProvider));

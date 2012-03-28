@@ -34,6 +34,8 @@ public class FilesystemHostConfigProvider extends HostConfigProvider {
 
 		@Override
 		public void run() {
+			// TODO: Is this breaking LRU??
+
 			try {
 				log.info("Starting filesystem refresh");
 

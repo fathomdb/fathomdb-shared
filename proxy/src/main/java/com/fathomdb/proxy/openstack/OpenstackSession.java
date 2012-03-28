@@ -23,7 +23,6 @@ public class OpenstackSession {
 	}
 
 	ObjectListener httpListener;
-	OpenstackDirectoryBuilder directoryListing;
 
 	KeystoneClient keystone;
 
@@ -57,6 +56,10 @@ public class OpenstackSession {
 
 	public String getAuthTokenId() {
 		return getAuthentication().getAuthTokenId();
+	}
+
+	public OpenstackCredentials getCredentials() {
+		return credentials;
 	}
 
 }

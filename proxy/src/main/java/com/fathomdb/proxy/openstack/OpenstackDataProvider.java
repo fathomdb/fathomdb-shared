@@ -24,11 +24,14 @@ import com.fathomdb.proxy.cache.CacheFile.CacheLock;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
+import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
 import com.fathomdb.proxy.openstack.fs.OpenstackItem;
 import com.google.common.base.Splitter;
 
 public class OpenstackDataProvider extends ObjectDataProvider {
 	static final Logger log = Logger.getLogger(OpenstackDataProvider.class);
+
+	final OpenstackDirectoryCache openstackDirectoryCache;
 
 	final OpenstackClientPool openstackClientPool;
 
@@ -40,9 +43,11 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 	final String containerName;
 
-	public OpenstackDataProvider(CacheFile cache,
+	public OpenstackDataProvider(
+			OpenstackDirectoryCache openstackDirectoryCache, CacheFile cache,
 			OpenstackCredentials openstackCredentials,
 			OpenstackClientPool openstackClientPool, String containerName) {
+		this.openstackDirectoryCache = openstackDirectoryCache;
 		this.cache = cache;
 		this.openstackCredentials = openstackCredentials;
 		this.openstackClientPool = openstackClientPool;
@@ -233,16 +238,15 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			// return false;
 		}
 
-		ListContainerObjectsOperation listContainerObjects;
+		OpenstackItem directoryRoot;
 
 		private OpenstackItem getDirectoryRoot() {
-			if (listContainerObjects == null) {
-				listContainerObjects = new ListContainerObjectsOperation(
-						session, getContainerName());
+			if (directoryRoot == null) {
+				directoryRoot = openstackDirectoryCache.getAsync(
+						session.getCredentials(), getContainerName());
 			}
 
-			OpenstackItem root = listContainerObjects.get();
-			return root;
+			return directoryRoot;
 		}
 
 		private void sendCachedResponse(ObjectDataSink sink, Resolved resolved,
@@ -273,12 +277,12 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		}
 
 		private void sendResponse(ObjectDataSink sink, HttpResponse response) {
-//			ChannelBuffer content = response.getContent();
+			// ChannelBuffer content = response.getContent();
 
 			sink.beginResponse(response);
-//			if (content != null && content.readable()) {
-//				sink.gotData(content);
-//			}
+			// if (content != null && content.readable()) {
+			// sink.gotData(content);
+			// }
 			sink.endData();
 		}
 

@@ -170,7 +170,7 @@ public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 	}
 
 	@Override
-	protected Object getResult() {
+	public Object getResult() {
 		return result;
 	}
 
