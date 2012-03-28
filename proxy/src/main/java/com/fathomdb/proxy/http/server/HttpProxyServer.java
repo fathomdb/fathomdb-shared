@@ -13,6 +13,8 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.http.client.HttpClientPool;
 import com.fathomdb.proxy.http.client.HttpClient;
+import com.fathomdb.proxy.http.config.FilesystemHostConfigProvider;
+import com.fathomdb.proxy.http.config.HostConfigProvider;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
 import com.fathomdb.proxy.openstack.OpenstackCredentials;
 
@@ -42,29 +44,9 @@ public class HttpProxyServer {
 		CacheFile cache = CacheFile.open(new File("cachedata000"));
 		log.info("Opened cache file: " + cache);
 
-		OpenstackCredentials openstackCredentials;
-		if (false) {
-			URI authUrl;
-			try {
-				authUrl = new URI("http://192.168.100.1:5000/v2.0/tokens");
-			} catch (URISyntaxException e) {
-				throw new IllegalArgumentException("Error parsing uri", e);
-			}
-			openstackCredentials = new OpenstackCredentials("admin", "admin",
-					"admin", authUrl);
-		} else {
-			URI authUrl;
-			try {
-				authUrl = new URI("https://identity.api.rackspacecloud.com/v2.0/tokens");
-			} catch (URISyntaxException e) {
-				throw new IllegalArgumentException("Error parsing uri", e);
-			}
-			openstackCredentials = new OpenstackCredentials(System.getProperty("user"), System.getProperty("key"), System.getProperty("tenant"), authUrl);
-		}
-
-		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(
-				cache, httpClientPool, openstackClientPool,
-				openstackCredentials);
+		HostConfigProvider configProvider = new FilesystemHostConfigProvider(new File("hosts"));
+		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(configProvider,
+				cache, httpClientPool, openstackClientPool);
 		// Set up the event pipeline factory.
 		bootstrap.setPipelineFactory(new HttpProxyServerPipelineFactory(
 				requestHandlerProvider));

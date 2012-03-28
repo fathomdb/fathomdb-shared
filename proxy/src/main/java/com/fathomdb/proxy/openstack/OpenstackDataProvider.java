@@ -38,20 +38,19 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 	final CacheFile cache;
 
+	final String containerName;
+
 	public OpenstackDataProvider(CacheFile cache,
 			OpenstackCredentials openstackCredentials,
-			OpenstackClientPool openstackClientPool) {
+			OpenstackClientPool openstackClientPool, String containerName) {
 		this.cache = cache;
 		this.openstackCredentials = openstackCredentials;
 		this.openstackClientPool = openstackClientPool;
+		this.containerName = containerName;
 		session = openstackClientPool.getClient(openstackCredentials);
 	}
 
 	String getContainerName() {
-		String containerName = System.getProperty("container");
-		if (containerName == null) {
-			containerName = "bucketshop";
-		}
 		return containerName;
 	}
 
@@ -154,6 +153,10 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 						}
 					}
 				}
+			}
+
+			if (pathItem == null) {
+				response = buildError(HttpResponseStatus.NOT_FOUND);
 			}
 
 			resolved = new Resolved(path, pathItem, response);
@@ -270,12 +273,12 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		}
 
 		private void sendResponse(ObjectDataSink sink, HttpResponse response) {
-			ChannelBuffer content = response.getContent();
+//			ChannelBuffer content = response.getContent();
 
 			sink.beginResponse(response);
-			if (content != null && content.readable()) {
-				sink.gotData(content);
-			}
+//			if (content != null && content.readable()) {
+//				sink.gotData(content);
+//			}
 			sink.endData();
 		}
 

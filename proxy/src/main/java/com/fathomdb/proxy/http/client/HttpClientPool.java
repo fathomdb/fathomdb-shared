@@ -13,6 +13,8 @@ public class HttpClientPool {
 	}
 
 	public HttpClientConnection getClient(HttpScheme scheme, String hostAndPort) {
+		// TODO: Implement pooling!!
+		
 		String host = hostAndPort;
 		int port;
 		int colonIndex = host.indexOf(':');
