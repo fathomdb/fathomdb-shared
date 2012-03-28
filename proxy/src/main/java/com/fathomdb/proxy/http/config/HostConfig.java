@@ -9,9 +9,11 @@ import java.util.Properties;
 public class HostConfig {
 	final String host;
 	final Properties properties;
+	final String versionKey;
 
-	public HostConfig(String host, Properties properties) {
+	public HostConfig(String host, String versionKey, Properties properties) {
 		this.host = host;
+		this.versionKey = versionKey;
 		this.properties = properties;
 	}
 
@@ -52,4 +54,9 @@ public class HostConfig {
 		}
 		return containerName;
 	}
+
+	public String getVersionKey() {
+		return versionKey;
+	}
+
 }

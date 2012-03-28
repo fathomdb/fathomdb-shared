@@ -45,6 +45,7 @@ public class HttpProxyServer {
 		log.info("Opened cache file: " + cache);
 
 		HostConfigProvider configProvider = new FilesystemHostConfigProvider(new File("hosts"));
+		configProvider.initialize();
 		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(configProvider,
 				cache, httpClientPool, openstackClientPool);
 		// Set up the event pipeline factory.
