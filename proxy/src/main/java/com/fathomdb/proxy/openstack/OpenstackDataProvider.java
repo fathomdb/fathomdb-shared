@@ -4,7 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.jboss.netty.handler.codec.http.CookieDecoder;
@@ -29,7 +30,7 @@ import com.fathomdb.proxy.openstack.fs.OpenstackItem;
 import com.google.common.base.Splitter;
 
 public class OpenstackDataProvider extends ObjectDataProvider {
-	static final Logger log = Logger.getLogger(OpenstackDataProvider.class);
+	static final Logger log = LoggerFactory.getLogger(OpenstackDataProvider.class);
 
 	final OpenstackDirectoryCache openstackDirectoryCache;
 

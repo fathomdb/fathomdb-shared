@@ -7,7 +7,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
@@ -22,7 +23,7 @@ import com.fathomdb.proxy.openstack.OpenstackCredentials;
 import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
 
 public class HttpProxyServer {
-	static final Logger log = Logger.getLogger(HttpProxyServer.class);
+	static final Logger log = LoggerFactory.getLogger(HttpProxyServer.class);
 
 	private final int port;
 

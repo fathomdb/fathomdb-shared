@@ -1,6 +1,7 @@
 package com.fathomdb.proxy.openstack;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpChunk;
@@ -14,7 +15,7 @@ import com.fathomdb.proxy.http.client.TaskWithFuture;
 public abstract class RestResponseListener extends TaskWithFuture implements
 		HttpResponseHandler {
 
-	static final Logger log = Logger.getLogger(RestResponseListener.class);
+	static final Logger log = LoggerFactory.getLogger(RestResponseListener.class);
 
 	protected RestResponseListener(Channel channel) {
 		super(channel);

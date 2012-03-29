@@ -8,7 +8,8 @@
 //import java.util.Map.Entry;
 //import java.util.Set;
 //
-//import org.apache.log4j.Logger;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 //import org.jboss.netty.channel.ChannelFuture;
 //import org.jboss.netty.channel.ChannelFutureListener;
 //import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
@@ -24,7 +25,7 @@
 //import com.fathomdb.proxy.http.server.GenericRequest;
 //
 //public class ProxyRequestHandler implements RequestHandler {
-//	static final Logger log = Logger.getLogger(ProxyRequestHandler.class);
+//	static final Logger log = LoggerFactory.getLogger(ProxyRequestHandler.class);
 //
 //	final HttpClientPool httpClientPool;
 //

@@ -2,11 +2,12 @@ package com.fathomdb.proxy.openstack.fs;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.DefaultChannelFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.proxy.openstack.AsyncFutureException;
 import com.google.common.cache.CacheBuilder;
@@ -15,7 +16,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 
 public abstract class AsyncCache<K, V> {
-	static final Logger log = Logger.getLogger(AsyncCache.class);
+	static final Logger log = LoggerFactory.getLogger(AsyncCache.class);
 
 	protected final LoadingCache<K, FetchOperation> cache = CacheBuilder
 			.newBuilder().build(new CacheLoader<K, FetchOperation>() {

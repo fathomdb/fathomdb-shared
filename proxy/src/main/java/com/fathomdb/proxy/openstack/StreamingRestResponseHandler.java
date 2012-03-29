@@ -2,20 +2,19 @@ package com.fathomdb.proxy.openstack;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 
-import com.fathomdb.proxy.http.client.HttpResponseHandler;
-import com.fathomdb.proxy.http.client.TaskWithFuture;
 import com.google.common.base.Charsets;
 
 public abstract class StreamingRestResponseHandler extends
 		OpenstackResponseHandler {
 
-	static final Logger log = Logger
+	static final Logger log = LoggerFactory
 			.getLogger(StreamingRestResponseHandler.class);
 
 	@Override

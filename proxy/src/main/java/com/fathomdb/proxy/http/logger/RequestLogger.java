@@ -17,14 +17,15 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import com.fathomdb.proxy.http.server.GenericRequest;
 
 public class RequestLogger {
-	static final Logger log = Logger.getLogger(RequestLogger.class);
+	static final Logger log = LoggerFactory.getLogger(RequestLogger.class);
 
 	final BlockingQueue<LogRequest> queue = new LinkedBlockingDeque<LogRequest>();
 

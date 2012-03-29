@@ -1,6 +1,7 @@
 package com.fathomdb.proxy.http.handlers;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -13,7 +14,7 @@ import com.fathomdb.proxy.objectdata.ObjectDataProvider.Handler;
 import com.fathomdb.proxy.openstack.EasyAsync;
 
 public class ObjectDataProviderResponseHandler implements RequestHandler {
-	static final Logger log = Logger
+	static final Logger log = LoggerFactory
 			.getLogger(ObjectDataProviderResponseHandler.class);
 
 	final ObjectDataProvider provider;

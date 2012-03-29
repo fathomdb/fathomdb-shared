@@ -3,7 +3,8 @@ package com.fathomdb.proxy.http.client;
 import java.net.InetSocketAddress;
 import java.net.URI;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
@@ -15,7 +16,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import com.fathomdb.proxy.http.HttpScheme;
 
 public class HttpClientConnection implements AutoCloseable {
-	static final Logger log = Logger.getLogger(HttpClientConnection.class);
+	static final Logger log = LoggerFactory.getLogger(HttpClientConnection.class);
 
 	private final HttpScheme scheme;
 	private final String host;

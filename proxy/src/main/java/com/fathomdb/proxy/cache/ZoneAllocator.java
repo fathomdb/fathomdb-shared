@@ -3,13 +3,14 @@ package com.fathomdb.proxy.cache;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.proxy.cache.CacheFile.CacheFileEntry;
 import com.google.common.collect.Lists;
 
 public class ZoneAllocator {
-	static final Logger log = Logger.getLogger(ZoneAllocator.class);
+	static final Logger log = LoggerFactory.getLogger(ZoneAllocator.class);
 
 	static final int FAIL = -1;
 

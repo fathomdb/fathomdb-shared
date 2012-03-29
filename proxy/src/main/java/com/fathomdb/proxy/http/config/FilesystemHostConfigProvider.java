@@ -7,13 +7,14 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.proxy.http.client.ThreadPools;
 import com.google.common.base.Objects;
 
 public class FilesystemHostConfigProvider extends HostConfigProvider {
-	static final Logger log = Logger
+	static final Logger log = LoggerFactory
 			.getLogger(FilesystemHostConfigProvider.class);
 
 	private final File baseDir;

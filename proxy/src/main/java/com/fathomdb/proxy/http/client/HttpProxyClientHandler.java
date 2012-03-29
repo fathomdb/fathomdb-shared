@@ -1,6 +1,7 @@
 package com.fathomdb.proxy.http.client;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
@@ -8,7 +9,7 @@ import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 
 public class HttpProxyClientHandler extends SimpleChannelUpstreamHandler {
-	static final Logger log = Logger.getLogger(HttpProxyClientHandler.class);
+	static final Logger log = LoggerFactory.getLogger(HttpProxyClientHandler.class);
 
 	private boolean readingChunks;
 	private HttpResponse chunkedResponse;

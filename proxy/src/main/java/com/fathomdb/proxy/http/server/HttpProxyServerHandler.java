@@ -19,7 +19,8 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.*;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
 import static org.jboss.netty.handler.codec.http.HttpVersion.*;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -32,7 +33,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import com.fathomdb.proxy.http.handlers.RequestHandler;
 
 public class HttpProxyServerHandler extends SimpleChannelUpstreamHandler {
-	static final Logger log = Logger.getLogger(HttpProxyServerHandler.class);
+	static final Logger log = LoggerFactory.getLogger(HttpProxyServerHandler.class);
 	
 	private HttpRequest request;
 	private boolean readingChunks;

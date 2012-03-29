@@ -3,7 +3,8 @@ package com.fathomdb.proxy.openstack.fs;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.meta.Meta;
 import com.fathomdb.proxy.http.client.ThreadPools;
@@ -13,7 +14,7 @@ import com.fathomdb.proxy.openstack.OpenstackCredentials;
 import com.fathomdb.proxy.openstack.OpenstackSession;
 
 public class OpenstackDirectoryCache {
-	static final Logger log = Logger.getLogger(OpenstackDirectoryCache.class);
+	static final Logger log = LoggerFactory.getLogger(OpenstackDirectoryCache.class);
 
 	private final OpenstackClientPool openstackClientPool;
 

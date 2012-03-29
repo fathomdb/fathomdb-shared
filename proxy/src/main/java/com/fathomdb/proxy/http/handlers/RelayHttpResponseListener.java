@@ -1,6 +1,7 @@
 //package com.fathomdb.proxy.http.handlers;
 //
-//import org.apache.log4j.Logger;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 //import org.jboss.netty.channel.Channel;
 //import org.jboss.netty.channel.ChannelFuture;
 //import org.jboss.netty.channel.ChannelFutureListener;
@@ -12,7 +13,7 @@
 //
 //public class RelayHttpResponseListener extends TaskWithFuture implements
 //		HttpResponseHandler {
-//	static final Logger log = Logger.getLogger(RelayHttpResponseListener.class);
+//	static final Logger log = LoggerFactory.getLogger(RelayHttpResponseListener.class);
 //
 //	public RelayHttpResponseListener(Channel channel) {
 //		super(channel);
