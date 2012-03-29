@@ -43,9 +43,10 @@ public class RequestLogger {
 		}
 	}
 
-	static final byte RECORD_TYPE_REQUEST = 1;
-	static final byte RECORD_TYPE_RESPONSE = 2;
-	static final byte RECORD_TYPE_TIMESTAMP = 3;
+	public static final byte RECORD_TYPE_HEADER = 1;
+	public static final byte RECORD_TYPE_TIMESTAMP = 8;
+	public static final byte RECORD_TYPE_REQUEST = 16;
+	public static final byte RECORD_TYPE_RESPONSE = 17;
 
 	public class LoggingThread implements Runnable {
 		final File logFile;
@@ -66,6 +67,15 @@ public class RequestLogger {
 				if (os != null)
 					os.close();
 			}
+			
+			writeHeader();
+		}
+
+		static final int FILE_FORMAT_VERSION = 1;
+		
+		private void writeHeader() throws IOException {
+			output.writeByte(RECORD_TYPE_HEADER);
+			output.writeInt(FILE_FORMAT_VERSION);
 		}
 
 		final CountDownLatch keepRunning = new CountDownLatch(1);
