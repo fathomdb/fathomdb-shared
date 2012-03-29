@@ -1,18 +1,12 @@
 package com.fathomdb.proxy.openstack;
 
 import java.net.URI;
-import java.util.concurrent.ConcurrentMap;
-
-import com.fathomdb.proxy.objectdata.ObjectDataSink;
-import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryBuilder;
-import com.fathomdb.proxy.openstack.fs.OpenstackItem;
-import com.google.common.collect.Maps;
 
 /**
  * It would be nice to use the same codebase as the main OpenStack Java binding.
  * However, this is pretty specialized for Swift & Async
  */
-public class OpenstackSession {
+public class OpenstackSession implements AutoCloseable {
 	final OpenstackClientPool openstackClientPool;
 	private final OpenstackCredentials credentials;
 
@@ -60,6 +54,17 @@ public class OpenstackSession {
 
 	public OpenstackCredentials getCredentials() {
 		return credentials;
+	}
+
+	public void close() {
+		if (keystone != null) {
+			keystone.close();
+		}
+		
+		if (swift != null) {
+			swift.close();
+		}
+		
 	}
 
 }

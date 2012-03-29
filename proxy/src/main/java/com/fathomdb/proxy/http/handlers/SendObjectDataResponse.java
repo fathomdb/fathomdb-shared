@@ -3,6 +3,7 @@ package com.fathomdb.proxy.http.handlers;
 import java.net.SocketAddress;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.HttpChunk;
@@ -36,7 +37,7 @@ public class SendObjectDataResponse extends TaskWithFuture implements
 	long responseLength = 0;
 
 	@Override
-	public void gotData(ChannelBuffer content) {
+	public void gotData(ChannelBuffer content, boolean isLast) {
 		if (dataCount == 0) {
 			sendResponse(response, content);
 		} else {
@@ -59,6 +60,11 @@ public class SendObjectDataResponse extends TaskWithFuture implements
 			sendResponse(response, null);
 		}
 
+		if (response.isChunked()) {
+			HttpChunk chunk = new DefaultHttpChunk(ChannelBuffers.EMPTY_BUFFER);
+			getChannel().write(chunk);
+		}
+
 		logResponse();
 	}
 
@@ -67,14 +73,27 @@ public class SendObjectDataResponse extends TaskWithFuture implements
 	}
 
 	public void sendResponse(HttpResponse response, ChannelBuffer content) {
-		if (content != null) {
-			if (response.getContent() != null
-					&& response.getContent().readable())
-				throw new IllegalStateException();
-			response.setContent(content);
+		if (!response.isChunked()) {
+			if (content != null) {
+				if (response.getContent() != null
+						&& response.getContent().readable())
+					throw new IllegalStateException();
+				response.setContent(content);
 
-			responseLength += content.readableBytes();
+				responseLength += content.readableBytes();
+			}
 		}
+
 		getChannel().write(response);
+
+		if (response.isChunked()) {
+			if (content != null) {
+				HttpChunk chunk = new DefaultHttpChunk(content);
+
+				getChannel().write(chunk);
+
+				responseLength += content.readableBytes();
+			}
+		}
 	}
 }

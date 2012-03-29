@@ -25,21 +25,32 @@ public class ObjectListener extends OpenstackResponseHandler {
 		if (chunk == null) {
 			long contentLength = HttpHeaders.getContentLength(response, -1);
 			if (contentLength >= 0) {
-				sendResponse.setHeader(HttpHeaders.Names.CONTENT_LENGTH, contentLength);
+				log.warn("Setting content length to " + contentLength);
+				sendResponse.setHeader(HttpHeaders.Names.CONTENT_LENGTH,
+						contentLength);
+			} else {
+				log.warn("Not setting content length");
 			}
-			
+
+			boolean headerIsLast = isLast
+					&& (chunk == null || !chunk.getContent().readable());
+
+			if (!headerIsLast) {
+				sendResponse.setChunked(true);
+			}
+
 			sink.beginResponse(sendResponse);
-			
+
 			ChannelBuffer content = response.getContent();
 			if (content.readable()) {
-				sink.gotData(content);
+				sink.gotData(content, headerIsLast);
 			}
 		}
 
 		if (chunk != null) {
 			ChannelBuffer content = chunk.getContent();
 			if (content.readable()) {
-				sink.gotData(content);
+				sink.gotData(content, isLast);
 			}
 		}
 

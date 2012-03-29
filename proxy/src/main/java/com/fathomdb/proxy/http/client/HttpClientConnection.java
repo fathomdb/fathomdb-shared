@@ -14,7 +14,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 
 import com.fathomdb.proxy.http.HttpScheme;
 
-public class HttpClientConnection {
+public class HttpClientConnection implements AutoCloseable {
 	static final Logger log = Logger.getLogger(HttpClientConnection.class);
 
 	private final HttpScheme scheme;
@@ -61,16 +61,6 @@ public class HttpClientConnection {
 		channel.write(request);
 	}
 
-	public void close() {
-		throw new UnsupportedOperationException();
-		//
-		// // Wait for the server to close the connection.
-		// channel.getCloseFuture().awaitUninterruptibly();
-		//
-		// // Shut down executor threads to exit.
-		// client.releaseExternalResources();
-	}
-
 	public boolean isConnected() {
 		if (connectFuture == null)
 			return false;
@@ -93,5 +83,17 @@ public class HttpClientConnection {
 		return hostAndPort;
 	}
 
+	public void close() {
+		// // Wait for the server to close the connection.
+		// channel.getCloseFuture().awaitUninterruptibly();
+		//
+		// // Shut down executor threads to exit.
+		// client.releaseExternalResources();
+
+		if (connectFuture != null) {
+			Channel channel = connectFuture.getChannel();
+			channel.close();
+		}
+	}
 
 }

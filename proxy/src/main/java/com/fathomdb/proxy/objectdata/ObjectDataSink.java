@@ -5,7 +5,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 
 public interface ObjectDataSink {
 
-	void gotData(ChannelBuffer content);
+	void gotData(ChannelBuffer content, boolean isLast);
 
 	void beginResponse(HttpResponse response);
 

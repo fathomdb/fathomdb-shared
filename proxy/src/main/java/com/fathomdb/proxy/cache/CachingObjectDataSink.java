@@ -20,7 +20,7 @@ public class CachingObjectDataSink implements ObjectDataSink {
 	}
 
 	@Override
-	public void gotData(ChannelBuffer content) {
+	public void gotData(ChannelBuffer content, boolean isLast) {
 		if (allocation != null) {
 			// This is a potentially blocking operation
 			// So... make sure that mmap is fast

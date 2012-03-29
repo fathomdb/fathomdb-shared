@@ -5,7 +5,7 @@ import com.fathomdb.proxy.http.server.GenericRequest;
 public abstract class ObjectDataProvider {
 	public abstract Handler buildHandler(GenericRequest request);
 
-	public abstract class Handler {
+	public abstract class Handler implements AutoCloseable {
 		protected final GenericRequest request;
 
 		public Handler(GenericRequest request) {

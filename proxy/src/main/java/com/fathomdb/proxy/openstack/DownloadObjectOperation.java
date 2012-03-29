@@ -28,7 +28,7 @@ public class DownloadObjectOperation  {
 
 	ObjectListener httpListener;
 
-	public void run() {
+	public void doDownload() {
 		if (httpListener == null) {
 			SwiftClient swift = session.getSwiftClient();
 			URI swiftUrl = swift.getBaseUrl();

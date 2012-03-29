@@ -1,14 +1,10 @@
 package com.fathomdb.proxy.openstack;
 
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
-
 import java.nio.ByteBuffer;
 import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.jboss.netty.handler.codec.http.CookieDecoder;
@@ -20,8 +16,6 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.util.CharsetUtil;
-
 import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.cache.CachingObjectDataSink;
 import com.fathomdb.proxy.cache.HashKey;
@@ -43,8 +37,6 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 	final OpenstackCredentials openstackCredentials;
 
-	final OpenstackSession session;
-
 	final CacheFile cache;
 
 	final String containerName;
@@ -58,7 +50,6 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		this.openstackCredentials = openstackCredentials;
 		this.openstackClientPool = openstackClientPool;
 		this.containerName = containerName;
-		session = openstackClientPool.getClient(openstackCredentials);
 	}
 
 	String getContainerName() {
@@ -68,6 +59,18 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 	class Handler extends ObjectDataProvider.Handler {
 		public Handler(GenericRequest request) {
 			super(request);
+		}
+
+		// TODO: Can we re-use auth by moving this up.
+		// We don't want to reuse the swift connection though...
+		OpenstackSession openstackSession;
+
+		OpenstackSession getOpenstackSession() {
+			if (openstackSession == null) {
+				openstackSession = openstackClientPool
+						.getClient(openstackCredentials);
+			}
+			return openstackSession;
 		}
 
 		class Resolved {
@@ -248,7 +251,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		private OpenstackItem getDirectoryRoot() {
 			if (directoryRoot == null) {
 				directoryRoot = openstackDirectoryCache.getAsync(
-						session.getCredentials(), getContainerName());
+						openstackCredentials, getContainerName());
 			}
 
 			return directoryRoot;
@@ -275,7 +278,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 			sink.beginResponse(response);
 			if (contentLength > 0) {
-				sink.gotData(ChannelBuffers.wrappedBuffer(buffer));
+				sink.gotData(ChannelBuffers.wrappedBuffer(buffer), true);
 			}
 			sink.endData();
 		}
@@ -350,11 +353,17 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 				getRules().addCacheHeaders(response);
 
-				downloadOperation = new DownloadObjectOperation(session,
-						getContainerName() + "/" + resolved.path, response,
-						downloadTo);
+				downloadOperation = new DownloadObjectOperation(
+						getOpenstackSession(), getContainerName() + "/"
+								+ resolved.path, response, downloadTo);
 			}
-			downloadOperation.run();
+			downloadOperation.doDownload();
+		}
+
+		public void close() {
+			if (openstackSession != null) {
+				openstackSession.close();
+			}
 		}
 
 		static final int SECONDS_IN_MINUTE = 60;
@@ -382,7 +391,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 					}
 				}
 			}
-			
+
 			if (!found) {
 				CookieEncoder cookieEncoder = new CookieEncoder(true);
 				Cookie cookie = new DefaultCookie(cookieName, UUID.randomUUID()

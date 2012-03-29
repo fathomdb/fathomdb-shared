@@ -13,14 +13,14 @@ public class ObjectDataSinkSplitter implements ObjectDataSink {
 	}
 
 	@Override
-	public void gotData(ChannelBuffer content) {
+	public void gotData(ChannelBuffer content, boolean isLast) {
 		for (int i = 0; i < children.length; i++) {
 			ChannelBuffer copy = content;
 			if ((i + 1) != children.length) {
 				copy = copy.duplicate();
 			}
 
-			children[i].gotData(copy);
+			children[i].gotData(copy, isLast);
 		}
 	}
 

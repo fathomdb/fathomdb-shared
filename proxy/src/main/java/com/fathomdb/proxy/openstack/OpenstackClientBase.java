@@ -12,7 +12,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import com.fathomdb.proxy.http.HttpScheme;
 import com.fathomdb.proxy.http.client.HttpClientConnection;
 
-public abstract class OpenstackClientBase {
+public abstract class OpenstackClientBase implements AutoCloseable {
 	final HttpScheme scheme;
 	final String hostHeader;
 
@@ -61,6 +61,12 @@ public abstract class OpenstackClientBase {
 		}
 
 		return httpClient;
+	}
+	
+	public void close() {
+		if (httpClient != null) {
+			httpClient.close();
+		}
 	}
 
 	public HttpRequest buildRequest(HttpMethod method, String path) {
