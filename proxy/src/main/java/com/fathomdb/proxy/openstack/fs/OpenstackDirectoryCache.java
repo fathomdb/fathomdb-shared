@@ -27,7 +27,7 @@ public class OpenstackDirectoryCache {
 	}
 
 	class UpdateChecker implements Runnable {
-		static final int INTERVAL = 30;
+		static final int INTERVAL = 300; // Five minutes
 
 		@Override
 		public void run() {
