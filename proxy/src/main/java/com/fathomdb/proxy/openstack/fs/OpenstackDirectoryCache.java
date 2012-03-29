@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.fathomdb.meta.Meta;
 import com.fathomdb.proxy.http.client.ThreadPools;
 import com.fathomdb.proxy.openstack.ListContainerObjectsOperation;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
@@ -100,9 +101,11 @@ public class OpenstackDirectoryCache {
 	};
 
 	public static class CacheKey {
+		private static final Meta<CacheKey> META = Meta.get(CacheKey.class);
+		
 		public final OpenstackCredentials credentials;
 		public final String containerName;
-
+		
 		public CacheKey(OpenstackCredentials credentials, String containerName) {
 			super();
 			this.credentials = credentials;
@@ -111,37 +114,18 @@ public class OpenstackDirectoryCache {
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result
-					+ ((containerName == null) ? 0 : containerName.hashCode());
-			result = prime * result
-					+ ((credentials == null) ? 0 : credentials.hashCode());
-			return result;
+			return META.hashCode(this);
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			CacheKey other = (CacheKey) obj;
-			if (containerName == null) {
-				if (other.containerName != null)
-					return false;
-			} else if (!containerName.equals(other.containerName))
-				return false;
-			if (credentials == null) {
-				if (other.credentials != null)
-					return false;
-			} else if (!credentials.equals(other.credentials))
-				return false;
-			return true;
+			return META.equals(this, obj);
 		}
-
+		
+		@Override
+		public String toString() {
+			return META.toString(this);
+		}
 	}
 
 	public static class CacheEntry {

@@ -1,5 +1,6 @@
 package com.fathomdb.proxy.openstack;
 
+import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -8,6 +9,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
 public class ObjectListener extends OpenstackResponseHandler {
+	static final Logger log = Logger.getLogger(ObjectListener.class);
 
 	private final ObjectDataSink sink;
 	private final HttpResponse sendResponse;
