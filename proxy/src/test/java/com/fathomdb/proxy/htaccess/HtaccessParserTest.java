@@ -30,7 +30,7 @@ public class HtaccessParserTest {
 	}
 
 	private ParseScopeNode parse(String s) throws IOException {
-		InputStream is = getClass().getResourceAsStream(s);
+		InputStream is = getClass().getResourceAsStream("/" + s);
 
 		HtaccessParser parser = new HtaccessParser(is);
 

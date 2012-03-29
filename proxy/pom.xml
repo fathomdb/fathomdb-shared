@@ -11,6 +11,10 @@
 	<artifactId>proxy</artifactId>
 	<name>Proxy</name>
 
+	<properties>
+		<app.main.class>com.fathomdb.proxy.http.server.HttpProxyServer</app.main.class>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -33,6 +37,41 @@
 	</dependencies>
 
 	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/tarfile.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+
+			</plugin>
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> 
+				<configuration> <outputDirectory> ${project.build.directory}/lib </outputDirectory> 
+				</configuration> <executions> <execution> <phase>package</phase> <goals> 
+				<goal>copy-dependencies</goal> </goals> </execution> </executions> </plugin> -->
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
+				<version>1.6</version> <executions> <execution> <phase>package</phase> <goals> 
+				<goal>shade</goal> </goals> <configuration> <outputFile>target/httpproxy.jar</outputFile> 
+				<transformers> <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
+				<manifestEntries> <Main-Class>${app.main.class}</Main-Class> <X-Compile-Source-JDK>${maven.compile.source}</X-Compile-Source-JDK> 
+				<X-Compile-Target-JDK>${maven.compile.target}</X-Compile-Target-JDK> </manifestEntries> 
+				</transformer> </transformers> </configuration> </execution> </executions> 
+				</plugin> -->
+		</plugins>
 	</build>
 
 
