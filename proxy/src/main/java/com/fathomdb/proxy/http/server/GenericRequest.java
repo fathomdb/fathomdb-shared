@@ -5,6 +5,9 @@ import java.util.Map.Entry;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpVersion;
+
+import com.fathomdb.proxy.http.logger.RequestLogger;
 
 public interface GenericRequest {
 
@@ -12,7 +15,7 @@ public interface GenericRequest {
 
 	Channel getChannel();
 
-	String getRequestURI();
+	String getUri();
 
 	String getHeader(String name);
 
@@ -21,5 +24,7 @@ public interface GenericRequest {
 	List<Entry<String, String>> getHeaders();
 
 	String toAbsolute(String relativePath);
+
+	HttpVersion getProtocolVersion();
 
 }

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import com.fathomdb.proxy.http.handlers.RequestHandler;
+import com.fathomdb.proxy.http.logger.RequestLogger;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider.Handler;
@@ -15,14 +16,17 @@ public class ObjectDataProviderResponseHandler implements RequestHandler {
 
 	final ObjectDataProvider provider;
 
-	public ObjectDataProviderResponseHandler(ObjectDataProvider provider) {
+	final RequestLogger logger;
+
+	public ObjectDataProviderResponseHandler(RequestLogger logger, ObjectDataProvider provider) {
+		this.logger = logger;
 		this.provider = provider;
 	}
 
 	@Override
 	public ChannelFuture handleRequest(final GenericRequest request) {
 		Channel channel = request.getChannel();
-		final SendObjectDataResponse response = new SendObjectDataResponse(
+		final SendObjectDataResponse response = new SendObjectDataResponse(request, logger, 
 				channel);
 
 		final Handler handler = provider.buildHandler(request);

@@ -7,6 +7,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 
 import com.fathomdb.proxy.http.HttpScheme;
 
@@ -34,7 +35,7 @@ public class SingleChunkHttpRequest implements GenericRequest {
 	}
 
 	@Override
-	public String getRequestURI() {
+	public String getUri() {
 		return request.getUri();
 	}
 
@@ -56,6 +57,11 @@ public class SingleChunkHttpRequest implements GenericRequest {
 	@Override
 	public String toAbsolute(String relativePath) {
 		return endpoint.toAbsolute(request, relativePath);
+	}
+
+	@Override
+	public HttpVersion getProtocolVersion() {
+		return request.getProtocolVersion();
 	}
 
 }

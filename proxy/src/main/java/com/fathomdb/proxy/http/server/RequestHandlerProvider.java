@@ -6,11 +6,13 @@ import com.fathomdb.proxy.http.config.HostConfig;
 import com.fathomdb.proxy.http.config.HostConfigProvider;
 import com.fathomdb.proxy.http.handlers.ObjectDataProviderResponseHandler;
 import com.fathomdb.proxy.http.handlers.RequestHandler;
+import com.fathomdb.proxy.http.logger.RequestLogger;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
 import com.fathomdb.proxy.openstack.OpenstackDataProvider;
 import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
 
 public class RequestHandlerProvider {
+	final RequestLogger logger;
 	final CacheFile cache;
 	final HttpClientPool httpClientPool;
 	final OpenstackClientPool openstackClientPool;
@@ -18,10 +20,11 @@ public class RequestHandlerProvider {
 	final OpenstackDirectoryCache openstackContainerMetadataCache;
 	
 	// TODO: This is crying out for dependency-injection
-	public RequestHandlerProvider(HostConfigProvider configProvider, OpenstackDirectoryCache openstackContainerMetadataCache, CacheFile cache,
+	public RequestHandlerProvider(RequestLogger logger, HostConfigProvider configProvider, OpenstackDirectoryCache openstackContainerMetadataCache, CacheFile cache,
 			HttpClientPool httpClientPool,
 			OpenstackClientPool openstackClientPool) {
 		super();
+		this.logger = logger;
 		this.configProvider = configProvider;
 		this.openstackContainerMetadataCache = openstackContainerMetadataCache;
 		this.cache = cache;
@@ -37,7 +40,7 @@ public class RequestHandlerProvider {
 				hostConfig.getOpenstackCredentials(), openstackClientPool,
 				hostConfig.getContainerName());
 
-		return new ObjectDataProviderResponseHandler(openstack);
+		return new ObjectDataProviderResponseHandler(logger, openstack);
 	}
 
 }

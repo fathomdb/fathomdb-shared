@@ -1,6 +1,7 @@
 package com.fathomdb.proxy.http.server;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,6 +16,7 @@ import com.fathomdb.proxy.http.client.HttpClientPool;
 import com.fathomdb.proxy.http.client.HttpClient;
 import com.fathomdb.proxy.http.config.FilesystemHostConfigProvider;
 import com.fathomdb.proxy.http.config.HostConfigProvider;
+import com.fathomdb.proxy.http.logger.RequestLogger;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
 import com.fathomdb.proxy.openstack.OpenstackCredentials;
 import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
@@ -28,7 +30,7 @@ public class HttpProxyServer {
 		this.port = port;
 	}
 
-	public void run() throws InterruptedException {
+	public void run() throws InterruptedException, IOException {
 		// Configure the server.
 		ServerBootstrap bootstrap = new ServerBootstrap(
 				new NioServerSocketChannelFactory(
@@ -49,10 +51,15 @@ public class HttpProxyServer {
 				openstackClientPool);
 		openstackContainerMetadataCache.initialize();
 
+		File logDir = new File("logs");
+		logDir.mkdir();
+		File logFile = new File(logDir, "log" + System.currentTimeMillis() + ".log");
+		RequestLogger logger = new RequestLogger(logFile);
+		
 		HostConfigProvider configProvider = new FilesystemHostConfigProvider(
 				new File("hosts"));
 		configProvider.initialize();
-		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(
+		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(logger,
 				configProvider, openstackContainerMetadataCache, cache,
 				httpClientPool, openstackClientPool);
 		// Set up the event pipeline factory.
@@ -68,7 +75,7 @@ public class HttpProxyServer {
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, IOException {
 		int port;
 		if (args.length > 0) {
 			port = Integer.parseInt(args[0]);

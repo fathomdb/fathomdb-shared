@@ -4,10 +4,16 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGT
 import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 
 import java.nio.ByteBuffer;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.handler.codec.http.Cookie;
+import org.jboss.netty.handler.codec.http.CookieDecoder;
+import org.jboss.netty.handler.codec.http.CookieEncoder;
+import org.jboss.netty.handler.codec.http.DefaultCookie;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -94,7 +100,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 				return resolved;
 			}
 
-			String path = request.getRequestURI();
+			String path = request.getUri();
 
 			if (path.startsWith("/"))
 				path = path.substring(1);
@@ -187,17 +193,16 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		}
 
 		private HttpResponse buildError(HttpResponseStatus status) {
-			DefaultHttpResponse response = new DefaultHttpResponse(
-					HttpVersion.HTTP_1_1, status);
+			HttpResponse response = buildResponse(status);
 
 			// response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, 0);
 
-			String responseBody = "Error " + status;
-			response.setContent(ChannelBuffers.copiedBuffer(responseBody,
-					CharsetUtil.UTF_8));
-			response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
-			response.setHeader(CONTENT_LENGTH, response.getContent()
-					.readableBytes());
+			// String responseBody = "Error " + status;
+			// response.setContent(ChannelBuffers.copiedBuffer(responseBody,
+			// CharsetUtil.UTF_8));
+			// response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
+			// response.setHeader(CONTENT_LENGTH, response.getContent()
+			// .readableBytes());
 
 			return response;
 		}
@@ -253,8 +258,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 				CacheLock found) {
 			ByteBuffer buffer = found.getBuffer();
 
-			HttpResponse response = new DefaultHttpResponse(
-					HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+			HttpResponse response = buildResponse(HttpResponseStatus.OK);
 
 			long contentLength = buffer.remaining();
 			if (contentLength > 0) {
@@ -336,8 +340,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 							downloadTo);
 				}
 
-				HttpResponse response = new DefaultHttpResponse(
-						HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+				HttpResponse response = buildResponse(HttpResponseStatus.OK);
 
 				String contentType = resolved.pathItem.getContentType();
 				if (contentType != null) {
@@ -352,6 +355,46 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 						downloadTo);
 			}
 			downloadOperation.run();
+		}
+
+		static final int SECONDS_IN_MINUTE = 60;
+		static final int SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
+		static final int SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
+		static final int SECONDS_IN_YEAR = SECONDS_IN_DAY * 365;
+		static final int SECONDS_IN_DECADE = 10 * SECONDS_IN_YEAR;
+
+		private HttpResponse buildResponse(HttpResponseStatus status) {
+			HttpResponse response = new DefaultHttpResponse(
+					HttpVersion.HTTP_1_1, status);
+
+			// Use cookies to allow tracking sessions in the debug log
+			String cookieName = "uuid";
+			boolean found = false;
+			String cookieString = request.getHeader(HttpHeaders.Names.COOKIE);
+			if (cookieString != null) {
+				CookieDecoder cookieDecoder = new CookieDecoder();
+				Set<Cookie> cookies = cookieDecoder.decode(cookieString);
+				if (!cookies.isEmpty()) {
+					for (Cookie cookie : cookies) {
+						if (cookie.getName().equals(cookieName)) {
+							found = true;
+						}
+					}
+				}
+			}
+			
+			if (!found) {
+				CookieEncoder cookieEncoder = new CookieEncoder(true);
+				Cookie cookie = new DefaultCookie(cookieName, UUID.randomUUID()
+						.toString());
+				cookie.setMaxAge(SECONDS_IN_DECADE);
+
+				cookieEncoder.addCookie(cookie);
+				response.addHeader(HttpHeaders.Names.SET_COOKIE,
+						cookieEncoder.encode());
+			}
+
+			return response;
 		}
 
 	}
