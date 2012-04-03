@@ -7,7 +7,12 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StreamingJsonTokenizer {
+	static final Logger log = LoggerFactory.getLogger(StreamingJsonTokenizer.class);
+
 	final CharsetDecoder decoder;
 	CharBuffer charBuffer;
 	int readPos;
@@ -191,6 +196,7 @@ public class StreamingJsonTokenizer {
 		}
 
 		case '-':
+		case '0':
 		case '1':
 		case '2':
 		case '3':
@@ -200,7 +206,7 @@ public class StreamingJsonTokenizer {
 		case '7':
 		case '8':
 		case '9': {
-			int start = pos + 1;
+			int start = pos;
 			StringBuilder s = new StringBuilder();
 			int end = -1;
 
@@ -235,12 +241,13 @@ public class StreamingJsonTokenizer {
 			if (end != -1) {
 				token = new Token(TokenType.NUMBER, s.toString());
 				pos = end;
-				break;
 			}
+			break;
 		}
 
 		default:
-			throw new IllegalStateException();
+			throw new IllegalStateException("Unexpected character: "
+					+ ((int) nextChar));
 		}
 
 		readPos = pos;
@@ -291,17 +298,18 @@ public class StreamingJsonTokenizer {
 
 			CoderResult result = decoder.decode(parse, charBuffer, isLast);
 
-/*			int newPosition = charBuffer.position();
+			if (log.isDebugEnabled()) {
+				int newPosition = charBuffer.position();
 
-			if (newPosition != oldPosition) {
-				CharBuffer duplicate = charBuffer.duplicate();
-				duplicate.limit(newPosition);
-				duplicate.position(oldPosition);
-				String s = duplicate.toString();
-				System.out.println(s);
+				if (newPosition != oldPosition) {
+					CharBuffer duplicate = charBuffer.duplicate();
+					duplicate.limit(newPosition);
+					duplicate.position(oldPosition);
+					String s = duplicate.toString();
+					log.debug(s);
+				}
 			}
-*/
-			
+
 			if (result.isUnderflow()) {
 				// We've processed the entire input buffer. This is good news.
 				if (parse.remaining() != 0) {
