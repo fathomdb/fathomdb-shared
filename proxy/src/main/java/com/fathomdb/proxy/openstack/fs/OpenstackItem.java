@@ -3,6 +3,7 @@ package com.fathomdb.proxy.openstack.fs;
 import java.util.Date;
 import java.util.Map;
 
+import com.fathomdb.meta.Meta;
 import com.fathomdb.proxy.cache.HashKey;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
@@ -15,6 +16,8 @@ public class OpenstackItem {
 	private final long lastModified;
 
 	final Map<String, OpenstackItem> children = Maps.newHashMap();
+
+	static final Meta<OpenstackItem> META = Meta.get(OpenstackItem.class);
 
 	public OpenstackItem(String name, HashKey contentHash, long length,
 			String contentType, long lastModified) {
@@ -38,7 +41,8 @@ public class OpenstackItem {
 			return false;
 
 		if (contentType == null
-				|| Objects.equal(contentType, "application/x-directory"))
+				|| Objects.equal(contentType, "application/x-directory")
+				|| Objects.equal(contentType, "application/directory"))
 			return true;
 		return false;
 	}
@@ -58,4 +62,8 @@ public class OpenstackItem {
 		return new Date(lastModified);
 	}
 
+	@Override
+	public String toString() {
+		return META.toString();
+	}
 }

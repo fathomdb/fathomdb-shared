@@ -1,7 +1,6 @@
 package com.fathomdb.proxy.openstack;
 
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
