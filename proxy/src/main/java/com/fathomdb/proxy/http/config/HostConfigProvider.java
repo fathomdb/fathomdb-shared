@@ -11,7 +11,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 
-public abstract class HostConfigProvider {
+public abstract class HostConfigProvider implements HasConfiguration {
 
 	protected final LoadingCache<String, HostConfig> cache = CacheBuilder
 			.newBuilder().build(new CacheLoader<String, HostConfig>() {

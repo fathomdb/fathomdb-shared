@@ -15,6 +15,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.http.client.HttpClientPool;
 import com.fathomdb.proxy.http.client.HttpClient;
+import com.fathomdb.proxy.http.config.Configuration;
 import com.fathomdb.proxy.http.config.FilesystemHostConfigProvider;
 import com.fathomdb.proxy.http.config.HostConfigProvider;
 import com.fathomdb.proxy.http.logger.RequestLogger;
@@ -48,20 +49,28 @@ public class HttpProxyServer {
 		CacheFile cache = CacheFile.open(new File("cachedata000"));
 		log.info("Opened cache file: " + cache);
 
+		Configuration configuration = Configuration.INSTANCE;
+		
 		OpenstackDirectoryCache openstackContainerMetadataCache = new OpenstackDirectoryCache(
 				openstackClientPool);
 		openstackContainerMetadataCache.initialize();
 
+		configuration.register(openstackContainerMetadataCache);
+		
 		File logDir = new File("logs");
 		logDir.mkdir();
-		File logFile = new File(logDir, "log" + System.currentTimeMillis() + ".log");
+		File logFile = new File(logDir, "log" + System.currentTimeMillis()
+				+ ".log");
 		RequestLogger logger = new RequestLogger(logFile);
-		
+
 		HostConfigProvider configProvider = new FilesystemHostConfigProvider(
 				new File("hosts"));
 		configProvider.initialize();
-		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(logger,
-				configProvider, openstackContainerMetadataCache, cache,
+		
+		configuration.register(configProvider);
+
+		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(
+				logger, configProvider, openstackContainerMetadataCache, cache,
 				httpClientPool, openstackClientPool);
 		// Set up the event pipeline factory.
 		bootstrap.setPipelineFactory(new HttpProxyServerPipelineFactory(
@@ -70,13 +79,16 @@ public class HttpProxyServer {
 		// Bind and start to accept incoming connections.
 		bootstrap.bind(new InetSocketAddress(port));
 
+		UserSignalHandler.install();
+
 		while (true) {
 			Thread.sleep(10000);
 			cache.writeMetadata();
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException, IOException {
+	public static void main(String[] args) throws InterruptedException,
+			IOException {
 		int port;
 		if (args.length > 0) {
 			port = Integer.parseInt(args[0]);

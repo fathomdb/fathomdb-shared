@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.fathomdb.proxy.http.client.ThreadPools;
 import com.google.common.base.Objects;
 
-public class FilesystemHostConfigProvider extends HostConfigProvider {
+public class FilesystemHostConfigProvider extends HostConfigProvider implements
+		HasConfiguration {
 	static final Logger log = LoggerFactory
 			.getLogger(FilesystemHostConfigProvider.class);
 
@@ -35,41 +36,8 @@ public class FilesystemHostConfigProvider extends HostConfigProvider {
 
 		@Override
 		public void run() {
-			// TODO: Is this breaking LRU??
-
-			try {
-				log.info("Starting filesystem refresh");
-
-				Collection<String> keys = getKeysSnapshot();
-
-				for (String key : keys) {
-					HostConfig config = cache.getIfPresent(key);
-					if (config == null) {
-						log.info("Key concurrently removed: " + key);
-						continue;
-					}
-
-					File file = new File(baseDir, key);
-					if (!file.exists()) {
-						log.info("Removed from filesystem: " + key);
-						cache.refresh(key);
-						continue;
-					}
-
-					String versionKey = toVersionKey(file);
-					if (!Objects.equal(versionKey, config.getVersionKey())) {
-						log.info("Out of date: " + key);
-						cache.refresh(key);
-						continue;
-					}
-
-					log.debug("Up-to-date on: " + key);
-				}
-			} catch (Throwable t) {
-				log.warn("Error on background task", t);
-			}
+			refresh();
 		}
-
 	};
 
 	@Override
@@ -123,6 +91,47 @@ public class FilesystemHostConfigProvider extends HostConfigProvider {
 
 			default:
 				throw new IllegalArgumentException();
+			}
+		}
+	}
+
+	static final Object CONFIGURE_LOCK = new Object();
+
+	@Override
+	public void refresh() {
+		synchronized (CONFIGURE_LOCK) {
+			// TODO: Is this breaking LRU??
+
+			try {
+				log.info("Starting filesystem refresh");
+
+				Collection<String> keys = getKeysSnapshot();
+
+				for (String key : keys) {
+					HostConfig config = cache.getIfPresent(key);
+					if (config == null) {
+						log.info("Key concurrently removed: " + key);
+						continue;
+					}
+
+					File file = new File(baseDir, key);
+					if (!file.exists()) {
+						log.info("Removed from filesystem: " + key);
+						cache.refresh(key);
+						continue;
+					}
+
+					String versionKey = toVersionKey(file);
+					if (!Objects.equal(versionKey, config.getVersionKey())) {
+						log.info("Out of date: " + key);
+						cache.refresh(key);
+						continue;
+					}
+
+					log.debug("Up-to-date on: " + key);
+				}
+			} catch (Throwable t) {
+				log.warn("Error on background task", t);
 			}
 		}
 	}

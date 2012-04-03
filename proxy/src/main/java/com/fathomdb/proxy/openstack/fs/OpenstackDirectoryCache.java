@@ -8,13 +8,15 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.meta.Meta;
 import com.fathomdb.proxy.http.client.ThreadPools;
+import com.fathomdb.proxy.http.config.HasConfiguration;
 import com.fathomdb.proxy.openstack.ListContainerObjectsOperation;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
 import com.fathomdb.proxy.openstack.OpenstackCredentials;
 import com.fathomdb.proxy.openstack.OpenstackSession;
 
-public class OpenstackDirectoryCache {
-	static final Logger log = LoggerFactory.getLogger(OpenstackDirectoryCache.class);
+public class OpenstackDirectoryCache implements HasConfiguration {
+	static final Logger log = LoggerFactory
+			.getLogger(OpenstackDirectoryCache.class);
 
 	private final OpenstackClientPool openstackClientPool;
 
@@ -34,9 +36,9 @@ public class OpenstackDirectoryCache {
 		@Override
 		public void run() {
 			try {
-				cache.refresh();
+				refresh();
 			} catch (Throwable t) {
-				log.warn("Error on cache refresh task task", t);
+				log.warn("Error on cache refresh task", t);
 			}
 		}
 
@@ -52,7 +54,7 @@ public class OpenstackDirectoryCache {
 		@Override
 		public void refreshPeriodically(Collection<CacheKey> keys) {
 			// TODO: Is this breaking LRU??
-			
+
 			log.info("Starting openstack container refresh");
 
 			for (CacheKey key : keys) {
@@ -67,7 +69,8 @@ public class OpenstackDirectoryCache {
 					continue;
 				}
 
-				log.info("Forcing refresh on: " + key.credentials.getUsername() + "::" + key.containerName);
+				log.info("Forcing refresh on: " + key.credentials.getUsername()
+						+ "::" + key.containerName);
 				refresh(key);
 			}
 		}
@@ -103,10 +106,10 @@ public class OpenstackDirectoryCache {
 
 	public static class CacheKey {
 		private static final Meta<CacheKey> META = Meta.get(CacheKey.class);
-		
+
 		public final OpenstackCredentials credentials;
 		public final String containerName;
-		
+
 		public CacheKey(OpenstackCredentials credentials, String containerName) {
 			super();
 			this.credentials = credentials;
@@ -122,7 +125,7 @@ public class OpenstackDirectoryCache {
 		public boolean equals(Object obj) {
 			return META.equals(this, obj);
 		}
-		
+
 		@Override
 		public String toString() {
 			return META.toString(this);
@@ -141,6 +144,10 @@ public class OpenstackDirectoryCache {
 			String containerName) {
 		CacheKey key = new CacheKey(credentials, containerName);
 		return cache.getAsync(key).root;
+	}
+
+	public void refresh() {
+		cache.refresh();
 	}
 
 }
