@@ -11,7 +11,7 @@ public class OpenstackDirectoryBuilder implements ObjectMetadataListener {
 	@Override
 	public void gotObjectDetails(String objectName, byte[] objectHash,
 			long objectBytes, String objectContentType,
-			String objectLastModified) {
+			long objectLastModified) {
 		OpenstackItem current = root;
 
 		String fileName = null;

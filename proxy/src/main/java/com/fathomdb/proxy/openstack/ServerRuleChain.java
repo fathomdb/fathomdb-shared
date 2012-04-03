@@ -1,6 +1,5 @@
 package com.fathomdb.proxy.openstack;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -13,12 +12,11 @@ import com.fathomdb.proxy.htaccess.DirectoryIndexDirective;
 import com.fathomdb.proxy.htaccess.ExpirationDirective.ExpirationTimeout;
 import com.fathomdb.proxy.htaccess.ExpiresByType;
 import com.fathomdb.proxy.htaccess.ScopeDirective;
+import com.fathomdb.proxy.http.Dates;
 import com.fathomdb.proxy.http.handlers.ContentType;
 
 public class ServerRuleChain {
 	private final List<ScopeDirective> rules;
-
-	public static final String DATE_PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz";
 
 	public ServerRuleChain(List<ScopeDirective> rules) {
 		this.rules = rules;
@@ -90,8 +88,7 @@ public class ServerRuleChain {
 
 		response.setHeader(HttpHeaders.Names.CACHE_CONTROL, cacheControl);
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN_RFC1123);
-		String expires = dateFormat.format(new Date((long) timeoutAt * 1000L));
+		String expires = Dates.format(new Date((long) timeoutAt * 1000L));
 
 		response.setHeader(HttpHeaders.Names.EXPIRES, expires);
 	}

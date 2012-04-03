@@ -1,7 +1,10 @@
 package com.fathomdb.proxy.openstack;
 
 import java.nio.ByteBuffer;
+import java.text.ParseException;
+import java.util.Date;
 
+import com.fathomdb.proxy.http.Dates;
 import com.fathomdb.proxy.utils.Hex;
 
 public class ContainerListResponseHandler extends StreamingRestResponseHandler {
@@ -30,7 +33,7 @@ public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 		String objectName = null;
 		byte[] objectHash = null;
 		String objectContentType = null;
-		String objectLastModified = null;
+		long objectLastModified = 0;
 
 		@Override
 		public void endArray() {
@@ -56,7 +59,7 @@ public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 				objectName = null;
 				objectHash = null;
 				objectContentType = null;
-				objectLastModified = null;
+				objectLastModified = 0;
 				break;
 			}
 
@@ -91,8 +94,13 @@ public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 				break;
 			}
 			case OBJECT_LAST_MODIFIED: {
-				// TODO: parse?
-				objectLastModified = value;
+				Date lastModifiedDate;
+				try {
+					lastModifiedDate = Dates.parse(value);
+				} catch (ParseException e) {
+					throw new IllegalStateException("Error parsing date value: " + value, e);
+				}
+				objectLastModified = lastModifiedDate.getTime();
 				state = State.OBJECT;
 				break;
 			}

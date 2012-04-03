@@ -7,7 +7,7 @@ public class DebugObjectMetadataListener implements ObjectMetadataListener {
 	@Override
 	public void gotObjectDetails(String objectName, byte[] objectHash,
 			long objectBytes, String objectContentType,
-			String objectLastModified) {
+			long objectLastModified) {
 		// )
 		// OpenstackFile item = new OpenstackFile(items.add(item);
 		System.out.println("Got object details: " + objectName + " "
