@@ -96,7 +96,7 @@ public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 			case OBJECT_LAST_MODIFIED: {
 				Date lastModifiedDate;
 				try {
-					lastModifiedDate = Dates.parse(value);
+					lastModifiedDate = Dates.parseJson(value);
 				} catch (ParseException e) {
 					throw new IllegalStateException("Error parsing date value: " + value, e);
 				}
