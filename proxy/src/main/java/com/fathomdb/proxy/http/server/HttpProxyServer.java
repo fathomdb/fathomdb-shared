@@ -11,6 +11,7 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 import com.fathomdb.config.ConfigurationManager;
+import com.fathomdb.config.UserSignalHandler;
 import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.http.client.HttpClientPool;
 import com.fathomdb.proxy.http.client.HttpClient;

@@ -1,11 +1,8 @@
 package com.fathomdb.dns.server;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,19 +13,12 @@ import org.jboss.netty.channel.socket.nio.NioDatagramChannelFactory;
 import org.jboss.netty.util.ExternalResourceReleasable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xbill.DNS.Master;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.Zone;
 
 import com.fathomdb.config.ConfigurationManager;
+import com.fathomdb.config.UserSignalHandler;
 import com.fathomdb.dns.server.config.ConfigRecordProvider;
 import com.fathomdb.dns.server.config.DnsZoneConfigProvider;
-import com.fathomdb.proxy.http.config.HttpProxyHostConfigProvider;
-import com.fathomdb.proxy.http.logger.RequestLogger;
-import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 public class DnsServer {
 	static final Logger log = LoggerFactory.getLogger(DnsServer.class);
@@ -73,8 +63,6 @@ public class DnsServer {
 
 		log.info("Listening on " + Joiner.on(",").join(config.bindingHosts));
 	}
-
-	
 
 	public void process() {
 		for (SocketAddress sa : this.config.getBindingHosts()) {
@@ -123,5 +111,6 @@ public class DnsServer {
 
 		server.process();
 
+		UserSignalHandler.install();
 	}
 }

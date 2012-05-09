@@ -1,17 +1,13 @@
 package com.fathomdb.config;
 
-public class ConfigObject {
-	final String key;
+public abstract class ConfigObject {
 	final String version;
 
-	protected ConfigObject(String key, String versionKey) {
-		this.key = key;
+	protected ConfigObject(String versionKey) {
 		this.version = versionKey;
 	}
-
-	public String getKey() {
-		return key;
-	}
+	
+	public abstract boolean isPresent();
 
 	public String getVersion() {
 		return version;

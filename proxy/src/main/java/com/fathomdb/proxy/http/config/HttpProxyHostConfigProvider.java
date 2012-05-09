@@ -22,7 +22,7 @@ public class HttpProxyHostConfigProvider extends
 			throws IOException {
 		Properties properties = new Properties();
 		properties.load(is);
-		return new HostConfig(key, version, properties);
+		return new HostConfig(version, key, properties);
 	}
 
 	public HostConfig getConfig(GenericRequest request) {
@@ -42,7 +42,7 @@ public class HttpProxyHostConfigProvider extends
 
 	@Override
 	protected HostConfig buildNullResult(String key) {
-		return new HostConfig(key, null, null);
+		return HostConfig.NOT_PRESENT;
 	}
 
 }

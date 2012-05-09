@@ -8,10 +8,14 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 
 public class HostConfig extends ConfigObject {
+	public static final HostConfig NOT_PRESENT = new HostConfig(null, null,
+			null);
+	final String host;
 	final Properties properties;
 
-	public HostConfig(String host, String versionKey, Properties properties) {
-		super(host, versionKey);
+	public HostConfig(String versionKey, String host, Properties properties) {
+		super(versionKey);
+		this.host = host;
 
 		this.properties = properties;
 	}
@@ -49,9 +53,14 @@ public class HostConfig extends ConfigObject {
 	public String getContainerName() {
 		String containerName = properties.getProperty("openstack.container");
 		if (containerName == null) {
-			containerName = getKey();
+			containerName = host;
 		}
 		return containerName;
+	}
+
+	@Override
+	public boolean isPresent() {
+		return properties != null;
 	}
 
 }

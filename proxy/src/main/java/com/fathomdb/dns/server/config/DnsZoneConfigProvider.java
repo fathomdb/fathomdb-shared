@@ -36,7 +36,7 @@ public class DnsZoneConfigProvider extends
 				.size()]);
 		Zone zone = new Zone(zoneName, recordArray);
 
-		return new DnsZoneConfig(key, version, zone);
+		return new DnsZoneConfig(version, zone);
 	}
 
 	public Zone getZone(Name name) {
@@ -55,8 +55,7 @@ public class DnsZoneConfigProvider extends
 
 	@Override
 	protected DnsZoneConfig buildNullResult(String key) {
-		return new DnsZoneConfig(key, null, null);
-
+		return DnsZoneConfig.NOT_PRESENT;
 	}
 
 }

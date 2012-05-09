@@ -120,9 +120,14 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends
 
 					File file = new File(baseDir, key);
 					if (!file.exists()) {
-						log.info("Removed from filesystem: " + key);
-						cache.refresh(key);
-						continue;
+						if (!config.isPresent()) {
+							log.debug("Up-to-date (not present) on: " + key);
+							continue;
+						} else {
+							log.info("Removed from filesystem: " + key);
+							cache.refresh(key);
+							continue;
+						}
 					}
 
 					String versionKey = toVersion(file);
