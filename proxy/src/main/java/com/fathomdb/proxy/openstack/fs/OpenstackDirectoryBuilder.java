@@ -1,6 +1,7 @@
 package com.fathomdb.proxy.openstack.fs;
 
 import com.fathomdb.proxy.cache.HashKey;
+import com.fathomdb.proxy.http.handlers.ContentType;
 import com.fathomdb.proxy.openstack.ObjectMetadataListener;
 import com.google.common.base.Splitter;
 
@@ -31,8 +32,9 @@ public class OpenstackDirectoryBuilder implements ObjectMetadataListener {
 			}
 		}
 
+		ContentType contentType = ContentType.get(objectContentType);
 		OpenstackItem item = new OpenstackItem(fileName, new HashKey(objectHash),
-				objectBytes, objectContentType, objectLastModified);
+				objectBytes, contentType, objectLastModified);
 		current.children.put(fileName, item);
 	}
 

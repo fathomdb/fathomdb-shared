@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.fathomdb.meta.Meta;
 import com.fathomdb.proxy.cache.HashKey;
+import com.fathomdb.proxy.http.handlers.ContentType;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 
@@ -12,7 +13,7 @@ public class OpenstackItem {
 	private final String name;
 	private final HashKey contentHash;
 	private final long length;
-	private final String contentType;
+	private final ContentType contentType;
 	private final long lastModified;
 
 	final Map<String, OpenstackItem> children = Maps.newHashMap();
@@ -20,7 +21,7 @@ public class OpenstackItem {
 	static final Meta<OpenstackItem> META = Meta.get(OpenstackItem.class);
 
 	public OpenstackItem(String name, HashKey contentHash, long length,
-			String contentType, long lastModified) {
+			ContentType contentType, long lastModified) {
 		this.name = name;
 		this.contentHash = contentHash;
 		this.length = length;
@@ -35,19 +36,23 @@ public class OpenstackItem {
 	public OpenstackItem getChild(String key) {
 		return children.get(key);
 	}
+	
+	static final ContentType TYPE_X_DIRECTORY = ContentType.get("application/x-directory");
+	static final ContentType TYPE_DIRECTORY = ContentType.get("application/directory");
+	
 
 	public boolean isDirectory() {
 		if (length > 0)
 			return false;
 
 		if (contentType == null
-				|| Objects.equal(contentType, "application/x-directory")
-				|| Objects.equal(contentType, "application/directory"))
+				|| Objects.equal(contentType,TYPE_X_DIRECTORY)
+				|| Objects.equal(contentType, TYPE_DIRECTORY))
 			return true;
 		return false;
 	}
 
-	public String getContentType() {
+	public ContentType getContentType() {
 		return contentType;
 	}
 

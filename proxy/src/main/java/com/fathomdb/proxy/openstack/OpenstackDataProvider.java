@@ -24,6 +24,7 @@ import com.fathomdb.proxy.cache.HashKey;
 import com.fathomdb.proxy.cache.ObjectDataSinkSplitter;
 import com.fathomdb.proxy.cache.CacheFile.CacheLock;
 import com.fathomdb.proxy.http.Dates;
+import com.fathomdb.proxy.http.handlers.ContentType;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
@@ -273,9 +274,9 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 						contentLength);
 			}
 
-			String contentType = resolved.pathItem.getContentType();
+			ContentType contentType = resolved.pathItem.getContentType();
 			if (contentType != null) {
-				response.setHeader(HttpHeaders.Names.CONTENT_TYPE, contentType);
+				response.setHeader(HttpHeaders.Names.CONTENT_TYPE, contentType.getContentType());
 			}
 
 			Date lastModified = resolved.pathItem.getLastModified();
@@ -355,10 +356,10 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 				HttpResponse response = buildResponse(HttpResponseStatus.OK);
 
-				String contentType = resolved.pathItem.getContentType();
+				ContentType contentType = resolved.pathItem.getContentType();
 				if (contentType != null) {
 					response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
-							contentType);
+							contentType.getContentType());
 				}
 
 				Date lastModified = resolved.pathItem.getLastModified();
