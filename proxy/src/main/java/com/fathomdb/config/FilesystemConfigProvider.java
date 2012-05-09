@@ -91,6 +91,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends
 				continue;
 			switch (c) {
 			case '.':
+			case '-':
 				break;
 
 			default:
