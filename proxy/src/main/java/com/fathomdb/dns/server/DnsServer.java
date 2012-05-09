@@ -21,6 +21,7 @@ import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Zone;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 public class DnsServer {
@@ -60,6 +61,8 @@ public class DnsServer {
 		this.bootstrap.setPipelineFactory(pipelineFactory);
 
 		this.group = new DefaultChannelGroup();
+
+		log.info("Listening on " + Joiner.on(",").join(config.bindingHosts));
 	}
 
 	private RecordProvider buildRecordProvider() throws IOException {
@@ -84,7 +87,8 @@ public class DnsServer {
 				Zone zone = new Zone(zoneName, recordArray);
 				recordProvider.znames.put(zoneName, zone);
 			} finally {
-				fis.close();
+				if (fis != null)
+					fis.close();
 			}
 		}
 		return recordProvider;
