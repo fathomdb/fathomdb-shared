@@ -1,19 +1,18 @@
 package com.fathomdb.proxy.http.config;
 
+import com.fathomdb.config.ConfigObject;
 import com.fathomdb.proxy.openstack.OpenstackCredentials;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
-public class HostConfig {
-	final String host;
+public class HostConfig extends ConfigObject {
 	final Properties properties;
-	final String versionKey;
 
 	public HostConfig(String host, String versionKey, Properties properties) {
-		this.host = host;
-		this.versionKey = versionKey;
+		super(host, versionKey);
+
 		this.properties = properties;
 	}
 
@@ -50,13 +49,9 @@ public class HostConfig {
 	public String getContainerName() {
 		String containerName = properties.getProperty("openstack.container");
 		if (containerName == null) {
-			containerName = host;
+			containerName = getKey();
 		}
 		return containerName;
-	}
-
-	public String getVersionKey() {
-		return versionKey;
 	}
 
 }

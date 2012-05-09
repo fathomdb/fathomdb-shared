@@ -3,7 +3,7 @@ package com.fathomdb.proxy.http.server;
 import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.http.client.HttpClientPool;
 import com.fathomdb.proxy.http.config.HostConfig;
-import com.fathomdb.proxy.http.config.HostConfigProvider;
+import com.fathomdb.proxy.http.config.HttpProxyHostConfigProvider;
 import com.fathomdb.proxy.http.handlers.ObjectDataProviderResponseHandler;
 import com.fathomdb.proxy.http.handlers.RequestHandler;
 import com.fathomdb.proxy.http.logger.RequestLogger;
@@ -16,11 +16,11 @@ public class RequestHandlerProvider {
 	final CacheFile cache;
 	final HttpClientPool httpClientPool;
 	final OpenstackClientPool openstackClientPool;
-	final HostConfigProvider configProvider;
+	final HttpProxyHostConfigProvider configProvider;
 	final OpenstackDirectoryCache openstackContainerMetadataCache;
 	
 	// TODO: This is crying out for dependency-injection
-	public RequestHandlerProvider(RequestLogger logger, HostConfigProvider configProvider, OpenstackDirectoryCache openstackContainerMetadataCache, CacheFile cache,
+	public RequestHandlerProvider(RequestLogger logger, HttpProxyHostConfigProvider configProvider, OpenstackDirectoryCache openstackContainerMetadataCache, CacheFile cache,
 			HttpClientPool httpClientPool,
 			OpenstackClientPool openstackClientPool) {
 		super();

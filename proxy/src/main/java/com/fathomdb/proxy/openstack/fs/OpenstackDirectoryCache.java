@@ -6,9 +6,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.config.HasConfiguration;
 import com.fathomdb.meta.Meta;
 import com.fathomdb.proxy.http.client.ThreadPools;
-import com.fathomdb.proxy.http.config.HasConfiguration;
 import com.fathomdb.proxy.openstack.ListContainerObjectsOperation;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
 import com.fathomdb.proxy.openstack.OpenstackCredentials;

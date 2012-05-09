@@ -1,15 +1,15 @@
-package com.fathomdb.proxy.http.config;
+package com.fathomdb.config;
 
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public class Configuration {
-	public static final Configuration INSTANCE = new Configuration();
+public class ConfigurationManager {
+	public static final ConfigurationManager INSTANCE = new ConfigurationManager();
 
 	final List<HasConfiguration> configurables = Lists.newArrayList();
 
-	private Configuration() {
+	private ConfigurationManager() {
 	}
 
 	public void refresh() {

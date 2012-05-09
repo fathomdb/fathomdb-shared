@@ -21,6 +21,12 @@ import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Zone;
 
+import com.fathomdb.config.ConfigurationManager;
+import com.fathomdb.dns.server.config.ConfigRecordProvider;
+import com.fathomdb.dns.server.config.DnsZoneConfigProvider;
+import com.fathomdb.proxy.http.config.HttpProxyHostConfigProvider;
+import com.fathomdb.proxy.http.logger.RequestLogger;
+import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
@@ -41,13 +47,16 @@ public class DnsServer {
 
 	// @Override
 	public void initialize() {
+		ConfigurationManager configuration = ConfigurationManager.INSTANCE;
+
+		DnsZoneConfigProvider configProvider = new DnsZoneConfigProvider(
+				new File("zones"));
+		configProvider.initialize();
+
+		configuration.register(configProvider);
+
 		// LOG.debug(Markers.LIFECYCLE, "initialize server");
-		RecordProvider recordProvider;
-		try {
-			recordProvider = buildRecordProvider();
-		} catch (IOException e) {
-			throw new IllegalStateException("Error loading zones", e);
-		}
+		RecordProvider recordProvider = new ConfigRecordProvider(configProvider);
 
 		ChannelPipelineFactory pipelineFactory = new DnsServerPipelineFactory(
 				recordProvider);
@@ -65,34 +74,7 @@ public class DnsServer {
 		log.info("Listening on " + Joiner.on(",").join(config.bindingHosts));
 	}
 
-	private RecordProvider buildRecordProvider() throws IOException {
-		RecordProvider recordProvider = new RecordProvider();
-
-		File baseDir = new File("zones");
-		for (File zoneFile : baseDir.listFiles()) {
-			Name zoneName = new Name(zoneFile.getName() + ".");
-
-			FileInputStream fis = null;
-			try {
-				fis = new FileInputStream(zoneFile);
-				Master master = new Master(fis, zoneName);
-				List<Record> records = Lists.newArrayList();
-
-				Record record;
-				while ((record = master.nextRecord()) != null)
-					records.add(record);
-
-				Record[] recordArray = (Record[]) records
-						.toArray(new Record[records.size()]);
-				Zone zone = new Zone(zoneName, recordArray);
-				recordProvider.znames.put(zoneName, zone);
-			} finally {
-				if (fis != null)
-					fis.close();
-			}
-		}
-		return recordProvider;
-	}
+	
 
 	public void process() {
 		for (SocketAddress sa : this.config.getBindingHosts()) {

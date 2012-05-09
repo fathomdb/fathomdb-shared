@@ -1,4 +1,4 @@
-package com.fathomdb.proxy.http.config;
+package com.fathomdb.config;
 
 public interface HasConfiguration {
 	void refresh();

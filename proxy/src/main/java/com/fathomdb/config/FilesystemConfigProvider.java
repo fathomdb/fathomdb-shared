@@ -1,26 +1,27 @@
-package com.fathomdb.proxy.http.config;
+package com.fathomdb.config;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.config.HasConfiguration;
 import com.fathomdb.proxy.http.client.ThreadPools;
 import com.google.common.base.Objects;
 
-public class FilesystemHostConfigProvider extends HostConfigProvider implements
-		HasConfiguration {
+public abstract class FilesystemConfigProvider<T extends ConfigObject> extends
+		ConfigProvider<T> implements HasConfiguration {
 	static final Logger log = LoggerFactory
-			.getLogger(FilesystemHostConfigProvider.class);
+			.getLogger(FilesystemConfigProvider.class);
 
 	private final File baseDir;
 
-	public FilesystemHostConfigProvider(File baseDir) {
+	public FilesystemConfigProvider(File baseDir) {
 		this.baseDir = baseDir;
 	}
 
@@ -41,22 +42,20 @@ public class FilesystemHostConfigProvider extends HostConfigProvider implements
 	};
 
 	@Override
-	protected HostConfig buildHostConfig(String host) {
-		safetyCheckHost(host);
+	protected T buildConfig(String key) {
+		safetyCheckHost(key);
 
-		File file = new File(baseDir, host);
+		File file = new File(baseDir, key);
 		if (!file.exists()) {
 			// TODO: Return dummy HostConfig
-			return null;
+			return buildNullResult(key);
 		}
 
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
-			Properties properties = new Properties();
-			properties.load(fis);
-			String versionKey = toVersionKey(file);
-			return new HostConfig(host, versionKey, properties);
+			String version = toVersion(file);
+			return loadConfig(key, version, fis);
 		} catch (IOException e) {
 			throw new IllegalStateException("Error loading host configuration",
 					e);
@@ -71,7 +70,12 @@ public class FilesystemHostConfigProvider extends HostConfigProvider implements
 		}
 	}
 
-	public String toVersionKey(File file) {
+	protected abstract T buildNullResult(String key);
+
+	protected abstract T loadConfig(String key, String version, InputStream is)
+			throws IOException;
+
+	public String toVersion(File file) {
 		long lastModified = file.lastModified();
 		return String.valueOf(lastModified);
 	}
@@ -108,7 +112,7 @@ public class FilesystemHostConfigProvider extends HostConfigProvider implements
 				Collection<String> keys = getKeysSnapshot();
 
 				for (String key : keys) {
-					HostConfig config = cache.getIfPresent(key);
+					T config = cache.getIfPresent(key);
 					if (config == null) {
 						log.info("Key concurrently removed: " + key);
 						continue;
@@ -121,8 +125,8 @@ public class FilesystemHostConfigProvider extends HostConfigProvider implements
 						continue;
 					}
 
-					String versionKey = toVersionKey(file);
-					if (!Objects.equal(versionKey, config.getVersionKey())) {
+					String versionKey = toVersion(file);
+					if (!Objects.equal(versionKey, config.getVersion())) {
 						log.info("Out of date: " + key);
 						cache.refresh(key);
 						continue;

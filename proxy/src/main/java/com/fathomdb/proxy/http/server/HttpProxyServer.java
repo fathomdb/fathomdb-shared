@@ -3,8 +3,6 @@ package com.fathomdb.proxy.http.server;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
@@ -12,15 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
+import com.fathomdb.config.ConfigurationManager;
 import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.http.client.HttpClientPool;
 import com.fathomdb.proxy.http.client.HttpClient;
-import com.fathomdb.proxy.http.config.Configuration;
-import com.fathomdb.proxy.http.config.FilesystemHostConfigProvider;
-import com.fathomdb.proxy.http.config.HostConfigProvider;
+import com.fathomdb.proxy.http.config.HttpProxyHostConfigProvider;
 import com.fathomdb.proxy.http.logger.RequestLogger;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
-import com.fathomdb.proxy.openstack.OpenstackCredentials;
 import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
 
 public class HttpProxyServer {
@@ -49,24 +45,24 @@ public class HttpProxyServer {
 		CacheFile cache = CacheFile.open(new File("cachedata000"));
 		log.info("Opened cache file: " + cache);
 
-		Configuration configuration = Configuration.INSTANCE;
-		
+		ConfigurationManager configuration = ConfigurationManager.INSTANCE;
+
 		OpenstackDirectoryCache openstackContainerMetadataCache = new OpenstackDirectoryCache(
 				openstackClientPool);
 		openstackContainerMetadataCache.initialize();
 
 		configuration.register(openstackContainerMetadataCache);
-		
+
 		File logDir = new File("logs");
 		logDir.mkdir();
 		File logFile = new File(logDir, "log" + System.currentTimeMillis()
 				+ ".log");
 		RequestLogger logger = new RequestLogger(logFile);
 
-		HostConfigProvider configProvider = new FilesystemHostConfigProvider(
+		HttpProxyHostConfigProvider configProvider = new HttpProxyHostConfigProvider(
 				new File("hosts"));
 		configProvider.initialize();
-		
+
 		configuration.register(configProvider);
 
 		RequestHandlerProvider requestHandlerProvider = new RequestHandlerProvider(

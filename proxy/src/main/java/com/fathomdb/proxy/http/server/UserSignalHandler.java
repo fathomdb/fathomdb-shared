@@ -1,6 +1,6 @@
 package com.fathomdb.proxy.http.server;
 
-import com.fathomdb.proxy.http.config.Configuration;
+import com.fathomdb.config.ConfigurationManager;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -26,7 +26,7 @@ public class UserSignalHandler implements SignalHandler {
 //            for (int i=0; i < numThreads; i++) {
 //                System.out.println("    "+threadArray[i]);
 //            }
-        	Configuration.INSTANCE.refresh();
+        	ConfigurationManager.INSTANCE.refresh();
             
             // Chain back to previous handler, if one exists
             if ( oldHandler != SIG_DFL && oldHandler != SIG_IGN ) {
