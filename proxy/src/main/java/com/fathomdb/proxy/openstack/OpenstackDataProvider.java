@@ -18,6 +18,8 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.jboss.netty.util.CharsetUtil;
+
 import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.cache.CachingObjectDataSink;
 import com.fathomdb.proxy.cache.HashKey;
@@ -205,12 +207,13 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 			// response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, 0);
 
-			// String responseBody = "Error " + status;
-			// response.setContent(ChannelBuffers.copiedBuffer(responseBody,
-			// CharsetUtil.UTF_8));
-			// response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
-			// response.setHeader(CONTENT_LENGTH, response.getContent()
-			// .readableBytes());
+			String responseBody = "Error " + status;
+			response.setContent(ChannelBuffers.copiedBuffer(responseBody,
+					CharsetUtil.UTF_8));
+			response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
+					"text/plain; charset=UTF-8");
+			response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, response
+					.getContent().readableBytes());
 
 			return response;
 		}
