@@ -14,8 +14,7 @@ public class ContentType {
 		this.key = key;
 	}
 
-	static final ConcurrentMap<String, ContentType> INSTANCES = Maps
-			.newConcurrentMap();
+	static final ConcurrentMap<String, ContentType> INSTANCES = Maps.newConcurrentMap();
 
 	public static ContentType get(String key) {
 		ContentType contentType = INSTANCES.get(key);
@@ -41,10 +40,10 @@ public class ContentType {
 	}
 
 	public static ContentType get(HttpResponse response) {
-		String contentType = HttpHeaders.getHeader(response,
-				HttpHeaders.Names.CONTENT_TYPE);
-		if (contentType == null)
+		String contentType = HttpHeaders.getHeader(response, HttpHeaders.Names.CONTENT_TYPE);
+		if (contentType == null) {
 			return null;
+		}
 		return get(contentType);
 	}
 }

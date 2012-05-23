@@ -6,12 +6,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class ThreadPools {
 
-	public static final ExecutorService BOSS_POOL = Executors
-			.newCachedThreadPool();
-	public static final ExecutorService WORKER_POOL = Executors
-			.newCachedThreadPool();
+	public static final ExecutorService BOSS_POOL = Executors.newCachedThreadPool();
+	public static final ExecutorService WORKER_POOL = Executors.newCachedThreadPool();
 
-	public static final ScheduledExecutorService SYSTEM_TASK_POOL = Executors
-			.newScheduledThreadPool(2);
+	public static final ScheduledExecutorService SYSTEM_TASK_POOL = Executors.newScheduledThreadPool(2);
 
 }

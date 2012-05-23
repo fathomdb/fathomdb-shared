@@ -26,7 +26,7 @@ public class ServerRuleResolver {
 
 		ScopeDirective systemRules = loadSystemDefaults();
 		rules.add(systemRules);
-		
+
 		for (String pathToken : Splitter.on('/').omitEmptyStrings().split(path)) {
 			current = current.getChild(pathToken);
 			if (current == null) {
@@ -70,8 +70,7 @@ public class ServerRuleResolver {
 		try {
 			parser.parse();
 		} catch (IOException e) {
-			throw new IllegalArgumentException(
-					"Error parsing system htaccess file", e);
+			throw new IllegalArgumentException("Error parsing system htaccess file", e);
 		}
 
 		ParseScopeNode root = parser.getRoot();

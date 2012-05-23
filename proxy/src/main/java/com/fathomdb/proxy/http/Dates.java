@@ -28,7 +28,7 @@ public class Dates {
 			}
 			value = value.substring(0, endIndex);
 		}
-		
+
 		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN_JSON);
 		return dateFormat.parse(value);
 	}

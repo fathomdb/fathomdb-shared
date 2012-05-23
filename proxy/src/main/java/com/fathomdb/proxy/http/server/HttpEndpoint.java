@@ -15,8 +15,7 @@ public class HttpEndpoint {
 
 	public String toAbsolute(HttpRequest request, String relativePath) {
 		String hostAndPort = request.getHeader(HttpHeaders.Names.HOST);
-		String uri = scheme.toString().toLowerCase() + "://" + hostAndPort
-				+ relativePath;
+		String uri = scheme.toString().toLowerCase() + "://" + hostAndPort + relativePath;
 		return uri;
 	}
 

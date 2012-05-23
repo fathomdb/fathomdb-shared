@@ -22,16 +22,14 @@ public class DnsMessageHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-			throws Exception {
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
 		DnsMessage query = (DnsMessage) e.getMessage();
 		SocketAddress remoteAddress = e.getRemoteAddress();
 
 		byte[] data = query.getOriginalMessageData();
 
 		Socket s = null;
-		byte[] reply = recordProvider.generateReply(query.getMessage(), data,
-				data.length, s);
+		byte[] reply = recordProvider.generateReply(query.getMessage(), data, data.length, s);
 
 		if (reply != null) {
 			ChannelBuffer buffer = ChannelBuffers.wrappedBuffer(reply);
@@ -53,8 +51,7 @@ public class DnsMessageHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-			throws Exception {
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
 		// TODO: Should we close a UDP channel?
 		e.getCause().printStackTrace();
 		e.getChannel().close();

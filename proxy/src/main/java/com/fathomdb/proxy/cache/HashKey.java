@@ -19,8 +19,9 @@ public class HashKey {
 	}
 
 	public void put(ByteBuffer buffer) {
-		if (key.length > Short.MAX_VALUE)
+		if (key.length > Short.MAX_VALUE) {
 			throw new IllegalStateException();
+		}
 		short keyLength = (short) key.length;
 		buffer.putShort(keyLength);
 		buffer.put(key);
@@ -28,8 +29,9 @@ public class HashKey {
 
 	public static HashKey get(ByteBuffer buffer) {
 		int byteCount = buffer.getShort();
-		if (byteCount <= 0)
+		if (byteCount <= 0) {
 			throw new IllegalStateException("Corrupt byte count in entry");
+		}
 		byte[] keyData = new byte[byteCount];
 		buffer.get(keyData);
 
@@ -44,17 +46,22 @@ public class HashKey {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		HashKey other = (HashKey) obj;
-		if (hash != other.hash)
+		if (hash != other.hash) {
 			return false;
-		if (!Arrays.equals(key, other.key))
+		}
+		if (!Arrays.equals(key, other.key)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -63,6 +70,4 @@ public class HashKey {
 		return "HashKey [key=" + Hex.toHex(key) + "]";
 	}
 
-	
-	
 }

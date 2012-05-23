@@ -1,11 +1,11 @@
 package com.fathomdb.proxy.openstack;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.DefaultChannelFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class EasyAsync extends DefaultChannelFuture {
 	static final Logger log = LoggerFactory.getLogger(EasyAsync.class);

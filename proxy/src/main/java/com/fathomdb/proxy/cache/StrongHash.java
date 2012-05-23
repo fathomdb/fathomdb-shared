@@ -14,8 +14,9 @@ public class StrongHash {
 	public static final StrongHash ZERO = new StrongHash(new byte[SIZE]);
 
 	private StrongHash(byte[] data) {
-		if (data.length != SIZE)
+		if (data.length != SIZE) {
 			throw new IllegalStateException();
+		}
 		this.data = data;
 	}
 
@@ -50,15 +51,19 @@ public class StrongHash {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		StrongHash other = (StrongHash) obj;
-		if (!Arrays.equals(data, other.data))
+		if (!Arrays.equals(data, other.data)) {
 			return false;
+		}
 		return true;
 	}
 

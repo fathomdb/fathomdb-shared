@@ -27,14 +27,12 @@ public class SimpleRequestHandler implements RequestHandler {
 		// Build the response object.
 		HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
 		String responseBody = "Hello world";
-		response.setContent(ChannelBuffers.copiedBuffer(responseBody,
-				CharsetUtil.UTF_8));
+		response.setContent(ChannelBuffers.copiedBuffer(responseBody, CharsetUtil.UTF_8));
 		response.setHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
 
 		if (request.isKeepAlive()) {
 			// Add 'Content-Length' header only for a keep-alive connection.
-			response.setHeader(CONTENT_LENGTH, response.getContent()
-					.readableBytes());
+			response.setHeader(CONTENT_LENGTH, response.getContent().readableBytes());
 		}
 
 		// Encode the cookie.

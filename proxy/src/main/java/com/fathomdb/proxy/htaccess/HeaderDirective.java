@@ -16,8 +16,7 @@ public class HeaderDirective extends Directive {
 		OnSuccess, Always
 	};
 
-	public HeaderDirective(ParseDirectiveNode node, Condition condition,
-			Action action, String header, String value) {
+	public HeaderDirective(ParseDirectiveNode node, Condition condition, Action action, String header, String value) {
 		super(node);
 		this.condition = condition;
 		this.action = action;
@@ -32,14 +31,12 @@ public class HeaderDirective extends Directive {
 
 		try {
 			String token = tokens.pop();
-			Condition condition = EnumUtils.valueOfCaseInsensitiveOrNull(
-					Condition.class, token);
+			Condition condition = EnumUtils.valueOfCaseInsensitiveOrNull(Condition.class, token);
 			if (condition != null) {
 				token = tokens.pop();
 			}
 
-			Action action = EnumUtils.valueOfCaseInsensitive(Action.class,
-					token);
+			Action action = EnumUtils.valueOfCaseInsensitive(Action.class, token);
 
 			String header = tokens.pop();
 
@@ -55,8 +52,7 @@ public class HeaderDirective extends Directive {
 			}
 
 			if (tokens.poll() != null) {
-				throw new IllegalArgumentException(
-						"Unexpected tokens at end of directive");
+				throw new IllegalArgumentException("Unexpected tokens at end of directive");
 			}
 
 			return new HeaderDirective(node, condition, action, header, value);
@@ -67,8 +63,8 @@ public class HeaderDirective extends Directive {
 
 	@Override
 	public String toString() {
-		return "HeaderDirective [condition=" + condition + ", action=" + action
-				+ ", header=" + header + ", value=" + value + "]";
+		return "HeaderDirective [condition=" + condition + ", action=" + action + ", header=" + header + ", value="
+				+ value + "]";
 	}
 
 }

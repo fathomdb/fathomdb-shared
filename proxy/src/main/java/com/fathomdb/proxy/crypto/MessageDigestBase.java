@@ -34,8 +34,9 @@ public abstract class MessageDigestBase {
 		byte[] buffer = new byte[8192];
 		while (true) {
 			int available = is.read(buffer);
-			if (available == -1)
+			if (available == -1) {
 				break;
+			}
 			digest.update(buffer, 0, available);
 		}
 		byte[] hash = digest.digest();
@@ -59,8 +60,7 @@ public abstract class MessageDigestBase {
 			return digest;
 		} catch (NoSuchAlgorithmException e) {
 			// should not happen
-			throw new IllegalStateException(
-					"Could not find message digest algorithm: " + name, e);
+			throw new IllegalStateException("Could not find message digest algorithm: " + name, e);
 		}
 	}
 

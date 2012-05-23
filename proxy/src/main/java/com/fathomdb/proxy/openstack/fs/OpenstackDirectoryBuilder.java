@@ -10,8 +10,7 @@ public class OpenstackDirectoryBuilder implements ObjectMetadataListener {
 	final OpenstackItem root = new OpenstackItem(null);
 
 	@Override
-	public void gotObjectDetails(String objectName, byte[] objectHash,
-			long objectBytes, String objectContentType,
+	public void gotObjectDetails(String objectName, byte[] objectHash, long objectBytes, String objectContentType,
 			long objectLastModified) {
 		OpenstackItem current = root;
 
@@ -33,8 +32,8 @@ public class OpenstackDirectoryBuilder implements ObjectMetadataListener {
 		}
 
 		ContentType contentType = ContentType.get(objectContentType);
-		OpenstackItem item = new OpenstackItem(fileName, new HashKey(objectHash),
-				objectBytes, contentType, objectLastModified);
+		OpenstackItem item = new OpenstackItem(fileName, new HashKey(objectHash), objectBytes, contentType,
+				objectLastModified);
 		current.children.put(fileName, item);
 	}
 

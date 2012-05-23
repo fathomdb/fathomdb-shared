@@ -29,8 +29,7 @@ public abstract class OpenstackClientBase implements AutoCloseable {
 		return getHttpClientConnection().getChannel();
 	}
 
-	protected OpenstackClientBase(OpenstackClientPool openstackClientPool,
-			URI urlBase) {
+	protected OpenstackClientBase(OpenstackClientPool openstackClientPool, URI urlBase) {
 		this.openstackClientPool = openstackClientPool;
 		this.urlBase = urlBase;
 
@@ -48,12 +47,10 @@ public abstract class OpenstackClientBase implements AutoCloseable {
 		return hostAndPort;
 	}
 
-	public HttpClientConnection getHttpClientConnection()
-			throws AsyncFutureException {
+	public HttpClientConnection getHttpClientConnection() throws AsyncFutureException {
 
 		if (httpClient == null) {
-			httpClient = openstackClientPool.httpClientPool.getClient(scheme,
-					hostHeader);
+			httpClient = openstackClientPool.httpClientPool.getClient(scheme, hostHeader);
 		}
 
 		if (!httpClient.isConnected()) {
@@ -62,7 +59,8 @@ public abstract class OpenstackClientBase implements AutoCloseable {
 
 		return httpClient;
 	}
-	
+
+	@Override
 	public void close() {
 		if (httpClient != null) {
 			httpClient.close();
@@ -70,17 +68,16 @@ public abstract class OpenstackClientBase implements AutoCloseable {
 	}
 
 	public HttpRequest buildRequest(HttpMethod method, String path) {
-		HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1,
-				method, path);
+		HttpRequest request = new DefaultHttpRequest(HttpVersion.HTTP_1_1, method, path);
 		request.setHeader(HttpHeaders.Names.HOST, hostHeader);
 		return request;
 	}
-	
+
 	public <T extends OpenstackResponseHandler> T doRequest(HttpRequest request, T handler) {
 		HttpClientConnection connection = getHttpClientConnection();
 		handler.setChannel(connection.getChannel());
 		connection.doRequest(request, handler);
-		
+
 		return handler;
 	}
 }

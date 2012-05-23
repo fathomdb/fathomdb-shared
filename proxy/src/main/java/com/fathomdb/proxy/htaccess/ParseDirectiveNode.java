@@ -14,8 +14,7 @@ public class ParseDirectiveNode extends ParseNode {
 
 	@Override
 	public String toString() {
-		return "ParseDirectiveNode [commandName=" + key
-				+ ", arguments=" + arguments + "]";
+		return "ParseDirectiveNode [commandName=" + key + ", arguments=" + arguments + "]";
 	}
 
 	@Override

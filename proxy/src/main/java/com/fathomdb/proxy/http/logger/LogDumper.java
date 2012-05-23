@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
@@ -28,8 +27,9 @@ public class LogDumper {
 			dis = new DataInputStream(is);
 			is = null;
 		} finally {
-			if (is != null)
+			if (is != null) {
 				is.close();
+			}
 		}
 
 		try {
@@ -55,11 +55,9 @@ public class LogDumper {
 					dis.readFully(addressBytes);
 					InetAddress remoteAddress;
 					if (addressBytesLength == 4) {
-						remoteAddress = Inet4Address.getByAddress(addressBytes);
+						remoteAddress = InetAddress.getByAddress(addressBytes);
 					} else {
-						throw new IllegalArgumentException(
-								"Unhandled address length: "
-										+ addressBytesLength);
+						throw new IllegalArgumentException("Unhandled address length: " + addressBytesLength);
 					}
 					int remotePort = dis.readInt();
 
@@ -68,8 +66,7 @@ public class LogDumper {
 
 					byte protocolVersion = dis.readByte();
 
-					System.out.println("REQUEST:\t" + remoteAddress + ":"
-							+ remotePort + " " + method + " " + uri + " "
+					System.out.println("REQUEST:\t" + remoteAddress + ":" + remotePort + " " + method + " " + uri + " "
 							+ "HTTP/" + protocolVersion);
 					int headerCount = dis.readInt();
 					for (int i = 0; i < headerCount; i++) {
@@ -85,8 +82,7 @@ public class LogDumper {
 					int statusCode = dis.readShort();
 					String statusReason = dis.readUTF();
 
-					System.out.println("RESPONSE:\t" + statusCode + " "
-							+ statusReason);
+					System.out.println("RESPONSE:\t" + statusCode + " " + statusReason);
 					int headerCount = dis.readInt();
 					for (int i = 0; i < headerCount; i++) {
 						String key = dis.readUTF();
@@ -101,8 +97,7 @@ public class LogDumper {
 				}
 
 				default:
-					throw new IllegalArgumentException("Unknown record type: "
-							+ recordType);
+					throw new IllegalArgumentException("Unknown record type: " + recordType);
 				}
 			}
 		} catch (EOFException e) {

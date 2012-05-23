@@ -17,8 +17,7 @@ public class StreamingJsonParser {
 		IN_ARRAY, IN_OBJECT, IN_VALUE
 	}
 
-	public StreamingJsonParser(StreamingJsonTokenizer tokenizer,
-			JsonHandler handler) {
+	public StreamingJsonParser(StreamingJsonTokenizer tokenizer, JsonHandler handler) {
 		super();
 		this.tokenizer = tokenizer;
 		this.handler = handler;
@@ -55,8 +54,9 @@ public class StreamingJsonParser {
 	void parse() {
 		while (true) {
 			Token next = nextToken();
-			if (next == null)
+			if (next == null) {
 				return;
+			}
 
 			switch (stateStack.peek()) {
 

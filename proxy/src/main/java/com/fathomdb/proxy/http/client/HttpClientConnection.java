@@ -3,15 +3,11 @@ package com.fathomdb.proxy.http.client;
 import java.net.InetSocketAddress;
 import java.net.URI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.proxy.http.HttpScheme;
 
@@ -25,8 +21,7 @@ public class HttpClientConnection implements AutoCloseable {
 	private final int port;
 	private ChannelFuture connectFuture;
 
-	public HttpClientConnection(HttpClient client, HttpScheme scheme,
-			String host, int port) {
+	public HttpClientConnection(HttpClient client, HttpScheme scheme, String host, int port) {
 		this.client = client;
 		this.scheme = scheme;
 		this.host = host;
@@ -36,8 +31,7 @@ public class HttpClientConnection implements AutoCloseable {
 	public ChannelFuture connect() {
 		boolean ssl = scheme == HttpScheme.HTTPS;
 
-		this.connectFuture = client.getClientBootstrap(ssl).connect(
-				new InetSocketAddress(host, port));
+		this.connectFuture = client.getClientBootstrap(ssl).connect(new InetSocketAddress(host, port));
 
 		return connectFuture;
 	}
@@ -52,8 +46,7 @@ public class HttpClientConnection implements AutoCloseable {
 		// request.setHeader(HttpHeaders.Names.COOKIE,
 		// httpCookieEncoder.encode());
 
-		HttpProxyClientHandler httpProxyClientHandler = channel.getPipeline()
-				.get(HttpProxyClientHandler.class);
+		HttpProxyClientHandler httpProxyClientHandler = channel.getPipeline().get(HttpProxyClientHandler.class);
 		httpProxyClientHandler.setTarget(listener);
 
 		log.info("Client sending request: " + request);
@@ -63,8 +56,9 @@ public class HttpClientConnection implements AutoCloseable {
 	}
 
 	public boolean isConnected() {
-		if (connectFuture == null)
+		if (connectFuture == null) {
 			return false;
+		}
 		Channel channel = connectFuture.getChannel();
 		return channel.isConnected();
 	}
@@ -84,6 +78,7 @@ public class HttpClientConnection implements AutoCloseable {
 		return hostAndPort;
 	}
 
+	@Override
 	public void close() {
 		// // Wait for the server to close the connection.
 		// channel.getCloseFuture().awaitUninterruptibly();

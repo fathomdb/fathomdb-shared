@@ -35,8 +35,7 @@ public class Meta<T> {
 			current = current.getSuperclass();
 		}
 
-		return (MetaField<T>[]) metaFields.toArray(new MetaField[metaFields
-				.size()]);
+		return metaFields.toArray(new MetaField[metaFields.size()]);
 	}
 
 	public static <T> Meta<T> get(Class<T> c) {
@@ -57,18 +56,22 @@ public class Meta<T> {
 	}
 
 	public boolean equals(T a, Object bObject) {
-		if (a == bObject)
+		if (a == bObject) {
 			return true;
-		if (a == null || bObject == null)
+		}
+		if (a == null || bObject == null) {
 			return false;
-		if (a.getClass() != bObject.getClass())
+		}
+		if (a.getClass() != bObject.getClass()) {
 			return false;
+		}
 		T b = (T) bObject;
 
 		for (int i = 0; i < identityFields.length; i++) {
 			MetaField<T> field = identityFields[i];
-			if (!field.equals(a, b))
+			if (!field.equals(a, b)) {
 				return false;
+			}
 		}
 
 		return true;
@@ -94,7 +97,7 @@ public class Meta<T> {
 			}
 		}
 		sb.append(']');
-		
+
 		return sb.toString();
 	}
 

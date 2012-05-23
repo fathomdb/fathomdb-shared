@@ -5,8 +5,7 @@ import com.fathomdb.proxy.http.handlers.ContentType;
 public class ExpiresByType extends ExpirationDirective {
 	final ContentType contentType;
 
-	ExpiresByType(ParseDirectiveNode node, ExpirationTimeout timeout,
-			ContentType contentType) {
+	ExpiresByType(ParseDirectiveNode node, ExpirationTimeout timeout, ContentType contentType) {
 		super(node, timeout);
 		this.contentType = contentType;
 	}
@@ -33,8 +32,7 @@ public class ExpiresByType extends ExpirationDirective {
 
 	@Override
 	public String toString() {
-		return "ExpiresByType [contentType=" + contentType
-				+ super.toStringHelper() + "]";
+		return "ExpiresByType [contentType=" + contentType + super.toStringHelper() + "]";
 	}
 
 	public ContentType getContentType() {

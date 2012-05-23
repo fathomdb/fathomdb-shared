@@ -13,27 +13,25 @@ import org.xbill.DNS.Zone;
 import com.fathomdb.config.FilesystemConfigProvider;
 import com.google.common.collect.Lists;
 
-public class DnsZoneConfigProvider extends
-		FilesystemConfigProvider<DnsZoneConfig> {
+public class DnsZoneConfigProvider extends FilesystemConfigProvider<DnsZoneConfig> {
 
 	public DnsZoneConfigProvider(File baseDir) {
 		super(baseDir);
 	}
 
 	@Override
-	protected DnsZoneConfig loadConfig(String key, String version,
-			InputStream is) throws IOException {
+	protected DnsZoneConfig loadConfig(String key, String version, InputStream is) throws IOException {
 		Name zoneName = new Name(key + ".");
 
 		Master master = new Master(is, zoneName);
 		List<Record> records = Lists.newArrayList();
 
 		Record record;
-		while ((record = master.nextRecord()) != null)
+		while ((record = master.nextRecord()) != null) {
 			records.add(record);
+		}
 
-		Record[] recordArray = (Record[]) records.toArray(new Record[records
-				.size()]);
+		Record[] recordArray = records.toArray(new Record[records.size()]);
 		Zone zone = new Zone(zoneName, recordArray);
 
 		return new DnsZoneConfig(version, zone);
@@ -44,12 +42,14 @@ public class DnsZoneConfigProvider extends
 		if (key.endsWith(".")) {
 			key = key.substring(0, key.length() - 1);
 		}
-		if (key.isEmpty())
+		if (key.isEmpty()) {
 			return null;
+		}
 
 		DnsZoneConfig config = getConfig(key);
-		if (config == null)
+		if (config == null) {
 			return null;
+		}
 		return config.zone;
 	}
 

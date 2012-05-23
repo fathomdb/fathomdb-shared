@@ -18,10 +18,10 @@ public class RequestHandlerProvider {
 	final OpenstackClientPool openstackClientPool;
 	final HttpProxyHostConfigProvider configProvider;
 	final OpenstackDirectoryCache openstackContainerMetadataCache;
-	
+
 	// TODO: This is crying out for dependency-injection
-	public RequestHandlerProvider(RequestLogger logger, HttpProxyHostConfigProvider configProvider, OpenstackDirectoryCache openstackContainerMetadataCache, CacheFile cache,
-			HttpClientPool httpClientPool,
+	public RequestHandlerProvider(RequestLogger logger, HttpProxyHostConfigProvider configProvider,
+			OpenstackDirectoryCache openstackContainerMetadataCache, CacheFile cache, HttpClientPool httpClientPool,
 			OpenstackClientPool openstackClientPool) {
 		super();
 		this.logger = logger;
@@ -34,11 +34,8 @@ public class RequestHandlerProvider {
 
 	public RequestHandler getRequestHandler(GenericRequest request) {
 		HostConfig hostConfig = configProvider.getConfig(request);
-		OpenstackDataProvider openstack = new OpenstackDataProvider(
-				openstackContainerMetadataCache,
-				cache,
-				hostConfig.getOpenstackCredentials(), openstackClientPool,
-				hostConfig.getContainerName());
+		OpenstackDataProvider openstack = new OpenstackDataProvider(openstackContainerMetadataCache, cache,
+				hostConfig.getOpenstackCredentials(), openstackClientPool, hostConfig.getContainerName());
 
 		return new ObjectDataProviderResponseHandler(logger, openstack);
 	}

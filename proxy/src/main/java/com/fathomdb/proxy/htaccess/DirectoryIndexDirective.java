@@ -23,8 +23,9 @@ public class DirectoryIndexDirective extends Directive {
 		try {
 			while (true) {
 				String token = tokens.poll();
-				if (token == null)
+				if (token == null) {
 					break;
+				}
 				urls.add(token);
 			}
 		} catch (Exception e) {
@@ -32,18 +33,16 @@ public class DirectoryIndexDirective extends Directive {
 		}
 
 		if (urls.isEmpty()) {
-			throw new IllegalArgumentException(
-					"Expected at least one default url");
+			throw new IllegalArgumentException("Expected at least one default url");
 		}
 
-		String[] urlsArray = (String[]) urls.toArray(new String[urls.size()]);
+		String[] urlsArray = urls.toArray(new String[urls.size()]);
 		return new DirectoryIndexDirective(node, urlsArray);
 	}
 
 	@Override
 	public String toString() {
-		return "DirectoryIndexDirective [urls=" + Joiner.on(',').join(urls)
-				+ super.toStringHelper() + "]";
+		return "DirectoryIndexDirective [urls=" + Joiner.on(',').join(urls) + super.toStringHelper() + "]";
 	}
 
 	public Iterable<String> getDirectoryIndexUrls() {

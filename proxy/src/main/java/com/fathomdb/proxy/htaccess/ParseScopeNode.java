@@ -27,13 +27,13 @@ public class ParseScopeNode extends ParseNode {
 
 	@Override
 	public String toString() {
-		return "ParseScopeNode [key=" + key + ", arguments=" + arguments
-				+ ", children=" + children + "]";
+		return "ParseScopeNode [key=" + key + ", arguments=" + arguments + ", children=" + children + "]";
 	}
 
+	@Override
 	public ScopeDirective compile() {
 		ScopeDirective directive;
-		
+
 		if (key == null) {
 			directive = new RootDirective(this);
 		} else if (Objects.equal(key, "Files")) {
@@ -41,7 +41,7 @@ public class ParseScopeNode extends ParseNode {
 		} else {
 			throw new IllegalArgumentException("Unknown directive: " + key);
 		}
-		
+
 		for (ParseNode child : children) {
 			Directive compiledChild = child.compile();
 			directive.addChild(compiledChild);

@@ -10,16 +10,14 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import com.fathomdb.config.FilesystemConfigProvider;
 import com.fathomdb.proxy.http.server.GenericRequest;
 
-public class HttpProxyHostConfigProvider extends
-		FilesystemConfigProvider<HostConfig> {
+public class HttpProxyHostConfigProvider extends FilesystemConfigProvider<HostConfig> {
 
 	public HttpProxyHostConfigProvider(File baseDir) {
 		super(baseDir);
 	}
 
 	@Override
-	protected HostConfig loadConfig(String key, String version, InputStream is)
-			throws IOException {
+	protected HostConfig loadConfig(String key, String version, InputStream is) throws IOException {
 		Properties properties = new Properties();
 		properties.load(is);
 		return new HostConfig(version, key, properties);
@@ -27,8 +25,9 @@ public class HttpProxyHostConfigProvider extends
 
 	public HostConfig getConfig(GenericRequest request) {
 		String host = request.getHeader(HttpHeaders.Names.HOST);
-		if (host == null)
+		if (host == null) {
 			throw new IllegalStateException();
+		}
 
 		// Ignore port for now
 		int colonIndex = host.indexOf(':');

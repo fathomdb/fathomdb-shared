@@ -78,8 +78,7 @@ public class ServerRuleChain {
 
 		long deltaSeconds = timeoutAt - now;
 
-		String cacheControl = response
-				.getHeader(HttpHeaders.Names.CACHE_CONTROL);
+		String cacheControl = response.getHeader(HttpHeaders.Names.CACHE_CONTROL);
 		if (cacheControl == null) {
 			cacheControl = "max-age=" + deltaSeconds;
 		} else {
@@ -88,7 +87,7 @@ public class ServerRuleChain {
 
 		response.setHeader(HttpHeaders.Names.CACHE_CONTROL, cacheControl);
 
-		String expires = Dates.format(new Date((long) timeoutAt * 1000L));
+		String expires = Dates.format(new Date(timeoutAt * 1000L));
 
 		response.setHeader(HttpHeaders.Names.EXPIRES, expires);
 	}

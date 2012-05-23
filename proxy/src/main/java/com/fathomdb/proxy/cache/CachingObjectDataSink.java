@@ -38,7 +38,7 @@ public class CachingObjectDataSink implements ObjectDataSink {
 			allocationBuffer.limit(startPosition + chunkSize);
 			content.readBytes(allocationBuffer);
 			allocationBuffer.limit(oldLimit);
-//			allocationBuffer.position(startPosition + chunkSize);
+			// allocationBuffer.position(startPosition + chunkSize);
 		}
 	}
 

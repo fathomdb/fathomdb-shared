@@ -9,16 +9,13 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-import com.fathomdb.proxy.http.HttpScheme;
-
 public class SingleChunkHttpRequest implements GenericRequest {
 
 	final Channel channel;
 	final HttpRequest request;
 	private final HttpEndpoint endpoint;
 
-	public SingleChunkHttpRequest(Channel channel, HttpEndpoint endpoint,
-			HttpRequest request) {
+	public SingleChunkHttpRequest(Channel channel, HttpEndpoint endpoint, HttpRequest request) {
 		this.channel = channel;
 		this.endpoint = endpoint;
 		this.request = request;

@@ -44,20 +44,24 @@ public class ZoneAllocator {
 			FreeRange found = null;
 			// TODO: Use binary search
 			for (FreeRange free : freeList) {
-				if (free.end < start)
+				if (free.end < start) {
 					continue;
-				if (free.start > end)
+				}
+				if (free.start > end) {
 					continue;
+				}
 
 				found = free;
 				break;
 			}
 
-			if (found == null)
+			if (found == null) {
 				throw new IllegalStateException();
+			}
 
-			if (found.start > start || found.end < end)
+			if (found.start > start || found.end < end) {
 				throw new IllegalStateException();
+			}
 
 			// Truncate or split the range
 			if (found.end == end) {
@@ -190,12 +194,12 @@ public class ZoneAllocator {
 		}
 
 		// Make sure allocation is a multiple of page_size
-		allocationSize = PAGE_SIZE
-				* ((allocationSize + PAGE_SIZE - 1) / PAGE_SIZE);
+		allocationSize = PAGE_SIZE * ((allocationSize + PAGE_SIZE - 1) / PAGE_SIZE);
 
 		int allocated = freeList.allocate(allocationSize);
-		if (allocated == FAIL)
+		if (allocated == FAIL) {
 			return null;
+		}
 
 		// Everything is allocated in pages, so everything should end up page
 		// aligned
@@ -210,21 +214,22 @@ public class ZoneAllocator {
 		// TODO: Inefficient!! At least use binary search, if not same
 		// generating function
 		for (Zone zone : zones) {
-			if (zone.size >= size)
+			if (zone.size >= size) {
 				return zone;
+			}
 		}
 		return null;
 	}
 
 	public int allocate(int size) {
 		Zone zone = pickZone(size);
-		if (zone == null)
+		if (zone == null) {
 			return FAIL;
+		}
 		return zone.allocate();
 	}
 
-	public static ZoneAllocator buildFreeList(Iterable<CacheFileEntry> entries,
-			int start, int limit) {
+	public static ZoneAllocator buildFreeList(Iterable<CacheFileEntry> entries, int start, int limit) {
 		final FreeList freeList = new FreeList();
 
 		FreeRange range = new FreeRange(start, limit);

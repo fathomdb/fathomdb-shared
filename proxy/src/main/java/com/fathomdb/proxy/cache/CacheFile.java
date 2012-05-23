@@ -36,7 +36,7 @@ public class CacheFile {
 	static final int FILE_LENGTH = 1024 * 1024 * 1024;
 
 	boolean isDirty;
-	
+
 	static class LockCollection {
 		// TODO: Move to a highly concurrent algorithm here ??
 
@@ -81,8 +81,7 @@ public class CacheFile {
 		this.buffer = buffer;
 		EntryData metadata = readMetadata(buffer);
 		this.entries = metadata.entries;
-		this.freeList = ZoneAllocator.buildFreeList(metadata.entries.values(),
-				metadata.dataAreaStart, buffer.limit());
+		this.freeList = ZoneAllocator.buildFreeList(metadata.entries.values(), metadata.dataAreaStart, buffer.limit());
 	}
 
 	public class CacheLock implements Closeable {
@@ -98,7 +97,7 @@ public class CacheFile {
 		public void close() {
 			locks.remove(this);
 		}
-		
+
 		public ByteBuffer getBuffer() {
 			return buffer;
 		}
@@ -124,8 +123,9 @@ public class CacheFile {
 		synchronized (entries) {
 			entry = entries.get(key);
 		}
-		if (entry == null)
+		if (entry == null) {
 			return null;
+		}
 
 		return readEntry(entry);
 	}
@@ -162,12 +162,12 @@ public class CacheFile {
 	}
 
 	public void store(HashKey key, Allocation allocation) {
-		if (this != allocation.getCacheFile())
+		if (this != allocation.getCacheFile()) {
 			throw new IllegalArgumentException();
+		}
 
 		// TODO: Header etc?
-		CacheFileEntry entry = new CacheFileEntry(key, allocation.position,
-				allocation.length);
+		CacheFileEntry entry = new CacheFileEntry(key, allocation.position, allocation.length);
 		synchronized (entries) {
 			isDirty = true;
 			entries.put(key, entry);
@@ -219,14 +219,12 @@ public class CacheFile {
 		metadata = metadata.slice();
 
 		int hashCapacity = Math.min(1024, entryCount + entryCount / 4);
-		Map<HashKey, CacheFileEntry> entries = new HashMap<HashKey, CacheFileEntry>(
-				hashCapacity);
+		Map<HashKey, CacheFileEntry> entries = new HashMap<HashKey, CacheFileEntry>(hashCapacity);
 
 		metadata.rewind();
 		StrongHash actual = StrongHash.computeHash(metadata);
 		if (!hash.equals(actual)) {
-			throw new IllegalStateException(
-					"Corrupt segment: data did not match hash");
+			throw new IllegalStateException("Corrupt segment: data did not match hash");
 		}
 
 		metadata.rewind();
@@ -236,9 +234,9 @@ public class CacheFile {
 			int position = metadata.getInt();
 			int length = metadata.getInt();
 
-			if (position <= 0 || length <= 0)
-				throw new IllegalStateException(
-						"Corrupt position/length in entry");
+			if (position <= 0 || length <= 0) {
+				throw new IllegalStateException("Corrupt position/length in entry");
+			}
 
 			CacheFileEntry entry = new CacheFileEntry(key, position, length);
 			entries.put(key, entry);
@@ -259,12 +257,10 @@ public class CacheFile {
 			RandomAccessFile randomFile = new RandomAccessFile(file, "rw");
 			randomFile.setLength(FILE_LENGTH);
 			FileChannel rwChannel = randomFile.getChannel();
-			MappedByteBuffer buffer = rwChannel.map(
-					FileChannel.MapMode.READ_WRITE, 0, (int) rwChannel.size());
+			MappedByteBuffer buffer = rwChannel.map(FileChannel.MapMode.READ_WRITE, 0, (int) rwChannel.size());
 			writeMetadata(Collections.<CacheFileEntry> emptyList(), buffer);
 		} catch (IOException e) {
-			throw new IllegalStateException(
-					"Error creating empty caching file", e);
+			throw new IllegalStateException("Error creating empty caching file", e);
 		}
 	}
 
@@ -279,10 +275,8 @@ public class CacheFile {
 		}
 
 		try {
-			FileChannel rwChannel = new RandomAccessFile(file, "rw")
-					.getChannel();
-			MappedByteBuffer buffer = rwChannel.map(
-					FileChannel.MapMode.READ_WRITE, 0, (int) rwChannel.size());
+			FileChannel rwChannel = new RandomAccessFile(file, "rw").getChannel();
+			MappedByteBuffer buffer = rwChannel.map(FileChannel.MapMode.READ_WRITE, 0, (int) rwChannel.size());
 
 			return new CacheFile(file, buffer);
 		} catch (Exception e) {
@@ -290,8 +284,7 @@ public class CacheFile {
 
 			if (removeIfCorrupt) {
 				log.warn("Moving cache file: " + file, e);
-				file.renameTo(new File(file.getAbsolutePath() + "."
-						+ System.currentTimeMillis()));
+				file.renameTo(new File(file.getAbsolutePath() + "." + System.currentTimeMillis()));
 				return open(file, false);
 			} else {
 				throw new IllegalStateException("Error opening cache file", e);
@@ -307,14 +300,14 @@ public class CacheFile {
 				log.debug("Metadata not dirty, won't write");
 				return;
 			}
-			
+
 			isDirty = false;
 
 			snapshot = Lists.newArrayList(entries.values());
 		}
-		
+
 		log.info("Writing metadata snapshot");
-		
+
 		writeMetadata(snapshot, buffer);
 	}
 
@@ -371,6 +364,5 @@ public class CacheFile {
 	public String toString() {
 		return "CacheFile: file=" + file + " entryCount=" + entries.size();
 	}
-	
-	
+
 }

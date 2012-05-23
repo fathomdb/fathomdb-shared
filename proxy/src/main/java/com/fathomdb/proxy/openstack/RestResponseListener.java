@@ -1,19 +1,18 @@
 package com.fathomdb.proxy.openstack;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.proxy.http.client.HttpResponseHandler;
 import com.fathomdb.proxy.http.client.TaskWithFuture;
 
-public abstract class RestResponseListener extends TaskWithFuture implements
-		HttpResponseHandler {
+public abstract class RestResponseListener extends TaskWithFuture implements HttpResponseHandler {
 
 	static final Logger log = LoggerFactory.getLogger(RestResponseListener.class);
 
@@ -72,6 +71,5 @@ public abstract class RestResponseListener extends TaskWithFuture implements
 		}
 	}
 
-	protected abstract void gotResponse(HttpResponse response, String content)
-			throws Exception;
+	protected abstract void gotResponse(HttpResponse response, String content) throws Exception;
 }

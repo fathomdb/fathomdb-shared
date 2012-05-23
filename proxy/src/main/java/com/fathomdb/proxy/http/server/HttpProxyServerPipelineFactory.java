@@ -15,7 +15,7 @@
  */
 package com.fathomdb.proxy.http.server;
 
-import static org.jboss.netty.channel.Channels.*;
+import static org.jboss.netty.channel.Channels.pipeline;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -28,8 +28,7 @@ import com.fathomdb.proxy.http.HttpScheme;
 public class HttpProxyServerPipelineFactory implements ChannelPipelineFactory {
 	final RequestHandlerProvider requestHandlerProvider;
 
-	public HttpProxyServerPipelineFactory(
-			RequestHandlerProvider requestHandlerProvider) {
+	public HttpProxyServerPipelineFactory(RequestHandlerProvider requestHandlerProvider) {
 		this.requestHandlerProvider = requestHandlerProvider;
 	}
 
@@ -51,10 +50,9 @@ public class HttpProxyServerPipelineFactory implements ChannelPipelineFactory {
 		// Remove the following line if you don't want automatic content
 		// compression.
 		pipeline.addLast("deflater", new HttpContentCompressor());
-		
+
 		HttpEndpoint httpEndpoint = new HttpEndpoint(HttpScheme.HTTP);
-		pipeline.addLast("handler", new HttpProxyServerHandler(httpEndpoint,
-				requestHandlerProvider));
+		pipeline.addLast("handler", new HttpProxyServerHandler(httpEndpoint, requestHandlerProvider));
 		return pipeline;
 	}
 }

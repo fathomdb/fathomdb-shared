@@ -125,8 +125,7 @@ public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 		public void endObject() {
 			switch (state) {
 			case OBJECT: {
-				listener.gotObjectDetails(objectName, objectHash, objectBytes,
-						objectContentType, objectLastModified);
+				listener.gotObjectDetails(objectName, objectHash, objectBytes, objectContentType, objectLastModified);
 
 				state = State.CONTAINER;
 				break;
@@ -161,8 +160,7 @@ public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 			}
 			}
 
-			throw new IllegalArgumentException("Unexpected element: "
-					+ localName);
+			throw new IllegalArgumentException("Unexpected element: " + localName);
 		}
 
 		@Override

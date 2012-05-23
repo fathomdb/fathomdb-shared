@@ -10,13 +10,12 @@ import com.google.common.collect.Lists;
 
 public abstract class ConfigProvider<T> implements HasConfiguration {
 
-	protected final LoadingCache<String, T> cache = CacheBuilder.newBuilder()
-			.build(new CacheLoader<String, T>() {
-				@Override
-				public T load(String host) throws Exception {
-					return buildConfig(host);
-				}
-			});
+	protected final LoadingCache<String, T> cache = CacheBuilder.newBuilder().build(new CacheLoader<String, T>() {
+		@Override
+		public T load(String host) throws Exception {
+			return buildConfig(host);
+		}
+	});
 
 	// TODO: Call automatically?
 	public void initialize() {
@@ -24,8 +23,9 @@ public abstract class ConfigProvider<T> implements HasConfiguration {
 	}
 
 	public T getConfig(String key) {
-		if (key == null)
+		if (key == null) {
 			throw new IllegalStateException();
+		}
 
 		try {
 			return cache.get(key);

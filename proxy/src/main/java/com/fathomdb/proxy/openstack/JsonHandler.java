@@ -9,11 +9,7 @@ public interface JsonHandler {
 	void gotValue(ValueType type, String value);
 
 	enum ValueType {
-		LiteralTrue,
-		LiteralFalse,
-		LiteralNull,
-		String,
-		Number
+		LiteralTrue, LiteralFalse, LiteralNull, String, Number
 	}
 
 	void beginArray();
@@ -21,6 +17,6 @@ public interface JsonHandler {
 	void endObject();
 
 	void gotKey(String value);
-	
+
 	void endDocument();
 }

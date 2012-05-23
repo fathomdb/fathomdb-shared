@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.events.XMLEvent;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -27,8 +27,7 @@ public class KeystoneResponseListener extends RestResponseListener {
 
 		@Override
 		public String toString() {
-			return "Endpoint [region=" + region + ", publicUrl=" + publicUrl
-					+ "]";
+			return "Endpoint [region=" + region + ", publicUrl=" + publicUrl + "]";
 		}
 
 	}
@@ -38,18 +37,16 @@ public class KeystoneResponseListener extends RestResponseListener {
 	}
 
 	@Override
-	protected void gotResponse(HttpResponse response, String data)
-			throws Exception {
+	protected void gotResponse(HttpResponse response, String data) throws Exception {
 		XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-		XMLStreamReader xmlReader = inputFactory
-				.createXMLStreamReader(new StringReader(data));
+		XMLStreamReader xmlReader = inputFactory.createXMLStreamReader(new StringReader(data));
 
 		String currentServiceType = null;
 
 		while (xmlReader.hasNext()) {
 			int eventType = xmlReader.next();
 			switch (eventType) {
-			case XMLEvent.START_ELEMENT:
+			case XMLStreamConstants.START_ELEMENT:
 				QName name = xmlReader.getName();
 				String elementName = name.getLocalPart();
 				if (elementName.equals("token")) {
@@ -57,30 +54,27 @@ public class KeystoneResponseListener extends RestResponseListener {
 				}
 
 				if (elementName.equals("service")) {
-					currentServiceType = xmlReader.getAttributeValue(null,
-							"type");
+					currentServiceType = xmlReader.getAttributeValue(null, "type");
 				}
 
 				if (elementName.equals("endpoint")) {
 					if (currentServiceType.equals("object-store")) {
 						Endpoint endpoint = new Endpoint();
-						endpoint.region = xmlReader.getAttributeValue(null,
-								"region");
-						String publicUrl = xmlReader.getAttributeValue(null,
-								"publicURL");
+						endpoint.region = xmlReader.getAttributeValue(null, "region");
+						String publicUrl = xmlReader.getAttributeValue(null, "publicURL");
 						endpoint.publicUrl = new URI(publicUrl);
 						endpoints.add(endpoint);
 					}
 				}
 				// System.out.print(" " + xmlReader.getName() + " ");
 				break;
-			case XMLEvent.CHARACTERS:
+			case XMLStreamConstants.CHARACTERS:
 				// System.out.print(" " + xmlReader.getText() + " ");
 				break;
 			// case XMLEvent.ATTRIBUTE:
 			// System.out.print(" " + xmlReader.getName() + " ");
 			// break;
-			case XMLEvent.END_ELEMENT:
+			case XMLStreamConstants.END_ELEMENT:
 				// System.out.print(" " + xmlReader.getName() + " ");
 				break;
 			// default:
@@ -98,7 +92,7 @@ public class KeystoneResponseListener extends RestResponseListener {
 				continue;
 			}
 
-			 if (best.publicUrl.getHost().contains("cdn1.clouddrive.com")) {
+			if (best.publicUrl.getHost().contains("cdn1.clouddrive.com")) {
 				best = endpoint;
 				continue;
 			}
@@ -121,8 +115,9 @@ public class KeystoneResponseListener extends RestResponseListener {
 	}
 
 	public String getTokenId() {
-		if (tokenIds.size() != 1)
+		if (tokenIds.size() != 1) {
 			throw new IllegalStateException();
+		}
 		return tokenIds.get(0);
 	}
 

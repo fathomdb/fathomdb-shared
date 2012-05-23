@@ -17,11 +17,12 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fathomdb.proxy.http.server.GenericRequest;
 
 public class RequestLogger {
@@ -65,15 +66,16 @@ public class RequestLogger {
 				this.output = new DataOutputStream(os);
 				os = null;
 			} finally {
-				if (os != null)
+				if (os != null) {
 					os.close();
+				}
 			}
-			
+
 			writeHeader();
 		}
 
 		static final int FILE_FORMAT_VERSION = 1;
-		
+
 		private void writeHeader() throws IOException {
 			output.writeByte(RECORD_TYPE_HEADER);
 			output.writeInt(FILE_FORMAT_VERSION);
@@ -120,8 +122,9 @@ public class RequestLogger {
 					log.warn("Interrupted while dequeueing log messages", e);
 				}
 
-				if (next == null)
+				if (next == null) {
 					break;
+				}
 
 				long timestamp = System.currentTimeMillis();
 				if (lastTimestamp == 0 || (timestamp - lastTimestamp) > 100) {
@@ -140,7 +143,7 @@ public class RequestLogger {
 					output.writeByte(addressBytes.length);
 					output.write(addressBytes);
 					output.writeInt(remoteAddress.getPort());
-					
+
 					output.writeUTF(request.getMethod().getName());
 					output.writeUTF(request.getUri());
 
@@ -180,7 +183,7 @@ public class RequestLogger {
 
 					output.writeLong(next.responseLength);
 				}
-				
+
 				wroteCount++;
 			}
 
@@ -200,8 +203,7 @@ public class RequestLogger {
 
 	public void logResponse(SocketAddress remoteAddress, GenericRequest request, HttpResponse response,
 			long responseLength) {
-		LogRequest logRequest = new LogRequest(remoteAddress, request, response,
-				responseLength);
+		LogRequest logRequest = new LogRequest(remoteAddress, request, response, responseLength);
 		try {
 			queue.put(logRequest);
 		} catch (InterruptedException e) {

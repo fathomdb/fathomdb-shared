@@ -4,5 +4,4 @@ public abstract class ParseNode {
 
 	public abstract Directive compile();
 
-
 }

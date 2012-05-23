@@ -20,8 +20,7 @@ public class OpenstackItem {
 
 	static final Meta<OpenstackItem> META = Meta.get(OpenstackItem.class);
 
-	public OpenstackItem(String name, HashKey contentHash, long length,
-			ContentType contentType, long lastModified) {
+	public OpenstackItem(String name, HashKey contentHash, long length, ContentType contentType, long lastModified) {
 		this.name = name;
 		this.contentHash = contentHash;
 		this.length = length;
@@ -36,19 +35,19 @@ public class OpenstackItem {
 	public OpenstackItem getChild(String key) {
 		return children.get(key);
 	}
-	
+
 	static final ContentType TYPE_X_DIRECTORY = ContentType.get("application/x-directory");
 	static final ContentType TYPE_DIRECTORY = ContentType.get("application/directory");
-	
 
 	public boolean isDirectory() {
-		if (length > 0)
+		if (length > 0) {
 			return false;
+		}
 
-		if (contentType == null
-				|| Objects.equal(contentType,TYPE_X_DIRECTORY)
-				|| Objects.equal(contentType, TYPE_DIRECTORY))
+		if (contentType == null || Objects.equal(contentType, TYPE_X_DIRECTORY)
+				|| Objects.equal(contentType, TYPE_DIRECTORY)) {
 			return true;
+		}
 		return false;
 	}
 
@@ -61,8 +60,9 @@ public class OpenstackItem {
 	}
 
 	public Date getLastModified() {
-		if (lastModified == 0)
+		if (lastModified == 0) {
 			return null;
+		}
 
 		return new Date(lastModified);
 	}

@@ -4,8 +4,7 @@ import java.net.URI;
 
 public class KeystoneClient extends OpenstackClientBase {
 
-	protected KeystoneClient(OpenstackClientPool openstackClientPool,
-			URI urlBase) {
+	protected KeystoneClient(OpenstackClientPool openstackClientPool, URI urlBase) {
 		super(openstackClientPool, urlBase);
 	}
 

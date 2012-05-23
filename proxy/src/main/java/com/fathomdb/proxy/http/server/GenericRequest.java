@@ -7,8 +7,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-import com.fathomdb.proxy.http.logger.RequestLogger;
-
 public interface GenericRequest {
 
 	boolean isKeepAlive();

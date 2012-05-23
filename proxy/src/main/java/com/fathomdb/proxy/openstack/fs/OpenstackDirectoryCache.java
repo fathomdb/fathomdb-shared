@@ -15,8 +15,7 @@ import com.fathomdb.proxy.openstack.OpenstackCredentials;
 import com.fathomdb.proxy.openstack.OpenstackSession;
 
 public class OpenstackDirectoryCache implements HasConfiguration {
-	static final Logger log = LoggerFactory
-			.getLogger(OpenstackDirectoryCache.class);
+	static final Logger log = LoggerFactory.getLogger(OpenstackDirectoryCache.class);
 
 	private final OpenstackClientPool openstackClientPool;
 
@@ -25,8 +24,7 @@ public class OpenstackDirectoryCache implements HasConfiguration {
 	}
 
 	public void initialize() {
-		ThreadPools.SYSTEM_TASK_POOL.scheduleWithFixedDelay(
-				new UpdateChecker(), UpdateChecker.INTERVAL,
+		ThreadPools.SYSTEM_TASK_POOL.scheduleWithFixedDelay(new UpdateChecker(), UpdateChecker.INTERVAL,
 				UpdateChecker.INTERVAL, TimeUnit.SECONDS);
 	}
 
@@ -69,8 +67,7 @@ public class OpenstackDirectoryCache implements HasConfiguration {
 					continue;
 				}
 
-				log.info("Forcing refresh on: " + key.credentials.getUsername()
-						+ "::" + key.containerName);
+				log.info("Forcing refresh on: " + key.credentials.getUsername() + "::" + key.containerName);
 				refresh(key);
 			}
 		}
@@ -87,13 +84,11 @@ public class OpenstackDirectoryCache implements HasConfiguration {
 			@Override
 			protected CacheEntry doAsyncFetch() {
 				if (session == null) {
-					session = new OpenstackSession(openstackClientPool,
-							key.credentials);
+					session = new OpenstackSession(openstackClientPool, key.credentials);
 				}
 
 				if (listContainerObjects == null) {
-					listContainerObjects = new ListContainerObjectsOperation(
-							session, key.containerName);
+					listContainerObjects = new ListContainerObjectsOperation(session, key.containerName);
 				}
 
 				OpenstackItem item = listContainerObjects.get();
@@ -140,12 +135,12 @@ public class OpenstackDirectoryCache implements HasConfiguration {
 		}
 	}
 
-	public OpenstackItem getAsync(OpenstackCredentials credentials,
-			String containerName) {
+	public OpenstackItem getAsync(OpenstackCredentials credentials, String containerName) {
 		CacheKey key = new CacheKey(credentials, containerName);
 		return cache.getAsync(key).root;
 	}
 
+	@Override
 	public void refresh() {
 		cache.refresh();
 	}

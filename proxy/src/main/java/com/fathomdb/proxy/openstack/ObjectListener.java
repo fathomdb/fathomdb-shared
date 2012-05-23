@@ -1,11 +1,11 @@
 package com.fathomdb.proxy.openstack;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
@@ -21,20 +21,17 @@ public class ObjectListener extends OpenstackResponseHandler {
 	}
 
 	@Override
-	public void gotData(HttpResponse response, HttpChunk chunk, boolean isLast)
-			throws Exception {
+	public void gotData(HttpResponse response, HttpChunk chunk, boolean isLast) throws Exception {
 		if (chunk == null) {
 			long contentLength = HttpHeaders.getContentLength(response, -1);
 			if (contentLength >= 0) {
 				log.warn("Setting content length to " + contentLength);
-				sendResponse.setHeader(HttpHeaders.Names.CONTENT_LENGTH,
-						contentLength);
+				sendResponse.setHeader(HttpHeaders.Names.CONTENT_LENGTH, contentLength);
 			} else {
 				log.warn("Not setting content length");
 			}
 
-			boolean headerIsLast = isLast
-					&& (chunk == null || !chunk.getContent().readable());
+			boolean headerIsLast = isLast && (chunk == null || !chunk.getContent().readable());
 
 			if (!headerIsLast) {
 				sendResponse.setChunked(true);

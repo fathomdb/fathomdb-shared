@@ -15,8 +15,7 @@ public class KeystoneAuthenticationOperation {
 	final KeystoneClient client;
 	final OpenstackCredentials credentials;
 
-	public KeystoneAuthenticationOperation(KeystoneClient client,
-			OpenstackCredentials credentials) {
+	public KeystoneAuthenticationOperation(KeystoneClient client, OpenstackCredentials credentials) {
 		this.client = client;
 		this.credentials = credentials;
 	}
@@ -24,21 +23,16 @@ public class KeystoneAuthenticationOperation {
 	KeystoneResponseListener keystoneAuthentication;
 
 	public KeystoneResponseListener authenticate() {
-		if (keystoneAuthentication == null
-				|| !keystoneAuthentication.isAuthenticated()) {
+		if (keystoneAuthentication == null || !keystoneAuthentication.isAuthenticated()) {
 			HttpClientConnection connection = client.getHttpClientConnection();
-			keystoneAuthentication = new KeystoneResponseListener(
-					connection.getChannel());
+			keystoneAuthentication = new KeystoneResponseListener(connection.getChannel());
 
-			HttpRequest authRequest = client.buildRequest(HttpMethod.POST,
-					credentials.getAuthUrl().getPath());
+			HttpRequest authRequest = client.buildRequest(HttpMethod.POST, credentials.getAuthUrl().getPath());
 
 			// TODO: Use keep-alive
-			authRequest.setHeader(HttpHeaders.Names.CONNECTION,
-					HttpHeaders.Values.CLOSE);
+			authRequest.setHeader(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE);
 
-			authRequest.setHeader(HttpHeaders.Names.CONTENT_TYPE,
-					"application/xml");
+			authRequest.setHeader(HttpHeaders.Names.CONTENT_TYPE, "application/xml");
 			authRequest.setHeader(HttpHeaders.Names.ACCEPT, "application/xml");
 
 			// We hard-code this for simplicity
@@ -54,15 +48,12 @@ public class KeystoneAuthenticationOperation {
 				postBody += ">";
 			}
 
-			postBody += "<passwordCredentials username=\"" + username
-					+ "\" password=\"" + password + "\"/></auth>";
+			postBody += "<passwordCredentials username=\"" + username + "\" password=\"" + password + "\"/></auth>";
 
-			ChannelBuffer contentBuffer = ChannelBuffers.copiedBuffer(postBody,
-					CharsetUtil.UTF_8);
+			ChannelBuffer contentBuffer = ChannelBuffers.copiedBuffer(postBody, CharsetUtil.UTF_8);
 			authRequest.setContent(contentBuffer);
 
-			authRequest.setHeader(HttpHeaders.Names.CONTENT_LENGTH,
-					contentBuffer.readableBytes());
+			authRequest.setHeader(HttpHeaders.Names.CONTENT_LENGTH, contentBuffer.readableBytes());
 			connection.doRequest(authRequest, keystoneAuthentication);
 
 			throw new AsyncFutureException(keystoneAuthentication.getFuture(), "Keystone authentication");
@@ -71,7 +62,7 @@ public class KeystoneAuthenticationOperation {
 		return keystoneAuthentication;
 	}
 
-	public URI getSwiftUrl()  {
+	public URI getSwiftUrl() {
 		return authenticate().getSwiftUrl();
 	}
 

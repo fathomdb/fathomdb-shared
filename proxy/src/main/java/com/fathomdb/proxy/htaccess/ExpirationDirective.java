@@ -14,9 +14,8 @@ public class ExpirationDirective extends Directive {
 	};
 
 	enum TimeUnit {
-		Year(365 * 24 * 60 * 60), Month(30 * 24 * 60 * 60), Week(
-				7 * 24 * 60 * 60), Day(24 * 60 * 60), Hour(60 * 60), Minute(60), Second(
-				1);
+		Year(365 * 24 * 60 * 60), Month(30 * 24 * 60 * 60), Week(7 * 24 * 60 * 60), Day(24 * 60 * 60), Hour(60 * 60), Minute(
+				60), Second(1);
 
 		final int seconds;
 
@@ -66,8 +65,7 @@ public class ExpirationDirective extends Directive {
 
 			try {
 				String baseToken = tokens.next();
-				ExpirationBase base = EnumUtils.valueOfCaseInsensitive(
-						ExpirationBase.class, baseToken);
+				ExpirationBase base = EnumUtils.valueOfCaseInsensitive(ExpirationBase.class, baseToken);
 				int addSeconds = 0;
 
 				while (tokens.hasNext()) {
@@ -79,11 +77,9 @@ public class ExpirationDirective extends Directive {
 					int count = Integer.parseInt(token);
 					String timeUnitToken = tokens.next();
 					if (timeUnitToken.endsWith("s")) {
-						timeUnitToken = timeUnitToken.substring(0,
-								timeUnitToken.length() - 1);
+						timeUnitToken = timeUnitToken.substring(0, timeUnitToken.length() - 1);
 					}
-					TimeUnit timeUnit = EnumUtils.valueOfCaseInsensitive(
-							TimeUnit.class, timeUnitToken);
+					TimeUnit timeUnit = EnumUtils.valueOfCaseInsensitive(TimeUnit.class, timeUnitToken);
 
 					addSeconds += timeUnit.getSeconds() * count;
 				}

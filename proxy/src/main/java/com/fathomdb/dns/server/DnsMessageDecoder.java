@@ -9,8 +9,7 @@ import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 public class DnsMessageDecoder extends OneToOneDecoder {
 
 	@Override
-	protected Object decode(ChannelHandlerContext ctx, Channel channel,
-			Object msg) throws Exception {
+	protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
 		if (!(msg instanceof ChannelBuffer)) {
 			return msg;
 		}

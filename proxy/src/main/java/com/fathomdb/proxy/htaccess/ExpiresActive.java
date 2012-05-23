@@ -18,7 +18,5 @@ public class ExpiresActive extends Directive {
 	public String toString() {
 		return "ExpiresActive [active=" + active + super.toStringHelper() + "]";
 	}
-	
-	
 
 }

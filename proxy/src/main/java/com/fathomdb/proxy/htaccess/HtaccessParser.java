@@ -41,8 +41,9 @@ public class HtaccessParser implements Closeable {
 		while (true) {
 			String line = reader.readLine();
 			if (line == null) {
-				if (sb != null)
+				if (sb != null) {
 					return sb.toString();
+				}
 				return null;
 			}
 			if (line.endsWith("\\")) {
@@ -66,8 +67,9 @@ public class HtaccessParser implements Closeable {
 	public void parse() throws IOException {
 		while (true) {
 			String line = readConfigLine();
-			if (line == null)
+			if (line == null) {
 				break;
+			}
 			line = line.trim();
 			if (line.isEmpty()) {
 				// Ignore blank lines
@@ -81,8 +83,9 @@ public class HtaccessParser implements Closeable {
 			}
 
 			String commandName = parseCommandName(line);
-			if (commandName.isEmpty())
+			if (commandName.isEmpty()) {
 				continue;
+			}
 
 			char commandFirstChar = commandName.charAt(0);
 			if (commandFirstChar == '<') {
@@ -100,8 +103,7 @@ public class HtaccessParser implements Closeable {
 
 					ParseScopeNode node = nodeStack.peek();
 					if (!Objects.equal(node.key, key)) {
-						throw new IllegalArgumentException("Expected </"
-								+ node.key + ">, found </" + key + ">");
+						throw new IllegalArgumentException("Expected </" + node.key + ">, found </" + key + ">");
 					}
 					nodeStack.pop();
 
@@ -116,8 +118,7 @@ public class HtaccessParser implements Closeable {
 					arguments = arguments.trim();
 
 					if (arguments.endsWith(">")) {
-						arguments = arguments.substring(0,
-								arguments.length() - 1);
+						arguments = arguments.substring(0, arguments.length() - 1);
 					}
 
 					arguments = removeQuotes(arguments);
@@ -135,8 +136,7 @@ public class HtaccessParser implements Closeable {
 
 				arguments = removeQuotes(arguments);
 
-				ParseDirectiveNode node = new ParseDirectiveNode(commandName,
-						arguments);
+				ParseDirectiveNode node = new ParseDirectiveNode(commandName, arguments);
 				ParseScopeNode parent = nodeStack.peek();
 				parent.add(node);
 			}
@@ -144,12 +144,14 @@ public class HtaccessParser implements Closeable {
 	}
 
 	private static String removeQuotes(String s) {
-		if (s == null)
+		if (s == null) {
 			return null;
+		}
 
 		int len = s.length();
-		if (len < 2)
+		if (len < 2) {
 			return s;
+		}
 
 		char firstChar = s.charAt(0);
 		char lastChar = s.charAt(len - 1);
@@ -161,8 +163,9 @@ public class HtaccessParser implements Closeable {
 	}
 
 	private String parseCommandName(String line) {
-		if (line.length() == 0)
+		if (line.length() == 0) {
 			return "";
+		}
 
 		char firstChar = line.charAt(0);
 
@@ -179,8 +182,9 @@ public class HtaccessParser implements Closeable {
 				}
 			}
 
-			if (end == -1)
+			if (end == -1) {
 				throw new IllegalArgumentException("Unclosed quotes in line");
+			}
 		} else {
 			start = 0;
 			end = line.length();

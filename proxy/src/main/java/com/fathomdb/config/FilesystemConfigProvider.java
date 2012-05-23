@@ -10,14 +10,12 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fathomdb.config.HasConfiguration;
 import com.fathomdb.proxy.http.client.ThreadPools;
 import com.google.common.base.Objects;
 
-public abstract class FilesystemConfigProvider<T extends ConfigObject> extends
-		ConfigProvider<T> implements HasConfiguration {
-	static final Logger log = LoggerFactory
-			.getLogger(FilesystemConfigProvider.class);
+public abstract class FilesystemConfigProvider<T extends ConfigObject> extends ConfigProvider<T> implements
+		HasConfiguration {
+	static final Logger log = LoggerFactory.getLogger(FilesystemConfigProvider.class);
 
 	private final File baseDir;
 
@@ -27,8 +25,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends
 
 	@Override
 	public void initialize() {
-		ThreadPools.SYSTEM_TASK_POOL.scheduleWithFixedDelay(
-				new UpdateChecker(), UpdateChecker.INTERVAL,
+		ThreadPools.SYSTEM_TASK_POOL.scheduleWithFixedDelay(new UpdateChecker(), UpdateChecker.INTERVAL,
 				UpdateChecker.INTERVAL, TimeUnit.SECONDS);
 	}
 
@@ -57,8 +54,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends
 			String version = toVersion(file);
 			return loadConfig(key, version, fis);
 		} catch (IOException e) {
-			throw new IllegalStateException("Error loading host configuration",
-					e);
+			throw new IllegalStateException("Error loading host configuration", e);
 		} finally {
 			if (fis != null) {
 				try {
@@ -72,8 +68,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends
 
 	protected abstract T buildNullResult(String key);
 
-	protected abstract T loadConfig(String key, String version, InputStream is)
-			throws IOException;
+	protected abstract T loadConfig(String key, String version, InputStream is) throws IOException;
 
 	public String toVersion(File file) {
 		long lastModified = file.lastModified();
@@ -83,12 +78,15 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends
 	private static void safetyCheckHost(String host) {
 		for (int i = 0; i < host.length(); i++) {
 			char c = host.charAt(i);
-			if (c >= 'a' && c <= 'z')
+			if (c >= 'a' && c <= 'z') {
 				continue;
-			if (c >= 'A' && c <= 'Z')
+			}
+			if (c >= 'A' && c <= 'Z') {
 				continue;
-			if (c >= '0' && c <= '9')
+			}
+			if (c >= '0' && c <= '9') {
 				continue;
+			}
 			switch (c) {
 			case '.':
 			case '-':

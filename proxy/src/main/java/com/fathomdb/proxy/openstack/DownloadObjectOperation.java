@@ -2,24 +2,20 @@ package com.fathomdb.proxy.openstack;
 
 import java.net.URI;
 
-import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 
-import com.fathomdb.proxy.http.client.HttpClientConnection;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
-public class DownloadObjectOperation  {
+public class DownloadObjectOperation {
 	final OpenstackSession session;
 	final String path;
 	final ObjectDataSink sink;
 	final HttpResponse sendResponse;
 
-	public DownloadObjectOperation(OpenstackSession session,
-			String path, HttpResponse sendResponse, ObjectDataSink sink) {
+	public DownloadObjectOperation(OpenstackSession session, String path, HttpResponse sendResponse, ObjectDataSink sink) {
 		this.session = session;
 		this.path = path;
 		this.sendResponse = sendResponse;
@@ -45,9 +41,9 @@ public class DownloadObjectOperation  {
 			// HttpHeaders.Values.KEEP_ALIVE);
 
 			httpListener = swift.doRequest(request, new ObjectListener(sendResponse, sink));
-		
+
 			throw new AsyncFutureException(httpListener.getFuture(), "Swift get object request");
 		}
-		
+
 	}
 }

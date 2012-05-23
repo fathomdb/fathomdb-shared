@@ -26,14 +26,16 @@ public class ObjectDataSinkSplitter implements ObjectDataSink {
 
 	@Override
 	public void endData() {
-		for (ObjectDataSink child : children)
+		for (ObjectDataSink child : children) {
 			child.endData();
+		}
 	}
 
 	@Override
 	public void beginResponse(HttpResponse response) {
-		for (ObjectDataSink child : children)
+		for (ObjectDataSink child : children) {
 			child.beginResponse(response);
+		}
 	}
 
 }

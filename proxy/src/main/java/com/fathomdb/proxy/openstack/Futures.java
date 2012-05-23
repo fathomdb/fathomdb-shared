@@ -25,8 +25,7 @@ public class Futures {
 		class Listener implements ChannelFutureListener {
 
 			@Override
-			public void operationComplete(ChannelFuture future)
-					throws Exception {
+			public void operationComplete(ChannelFuture future) throws Exception {
 				if (future.isSuccess()) {
 					poll();
 				} else {

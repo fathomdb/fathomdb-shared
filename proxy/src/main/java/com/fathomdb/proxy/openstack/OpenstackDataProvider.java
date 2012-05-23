@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.jboss.netty.handler.codec.http.CookieDecoder;
@@ -19,12 +17,14 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.proxy.cache.CacheFile;
+import com.fathomdb.proxy.cache.CacheFile.CacheLock;
 import com.fathomdb.proxy.cache.CachingObjectDataSink;
 import com.fathomdb.proxy.cache.HashKey;
 import com.fathomdb.proxy.cache.ObjectDataSinkSplitter;
-import com.fathomdb.proxy.cache.CacheFile.CacheLock;
 import com.fathomdb.proxy.http.Dates;
 import com.fathomdb.proxy.http.handlers.ContentType;
 import com.fathomdb.proxy.http.server.GenericRequest;
@@ -35,8 +35,7 @@ import com.fathomdb.proxy.openstack.fs.OpenstackItem;
 import com.google.common.base.Splitter;
 
 public class OpenstackDataProvider extends ObjectDataProvider {
-	static final Logger log = LoggerFactory
-			.getLogger(OpenstackDataProvider.class);
+	static final Logger log = LoggerFactory.getLogger(OpenstackDataProvider.class);
 
 	final OpenstackDirectoryCache openstackDirectoryCache;
 
@@ -48,10 +47,8 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 	final String containerName;
 
-	public OpenstackDataProvider(
-			OpenstackDirectoryCache openstackDirectoryCache, CacheFile cache,
-			OpenstackCredentials openstackCredentials,
-			OpenstackClientPool openstackClientPool, String containerName) {
+	public OpenstackDataProvider(OpenstackDirectoryCache openstackDirectoryCache, CacheFile cache,
+			OpenstackCredentials openstackCredentials, OpenstackClientPool openstackClientPool, String containerName) {
 		this.openstackDirectoryCache = openstackDirectoryCache;
 		this.cache = cache;
 		this.openstackCredentials = openstackCredentials;
@@ -74,8 +71,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 		OpenstackSession getOpenstackSession() {
 			if (openstackSession == null) {
-				openstackSession = openstackClientPool
-						.getClient(openstackCredentials);
+				openstackSession = openstackClientPool.getClient(openstackCredentials);
 			}
 			return openstackSession;
 		}
@@ -85,8 +81,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			OpenstackItem pathItem;
 			HttpResponse response;
 
-			public Resolved(String path, OpenstackItem pathItem,
-					HttpResponse response) {
+			public Resolved(String path, OpenstackItem pathItem, HttpResponse response) {
 				this.path = path;
 				this.pathItem = pathItem;
 				this.response = response;
@@ -112,8 +107,9 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 			String path = request.getUri();
 
-			if (path.startsWith("/"))
+			if (path.startsWith("/")) {
 				path = path.substring(1);
+			}
 
 			String query;
 
@@ -143,8 +139,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 						String redirectRelative = "/" + path + "/";
 						// String redirectAbsolute =
 						// request.toAbsolute(redirectRelative);
-						response.setHeader(HttpHeaders.Names.LOCATION,
-								redirectRelative);
+						response.setHeader(HttpHeaders.Names.LOCATION, redirectRelative);
 					} else {
 						boolean found = false;
 
@@ -152,11 +147,9 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 							serverRuleResolver = new ServerRuleResolver(root);
 						}
 
-						ServerRuleChain rules = serverRuleResolver
-								.resolveServerRules(path);
+						ServerRuleChain rules = serverRuleResolver.resolveServerRules(path);
 						for (String documentIndex : rules.getDocumentIndexes()) {
-							OpenstackItem child = pathItem
-									.getChild(documentIndex);
+							OpenstackItem child = pathItem.getChild(documentIndex);
 							if (child != null) {
 								// Note that the rule chain is the same, because
 								// it lives in the same directory!
@@ -195,8 +188,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 					serverRuleResolver = new ServerRuleResolver(root);
 				}
 
-				ServerRuleChain rules = serverRuleResolver
-						.resolveServerRules(resolved.path);
+				ServerRuleChain rules = serverRuleResolver.resolveServerRules(resolved.path);
 				ruleChain = rules;
 			}
 			return ruleChain;
@@ -208,12 +200,9 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			// response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, 0);
 
 			String responseBody = "Error " + status;
-			response.setContent(ChannelBuffers.copiedBuffer(responseBody,
-					CharsetUtil.UTF_8));
-			response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
-					"text/plain; charset=UTF-8");
-			response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, response
-					.getContent().readableBytes());
+			response.setContent(ChannelBuffers.copiedBuffer(responseBody, CharsetUtil.UTF_8));
+			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
+			response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, response.getContent().readableBytes());
 
 			return response;
 		}
@@ -226,8 +215,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			// We omit empty strings so we're not tricked by / or directory/
 			// Also, we want directory and directory/ to be the same in terms of
 			// resolution
-			for (String pathToken : Splitter.on('/').omitEmptyStrings()
-					.split(path)) {
+			for (String pathToken : Splitter.on('/').omitEmptyStrings().split(path)) {
 				current = current.getChild(pathToken);
 				if (current == null) {
 					return null;
@@ -237,8 +225,9 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		}
 
 		HashKey getCacheKey(Resolved resolved) {
-			if (resolved.pathItem == null)
+			if (resolved.pathItem == null) {
 				return null;
+			}
 			return resolved.pathItem.getContentHash();
 		}
 
@@ -258,23 +247,20 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 		private OpenstackItem getDirectoryRoot() {
 			if (directoryRoot == null) {
-				directoryRoot = openstackDirectoryCache.getAsync(
-						openstackCredentials, getContainerName());
+				directoryRoot = openstackDirectoryCache.getAsync(openstackCredentials, getContainerName());
 			}
 
 			return directoryRoot;
 		}
 
-		private void sendCachedResponse(ObjectDataSink sink, Resolved resolved,
-				CacheLock found) {
+		private void sendCachedResponse(ObjectDataSink sink, Resolved resolved, CacheLock found) {
 			ByteBuffer buffer = found.getBuffer();
 
 			HttpResponse response = buildResponse(HttpResponseStatus.OK);
 
 			long contentLength = buffer.remaining();
 			if (contentLength > 0) {
-				response.setHeader(HttpHeaders.Names.CONTENT_LENGTH,
-						contentLength);
+				response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, contentLength);
 			}
 
 			ContentType contentType = resolved.pathItem.getContentType();
@@ -284,8 +270,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 			Date lastModified = resolved.pathItem.getLastModified();
 			if (lastModified != null) {
-				response.setHeader(HttpHeaders.Names.LAST_MODIFIED,
-						Dates.format(lastModified));
+				response.setHeader(HttpHeaders.Names.LAST_MODIFIED, Dates.format(lastModified));
 			}
 
 			getRules().addCacheHeaders(response);
@@ -335,14 +320,12 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			if (found != null) {
 				try {
 					if (isStillValid(resolved, found)) {
-						log.info("Cache HIT on " + resolved.path + " "
-								+ cacheKey);
+						log.info("Cache HIT on " + resolved.path + " " + cacheKey);
 
 						sendCachedResponse(sink, resolved, found);
 						return;
 					} else {
-						log.info("Cache OUTOFDATE on " + resolved.path + " "
-								+ cacheKey + " (hit but no longer valid)");
+						log.info("Cache OUTOFDATE on " + resolved.path + " " + cacheKey + " (hit but no longer valid)");
 					}
 				} finally {
 					found.close();
@@ -352,34 +335,30 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			if (downloadOperation == null) {
 				ObjectDataSink downloadTo = sink;
 				if (cacheKey != null) {
-					downloadTo = new ObjectDataSinkSplitter(
-							new CachingObjectDataSink(cache, cacheKey),
-							downloadTo);
+					downloadTo = new ObjectDataSinkSplitter(new CachingObjectDataSink(cache, cacheKey), downloadTo);
 				}
 
 				HttpResponse response = buildResponse(HttpResponseStatus.OK);
 
 				ContentType contentType = resolved.pathItem.getContentType();
 				if (contentType != null) {
-					response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
-							contentType.getContentType());
+					response.setHeader(HttpHeaders.Names.CONTENT_TYPE, contentType.getContentType());
 				}
 
 				Date lastModified = resolved.pathItem.getLastModified();
 				if (lastModified != null) {
-					response.setHeader(HttpHeaders.Names.LAST_MODIFIED,
-							Dates.format(lastModified));
+					response.setHeader(HttpHeaders.Names.LAST_MODIFIED, Dates.format(lastModified));
 				}
 
 				getRules().addCacheHeaders(response);
 
-				downloadOperation = new DownloadObjectOperation(
-						getOpenstackSession(), getContainerName() + "/"
-								+ resolved.path, response, downloadTo);
+				downloadOperation = new DownloadObjectOperation(getOpenstackSession(), getContainerName() + "/"
+						+ resolved.path, response, downloadTo);
 			}
 			downloadOperation.doDownload();
 		}
 
+		@Override
 		public void close() {
 			if (openstackSession != null) {
 				openstackSession.close();
@@ -393,8 +372,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		static final int SECONDS_IN_DECADE = 10 * SECONDS_IN_YEAR;
 
 		private HttpResponse buildResponse(HttpResponseStatus status) {
-			HttpResponse response = new DefaultHttpResponse(
-					HttpVersion.HTTP_1_1, status);
+			HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
 
 			// Use cookies to allow tracking sessions in the debug log
 			String cookieName = "uuid";
@@ -414,13 +392,11 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 			if (!found) {
 				CookieEncoder cookieEncoder = new CookieEncoder(true);
-				Cookie cookie = new DefaultCookie(cookieName, UUID.randomUUID()
-						.toString());
+				Cookie cookie = new DefaultCookie(cookieName, UUID.randomUUID().toString());
 				cookie.setMaxAge(SECONDS_IN_DECADE);
 
 				cookieEncoder.addCookie(cookie);
-				response.addHeader(HttpHeaders.Names.SET_COOKIE,
-						cookieEncoder.encode());
+				response.addHeader(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
 			}
 
 			return response;

@@ -13,8 +13,9 @@ public class HtaccessTokenizer {
 
 	public String pop() {
 		String token = poll();
-		if (token == null)
+		if (token == null) {
 			throw new IllegalArgumentException("Unexpected end of tokens");
+		}
 
 		return token;
 	}
@@ -23,13 +24,15 @@ public class HtaccessTokenizer {
 		char firstChar = 0;
 		while (pos < length) {
 			firstChar = s.charAt(pos);
-			if (firstChar != ' ')
+			if (firstChar != ' ') {
 				break;
+			}
 			pos++;
 		}
 
-		if (pos >= length)
+		if (pos >= length) {
 			return null;
+		}
 
 		int start;
 		int end;
@@ -44,8 +47,9 @@ public class HtaccessTokenizer {
 				}
 			}
 
-			if (end == -1)
+			if (end == -1) {
 				throw new IllegalArgumentException("Unclosed quotes in line");
+			}
 		} else {
 			start = pos;
 			end = length;

@@ -20,21 +20,24 @@ public class MetaField<T> {
 
 	public int hashCode(T o) {
 		Object fieldValue = getValue(o);
-		if (fieldValue == null)
+		if (fieldValue == null) {
 			return 0;
-		else
+		} else {
 			return fieldValue.hashCode();
+		}
 	}
 
 	public boolean equals(T a, T b) {
 		Object aValue = getValue(a);
 		Object bValue = getValue(b);
 
-		if (aValue == bValue)
+		if (aValue == bValue) {
 			return true;
+		}
 
-		if (aValue == null || bValue == null)
+		if (aValue == null || bValue == null) {
 			return false;
+		}
 
 		return aValue.equals(bValue);
 	}

@@ -50,27 +50,18 @@ public class StreamingJsonTokenizer {
 
 	}
 
-	public static final Token TOKEN_LITERAL_COMMA = new Token(TokenType.COMMA,
-			",");
+	public static final Token TOKEN_LITERAL_COMMA = new Token(TokenType.COMMA, ",");
 
-	public static final Token TOKEN_LITERAL_COLON = new Token(TokenType.COLON,
-			":");
+	public static final Token TOKEN_LITERAL_COLON = new Token(TokenType.COLON, ":");
 
-	public static final Token TOKEN_LITERAL_TRUE = new Token(TokenType.TRUE,
-			"true");
-	public static final Token TOKEN_LITERAL_FALSE = new Token(TokenType.FALSE,
-			"false");
-	public static final Token TOKEN_LITERAL_NULL = new Token(
-			TokenType.JSON_NULL, "null");
+	public static final Token TOKEN_LITERAL_TRUE = new Token(TokenType.TRUE, "true");
+	public static final Token TOKEN_LITERAL_FALSE = new Token(TokenType.FALSE, "false");
+	public static final Token TOKEN_LITERAL_NULL = new Token(TokenType.JSON_NULL, "null");
 
-	public static final Token TOKEN_LITERAL_OPEN_SQUARE = new Token(
-			TokenType.OPEN_SQUARE, "[");
-	public static final Token TOKEN_LITERAL_CLOSE_SQUARE = new Token(
-			TokenType.CLOSE_SQUARE, "]");
-	public static final Token TOKEN_LITERAL_OPEN_CURLY = new Token(
-			TokenType.OPEN_CURLY, "{");
-	public static final Token TOKEN_LITERAL_CLOSE_CURLY = new Token(
-			TokenType.CLOSE_CURLY, "}");
+	public static final Token TOKEN_LITERAL_OPEN_SQUARE = new Token(TokenType.OPEN_SQUARE, "[");
+	public static final Token TOKEN_LITERAL_CLOSE_SQUARE = new Token(TokenType.CLOSE_SQUARE, "]");
+	public static final Token TOKEN_LITERAL_OPEN_CURLY = new Token(TokenType.OPEN_CURLY, "{");
+	public static final Token TOKEN_LITERAL_CLOSE_CURLY = new Token(TokenType.CLOSE_CURLY, "}");
 
 	Token nextToken() {
 		int pos = readPos;
@@ -131,8 +122,7 @@ public class StreamingJsonTokenizer {
 		case 't': {
 			// Must be Literal true
 			if ((limit - pos) >= 4) {
-				if ((charBuffer.get(pos + 1) == 'r')
-						&& (charBuffer.get(pos + 2) == 'u')
+				if ((charBuffer.get(pos + 1) == 'r') && (charBuffer.get(pos + 2) == 'u')
 						&& (charBuffer.get(pos + 3) == 'e')) {
 					token = TOKEN_LITERAL_TRUE;
 					pos += 4;
@@ -147,8 +137,7 @@ public class StreamingJsonTokenizer {
 		case 'n': {
 			// Must be Literal null
 			if ((limit - pos) >= 4) {
-				if ((charBuffer.get(pos + 1) == 'u')
-						&& (charBuffer.get(pos + 2) == 'l')
+				if ((charBuffer.get(pos + 1) == 'u') && (charBuffer.get(pos + 2) == 'l')
 						&& (charBuffer.get(pos + 3) == 'l')) {
 					token = TOKEN_LITERAL_NULL;
 					pos += 4;
@@ -163,10 +152,8 @@ public class StreamingJsonTokenizer {
 		case 'f': {
 			// Must be Literal false
 			if ((limit - pos) >= 5) {
-				if ((charBuffer.get(pos + 1) == 'a')
-						&& (charBuffer.get(pos + 2) == 'l')
-						&& (charBuffer.get(pos + 3) == 's')
-						&& (charBuffer.get(pos + 4) == 'e')) {
+				if ((charBuffer.get(pos + 1) == 'a') && (charBuffer.get(pos + 2) == 'l')
+						&& (charBuffer.get(pos + 3) == 's') && (charBuffer.get(pos + 4) == 'e')) {
 					token = TOKEN_LITERAL_FALSE;
 					pos += 4;
 					break;
@@ -246,8 +233,7 @@ public class StreamingJsonTokenizer {
 		}
 
 		default:
-			throw new IllegalStateException("Unexpected character: "
-					+ ((int) nextChar));
+			throw new IllegalStateException("Unexpected character: " + ((int) nextChar));
 		}
 
 		readPos = pos;

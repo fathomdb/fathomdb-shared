@@ -15,12 +15,10 @@
  */
 package com.fathomdb.proxy.http.server;
 
-import static org.jboss.netty.handler.codec.http.HttpHeaders.*;
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
-import static org.jboss.netty.handler.codec.http.HttpVersion.*;
+import static org.jboss.netty.handler.codec.http.HttpHeaders.is100ContinueExpected;
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
+import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -30,11 +28,14 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fathomdb.proxy.http.handlers.RequestHandler;
 
 public class HttpProxyServerHandler extends SimpleChannelUpstreamHandler {
 	static final Logger log = LoggerFactory.getLogger(HttpProxyServerHandler.class);
-	
+
 	private HttpRequest request;
 	private boolean readingChunks;
 	/** Buffer that stores the response content */
@@ -50,8 +51,7 @@ public class HttpProxyServerHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-			throws Exception {
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
 		if (!readingChunks) {
 			HttpRequest request = this.request = (HttpRequest) e.getMessage();
 
@@ -98,8 +98,7 @@ public class HttpProxyServerHandler extends SimpleChannelUpstreamHandler {
 				// }
 				// writeResponse(e);
 
-				GenericRequest singleChunkRequest = new SingleChunkHttpRequest(
-						e.getChannel(), endpoint, request);
+				GenericRequest singleChunkRequest = new SingleChunkHttpRequest(e.getChannel(), endpoint, request);
 				handleRequest(singleChunkRequest);
 			}
 		} else {
@@ -130,8 +129,7 @@ public class HttpProxyServerHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	private void handleRequest(GenericRequest request) {
-		RequestHandler requestHandler = requestHandlerProvider
-				.getRequestHandler(request);
+		RequestHandler requestHandler = requestHandlerProvider.getRequestHandler(request);
 
 		ChannelFuture future = requestHandler.handleRequest(request);
 
@@ -149,8 +147,7 @@ public class HttpProxyServerHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-			throws Exception {
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
 		e.getCause().printStackTrace();
 		e.getChannel().close();
 	}

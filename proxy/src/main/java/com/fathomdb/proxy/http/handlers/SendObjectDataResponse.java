@@ -8,20 +8,19 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+
 import com.fathomdb.proxy.http.client.TaskWithFuture;
 import com.fathomdb.proxy.http.logger.RequestLogger;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
-public class SendObjectDataResponse extends TaskWithFuture implements
-		ObjectDataSink {
+public class SendObjectDataResponse extends TaskWithFuture implements ObjectDataSink {
 
 	private final RequestLogger logger;
 	private final GenericRequest request;
 	private final SocketAddress remoteAddress;
 
-	public SendObjectDataResponse(GenericRequest request, RequestLogger logger,
-			Channel channel) {
+	public SendObjectDataResponse(GenericRequest request, RequestLogger logger, Channel channel) {
 		super(channel);
 		this.request = request;
 		this.logger = logger;
@@ -75,9 +74,9 @@ public class SendObjectDataResponse extends TaskWithFuture implements
 	public void sendResponse(HttpResponse response, ChannelBuffer content) {
 		if (!response.isChunked()) {
 			if (content != null) {
-				if (response.getContent() != null
-						&& response.getContent().readable())
+				if (response.getContent() != null && response.getContent().readable()) {
 					throw new IllegalStateException();
+				}
 				response.setContent(content);
 
 				responseLength += content.readableBytes();

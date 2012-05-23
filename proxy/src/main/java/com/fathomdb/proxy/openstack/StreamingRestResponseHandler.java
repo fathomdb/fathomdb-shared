@@ -2,20 +2,18 @@ package com.fathomdb.proxy.openstack;
 
 import java.nio.ByteBuffer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
 
-public abstract class StreamingRestResponseHandler extends
-		OpenstackResponseHandler {
+public abstract class StreamingRestResponseHandler extends OpenstackResponseHandler {
 
-	static final Logger log = LoggerFactory
-			.getLogger(StreamingRestResponseHandler.class);
+	static final Logger log = LoggerFactory.getLogger(StreamingRestResponseHandler.class);
 
 	@Override
 	public void gotData(HttpResponse response, HttpChunk chunk, boolean isLast) {
@@ -34,10 +32,8 @@ public abstract class StreamingRestResponseHandler extends
 				if (content.readable()) {
 					s = content.toString(Charsets.UTF_8);
 				}
-				log.info("Unexpected response code: " + httpStatusCode
-						+ ". Message=" + s);
-				throw new IllegalStateException(
-						"Error authenticating.  Message=" + s);
+				log.info("Unexpected response code: " + httpStatusCode + ". Message=" + s);
+				throw new IllegalStateException("Error authenticating.  Message=" + s);
 			}
 			}
 

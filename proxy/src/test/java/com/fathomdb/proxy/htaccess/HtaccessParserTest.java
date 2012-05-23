@@ -12,6 +12,7 @@ public class HtaccessParserTest {
 		ParseScopeNode root = parse("htaccess1");
 		dump(root);
 	}
+
 	@Test
 	public void test2() throws IOException {
 		ParseScopeNode root = parse("htaccess2");
@@ -21,7 +22,7 @@ public class HtaccessParserTest {
 	private void dump(ParseScopeNode root) {
 		Directive directive = root.compile();
 		System.out.println(directive);
-		
+
 		// for (ParseNode child : root.getChildren()) {
 		// Directive directive = child.compile();
 		// System.out.println(directive);

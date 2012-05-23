@@ -6,7 +6,7 @@ public abstract class ConfigObject {
 	protected ConfigObject(String versionKey) {
 		this.version = versionKey;
 	}
-	
+
 	public abstract boolean isPresent();
 
 	public String getVersion() {

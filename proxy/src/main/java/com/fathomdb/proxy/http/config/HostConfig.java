@@ -1,15 +1,14 @@
 package com.fathomdb.proxy.http.config;
 
-import com.fathomdb.config.ConfigObject;
-import com.fathomdb.proxy.openstack.OpenstackCredentials;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
+import com.fathomdb.config.ConfigObject;
+import com.fathomdb.proxy.openstack.OpenstackCredentials;
+
 public class HostConfig extends ConfigObject {
-	public static final HostConfig NOT_PRESENT = new HostConfig(null, null,
-			null);
+	public static final HostConfig NOT_PRESENT = new HostConfig(null, null, null);
 	final String host;
 	final Properties properties;
 
@@ -37,15 +36,12 @@ public class HostConfig extends ConfigObject {
 			// } else {
 			URI authUrl;
 			try {
-				authUrl = new URI(
-						"https://identity.api.rackspacecloud.com/v2.0/tokens");
+				authUrl = new URI("https://identity.api.rackspacecloud.com/v2.0/tokens");
 			} catch (URISyntaxException e) {
 				throw new IllegalArgumentException("Error parsing uri", e);
 			}
-			openstackCredentials = new OpenstackCredentials(
-					properties.getProperty("openstack.user"),
-					properties.getProperty("openstack.key"),
-					properties.getProperty("openstack.tenant"), authUrl);
+			openstackCredentials = new OpenstackCredentials(properties.getProperty("openstack.user"),
+					properties.getProperty("openstack.key"), properties.getProperty("openstack.tenant"), authUrl);
 		}
 		return openstackCredentials;
 	}

@@ -16,8 +16,9 @@ public class TaskWithFuture {
 	}
 
 	public void setChannel(Channel channel) {
-		if (this.channel != null)
+		if (this.channel != null) {
 			throw new IllegalStateException("Channel already set");
+		}
 
 		this.channel = channel;
 		boolean cancellable = false;
@@ -25,8 +26,9 @@ public class TaskWithFuture {
 	}
 
 	public ChannelFuture getFuture() {
-		if (future == null)
+		if (future == null) {
 			throw new IllegalStateException("Channel not yet set");
+		}
 		return future;
 	}
 
@@ -39,8 +41,9 @@ public class TaskWithFuture {
 	}
 
 	public Channel getChannel() {
-		if (channel == null)
+		if (channel == null) {
 			throw new IllegalStateException("Cannot not yet set");
+		}
 		return channel;
 	}
 }

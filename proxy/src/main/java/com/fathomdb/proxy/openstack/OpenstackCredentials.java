@@ -5,16 +5,14 @@ import java.net.URI;
 import com.fathomdb.meta.Meta;
 
 public class OpenstackCredentials {
-	static final Meta<OpenstackCredentials> META = Meta
-			.get(OpenstackCredentials.class);
+	static final Meta<OpenstackCredentials> META = Meta.get(OpenstackCredentials.class);
 
 	final String username;
 	final String password;
 	final String tenant;
 	final URI authUrl;
 
-	public OpenstackCredentials(String username, String password,
-			String tenant, URI authUrl) {
+	public OpenstackCredentials(String username, String password, String tenant, URI authUrl) {
 		super();
 		this.username = username;
 		this.password = password;

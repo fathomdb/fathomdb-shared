@@ -2,6 +2,7 @@ package com.fathomdb.proxy.openstack.fs;
 
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
+
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -18,8 +19,8 @@ import com.google.common.collect.Lists;
 public abstract class AsyncCache<K, V> {
 	static final Logger log = LoggerFactory.getLogger(AsyncCache.class);
 
-	protected final LoadingCache<K, FetchOperation> cache = CacheBuilder
-			.newBuilder().build(new CacheLoader<K, FetchOperation>() {
+	protected final LoadingCache<K, FetchOperation> cache = CacheBuilder.newBuilder().build(
+			new CacheLoader<K, FetchOperation>() {
 
 				@Override
 				public FetchOperation load(K key) throws Exception {
@@ -45,8 +46,7 @@ public abstract class AsyncCache<K, V> {
 
 		class Listener implements ChannelFutureListener {
 			@Override
-			public void operationComplete(ChannelFuture future)
-					throws Exception {
+			public void operationComplete(ChannelFuture future) throws Exception {
 				if (future.isSuccess()) {
 					try {
 						poll();
@@ -79,8 +79,7 @@ public abstract class AsyncCache<K, V> {
 
 			Channel channel = null;
 			boolean cancellable = false;
-			fetchOperationFuture = new DefaultChannelFuture(channel,
-					cancellable);
+			fetchOperationFuture = new DefaultChannelFuture(channel, cancellable);
 
 			try {
 				poll();
@@ -101,8 +100,7 @@ public abstract class AsyncCache<K, V> {
 				}
 
 				if (fetchOperationFuture != null) {
-					throw new AsyncFutureException(fetchOperationFuture,
-							"Async cache fetch");
+					throw new AsyncFutureException(fetchOperationFuture, "Async cache fetch");
 				}
 
 				throw new IllegalStateException();
@@ -157,16 +155,14 @@ public abstract class AsyncCache<K, V> {
 
 		operation.addListener(new ChannelFutureListener() {
 			@Override
-			public void operationComplete(ChannelFuture future)
-					throws Exception {
+			public void operationComplete(ChannelFuture future) throws Exception {
 				if (future.isSuccess()) {
 					cache.put(key, operation);
 					log.info("Inserting updated version into cache: " + key);
 				} else {
 					Throwable t = future.getCause();
 
-					log.warn("Error while background-refreshing cache: " + key,
-							t);
+					log.warn("Error while background-refreshing cache: " + key, t);
 				}
 			}
 		});

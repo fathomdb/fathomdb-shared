@@ -39,8 +39,7 @@ public class DnsServer {
 	public void initialize() {
 		ConfigurationManager configuration = ConfigurationManager.INSTANCE;
 
-		DnsZoneConfigProvider configProvider = new DnsZoneConfigProvider(
-				new File("zones"));
+		DnsZoneConfigProvider configProvider = new DnsZoneConfigProvider(new File("zones"));
 		configProvider.initialize();
 
 		configuration.register(configProvider);
@@ -48,11 +47,9 @@ public class DnsServer {
 		// LOG.debug(Markers.LIFECYCLE, "initialize server");
 		RecordProvider recordProvider = new ConfigRecordProvider(configProvider);
 
-		ChannelPipelineFactory pipelineFactory = new DnsServerPipelineFactory(
-				recordProvider);
+		ChannelPipelineFactory pipelineFactory = new DnsServerPipelineFactory(recordProvider);
 
-		ExecutorService executor = Executors.newFixedThreadPool(this.config
-				.getThreadPoolSize());
+		ExecutorService executor = Executors.newFixedThreadPool(this.config.getThreadPoolSize());
 		// TODO TCP ??
 		this.serverChannelFactory = new NioDatagramChannelFactory(executor);
 

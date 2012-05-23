@@ -14,7 +14,7 @@ public class HttpClientPool {
 
 	public HttpClientConnection getClient(HttpScheme scheme, String hostAndPort) {
 		// TODO: Implement pooling!!
-		
+
 		String host = hostAndPort;
 		int port;
 		int colonIndex = host.indexOf(':');
@@ -26,8 +26,7 @@ public class HttpClientPool {
 
 			port = Integer.parseInt(portString);
 		}
-		HttpClientConnection connection = new HttpClientConnection(client,
-				scheme, host, port);
+		HttpClientConnection connection = new HttpClientConnection(client, scheme, host, port);
 		return connection;
 	}
 
