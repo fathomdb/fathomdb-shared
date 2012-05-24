@@ -17,6 +17,11 @@
 
 	<dependencies>
 		<dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-commons</artifactId>
+        </dependency>
+        
+        <dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>

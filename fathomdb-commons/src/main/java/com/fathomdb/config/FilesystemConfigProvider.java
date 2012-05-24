@@ -5,12 +5,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fathomdb.proxy.http.client.ThreadPools;
 import com.google.common.base.Objects;
 
 public abstract class FilesystemConfigProvider<T extends ConfigObject> extends ConfigProvider<T> implements
@@ -19,14 +19,17 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 
 	private final File baseDir;
 
-	public FilesystemConfigProvider(File baseDir) {
+	private final ScheduledExecutorService threadPool;
+
+	public FilesystemConfigProvider(ScheduledExecutorService threadPool, File baseDir) {
+		this.threadPool = threadPool;
 		this.baseDir = baseDir;
 	}
 
 	@Override
 	public void initialize() {
-		ThreadPools.SYSTEM_TASK_POOL.scheduleWithFixedDelay(new UpdateChecker(), UpdateChecker.INTERVAL,
-				UpdateChecker.INTERVAL, TimeUnit.SECONDS);
+		threadPool.scheduleWithFixedDelay(new UpdateChecker(), UpdateChecker.INTERVAL, UpdateChecker.INTERVAL,
+				TimeUnit.SECONDS);
 	}
 
 	class UpdateChecker implements Runnable {

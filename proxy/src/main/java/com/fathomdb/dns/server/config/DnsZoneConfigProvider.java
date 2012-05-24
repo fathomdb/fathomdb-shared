@@ -11,12 +11,13 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Zone;
 
 import com.fathomdb.config.FilesystemConfigProvider;
+import com.fathomdb.proxy.http.client.ThreadPools;
 import com.google.common.collect.Lists;
 
 public class DnsZoneConfigProvider extends FilesystemConfigProvider<DnsZoneConfig> {
 
 	public DnsZoneConfigProvider(File baseDir) {
-		super(baseDir);
+		super(ThreadPools.SYSTEM_TASK_POOL, baseDir);
 	}
 
 	@Override

@@ -8,12 +8,13 @@ import java.util.Properties;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 
 import com.fathomdb.config.FilesystemConfigProvider;
+import com.fathomdb.proxy.http.client.ThreadPools;
 import com.fathomdb.proxy.http.server.GenericRequest;
 
 public class HttpProxyHostConfigProvider extends FilesystemConfigProvider<HostConfig> {
 
 	public HttpProxyHostConfigProvider(File baseDir) {
-		super(baseDir);
+		super(ThreadPools.SYSTEM_TASK_POOL, baseDir);
 	}
 
 	@Override
