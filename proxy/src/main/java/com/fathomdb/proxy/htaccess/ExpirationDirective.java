@@ -3,7 +3,7 @@ package com.fathomdb.proxy.htaccess;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import com.fathomdb.proxy.utils.EnumUtils;
+import com.fathomdb.utils.EnumUtils;
 import com.google.common.base.Splitter;
 
 public class ExpirationDirective extends Directive {

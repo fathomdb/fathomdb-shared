@@ -3,8 +3,8 @@ package com.fathomdb.proxy.openstack.fs;
 import java.util.Date;
 import java.util.Map;
 
+import com.fathomdb.cache.HashKey;
 import com.fathomdb.meta.Meta;
-import com.fathomdb.proxy.cache.HashKey;
 import com.fathomdb.proxy.http.handlers.ContentType;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;

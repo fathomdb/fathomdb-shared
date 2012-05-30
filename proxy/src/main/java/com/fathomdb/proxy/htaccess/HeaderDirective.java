@@ -1,6 +1,6 @@
 package com.fathomdb.proxy.htaccess;
 
-import com.fathomdb.proxy.utils.EnumUtils;
+import com.fathomdb.utils.EnumUtils;
 
 public class HeaderDirective extends Directive {
 	private final Condition condition;

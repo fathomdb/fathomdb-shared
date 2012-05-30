@@ -6,15 +6,17 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 
-import com.fathomdb.proxy.cache.CacheFile.Allocation;
+import com.fathomdb.cache.Cache;
+import com.fathomdb.cache.HashKey;
+import com.fathomdb.cache.CacheFile.Allocation;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
 public class CachingObjectDataSink implements ObjectDataSink {
-	final CacheFile cache;
+	final Cache cache;
 	private Allocation allocation;
 	private final HashKey cacheKey;
 
-	public CachingObjectDataSink(CacheFile cache, HashKey cacheKey) {
+	public CachingObjectDataSink(Cache cache, HashKey cacheKey) {
 		this.cache = cache;
 		this.cacheKey = cacheKey;
 	}

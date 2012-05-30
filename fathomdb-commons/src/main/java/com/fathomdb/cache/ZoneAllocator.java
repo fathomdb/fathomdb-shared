@@ -1,4 +1,4 @@
-package com.fathomdb.proxy.cache;
+package com.fathomdb.cache;
 
 import java.util.Iterator;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fathomdb.proxy.cache.CacheFile.CacheFileEntry;
+import com.fathomdb.cache.CacheFile.CacheFileEntry;
 import com.google.common.collect.Lists;
 
 public class ZoneAllocator {

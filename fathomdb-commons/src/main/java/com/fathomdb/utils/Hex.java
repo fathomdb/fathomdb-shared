@@ -1,4 +1,4 @@
-package com.fathomdb.proxy.utils;
+package com.fathomdb.utils;
 
 public class Hex {
 	public static String toHex(byte[] bytes) {

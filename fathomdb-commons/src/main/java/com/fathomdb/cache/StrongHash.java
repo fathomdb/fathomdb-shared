@@ -1,10 +1,10 @@
-package com.fathomdb.proxy.cache;
+package com.fathomdb.cache;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.fathomdb.proxy.crypto.Md5Digest;
-import com.fathomdb.proxy.utils.Hex;
+import com.fathomdb.crypto.Md5Digest;
+import com.fathomdb.utils.Hex;
 
 public class StrongHash {
 	final byte[] data;

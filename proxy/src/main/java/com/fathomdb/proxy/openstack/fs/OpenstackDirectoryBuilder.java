@@ -1,6 +1,6 @@
 package com.fathomdb.proxy.openstack.fs;
 
-import com.fathomdb.proxy.cache.HashKey;
+import com.fathomdb.cache.HashKey;
 import com.fathomdb.proxy.http.handlers.ContentType;
 import com.fathomdb.proxy.openstack.ObjectMetadataListener;
 import com.google.common.base.Splitter;

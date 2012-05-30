@@ -5,7 +5,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import com.fathomdb.proxy.http.Dates;
-import com.fathomdb.proxy.utils.Hex;
+import com.fathomdb.utils.Hex;
 
 public class ContainerListResponseHandler extends StreamingRestResponseHandler {
 	final StreamingJsonParser parser;

@@ -1,4 +1,4 @@
-package com.fathomdb.proxy.cache;
+package com.fathomdb.cache;
 
 import java.io.Closeable;
 import java.io.File;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class CacheFile {
+public class CacheFile implements Cache {
 	static final Logger log = LoggerFactory.getLogger(CacheFile.class);
 
 	final File file;
@@ -118,6 +118,7 @@ public class CacheFile {
 		return lock;
 	}
 
+	@Override
 	public CacheLock lookup(HashKey key) {
 		CacheFileEntry entry;
 		synchronized (entries) {
@@ -147,6 +148,7 @@ public class CacheFile {
 
 	}
 
+	@Override
 	public Allocation allocate(int dataSize) {
 		int position = freeList.allocate(dataSize);
 		if (position <= 0) {
@@ -161,6 +163,7 @@ public class CacheFile {
 		return new Allocation(allocated, position, dataSize);
 	}
 
+	@Override
 	public void store(HashKey key, Allocation allocation) {
 		if (this != allocation.getCacheFile()) {
 			throw new IllegalArgumentException();

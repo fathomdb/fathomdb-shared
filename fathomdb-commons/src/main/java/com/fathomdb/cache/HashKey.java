@@ -1,9 +1,9 @@
-package com.fathomdb.proxy.cache;
+package com.fathomdb.cache;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.fathomdb.proxy.utils.Hex;
+import com.fathomdb.utils.Hex;
 
 public class HashKey {
 	final byte[] key;

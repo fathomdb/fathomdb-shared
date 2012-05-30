@@ -1,4 +1,4 @@
-package com.fathomdb.proxy.crypto;
+package com.fathomdb.crypto;
 
 import java.security.MessageDigest;
 

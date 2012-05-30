@@ -1,4 +1,4 @@
-package com.fathomdb.proxy.utils;
+package com.fathomdb.utils;
 
 import java.util.EnumSet;
 

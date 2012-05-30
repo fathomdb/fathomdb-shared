@@ -10,9 +10,9 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.cache.CacheFile;
 import com.fathomdb.config.ConfigurationManager;
 import com.fathomdb.config.UserSignalHandler;
-import com.fathomdb.proxy.cache.CacheFile;
 import com.fathomdb.proxy.http.client.HttpClient;
 import com.fathomdb.proxy.http.client.HttpClientPool;
 import com.fathomdb.proxy.http.config.HttpProxyHostConfigProvider;

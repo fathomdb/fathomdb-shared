@@ -1,6 +1,6 @@
 package com.fathomdb.proxy.openstack;
 
-import com.fathomdb.proxy.utils.Hex;
+import com.fathomdb.utils.Hex;
 
 public class DebugObjectMetadataListener implements ObjectMetadataListener {
 

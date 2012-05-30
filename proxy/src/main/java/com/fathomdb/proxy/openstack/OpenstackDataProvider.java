@@ -20,10 +20,10 @@ import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fathomdb.proxy.cache.CacheFile;
-import com.fathomdb.proxy.cache.CacheFile.CacheLock;
+import com.fathomdb.cache.Cache;
+import com.fathomdb.cache.HashKey;
+import com.fathomdb.cache.CacheFile.CacheLock;
 import com.fathomdb.proxy.cache.CachingObjectDataSink;
-import com.fathomdb.proxy.cache.HashKey;
 import com.fathomdb.proxy.cache.ObjectDataSinkSplitter;
 import com.fathomdb.proxy.http.Dates;
 import com.fathomdb.proxy.http.handlers.ContentType;
@@ -43,11 +43,11 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 	final OpenstackCredentials openstackCredentials;
 
-	final CacheFile cache;
+	final Cache cache;
 
 	final String containerName;
 
-	public OpenstackDataProvider(OpenstackDirectoryCache openstackDirectoryCache, CacheFile cache,
+	public OpenstackDataProvider(OpenstackDirectoryCache openstackDirectoryCache, Cache cache,
 			OpenstackCredentials openstackCredentials, OpenstackClientPool openstackClientPool, String containerName) {
 		this.openstackDirectoryCache = openstackDirectoryCache;
 		this.cache = cache;

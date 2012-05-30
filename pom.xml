@@ -24,7 +24,6 @@
                 <version>${project.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty</artifactId>
