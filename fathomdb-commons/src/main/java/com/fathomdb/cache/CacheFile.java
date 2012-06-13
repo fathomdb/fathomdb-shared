@@ -132,7 +132,7 @@ public class CacheFile implements Cache {
 		return readEntry(entry);
 	}
 
-	public class Allocation {
+	public class Allocation implements Closeable {
 		public final ByteBuffer buffer;
 		final int position;
 		final int length;
@@ -147,6 +147,10 @@ public class CacheFile implements Cache {
 			return CacheFile.this;
 		}
 
+		@Override
+		public void close() throws IOException {
+			release(this);
+		}
 	}
 
 	@Override
@@ -304,6 +308,7 @@ public class CacheFile implements Cache {
 
 	}
 
+	@Override
 	public void writeMetadata() {
 		List<CacheFileEntry> snapshot;
 		synchronized (entries) {

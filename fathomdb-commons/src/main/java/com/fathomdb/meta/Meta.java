@@ -1,24 +1,61 @@
 package com.fathomdb.meta;
 
+import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import org.openstack.utils.Io;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class Meta<T> {
 	final Class<T> clazz;
 
+	final List<MetaField<T>> allFields;
 	final MetaField<T>[] identityFields;
-	final MetaField<T>[] toStringFields;
+	final List<MetaField<T>> toStringFields;
+	final List<MetaField<T>> closeableFields;
 
 	public Meta(Class<T> c) {
 		this.clazz = c;
-		this.identityFields = findIdentityFields();
-		this.toStringFields = identityFields;
+
+		this.allFields = findFields();
+		this.identityFields = toArray(allFields);
+		this.toStringFields = allFields;
+		this.closeableFields = filter(allFields, Implements.build(Closeable.class));
 	}
 
-	private MetaField<T>[] findIdentityFields() {
+	private MetaField<T>[] toArray(List<MetaField<T>> fields) {
+		return fields.toArray(new MetaField[fields.size()]);
+	}
+
+	static class Implements<V> implements Predicate<MetaField<?>> {
+		final Class<V> checkClass;
+
+		public Implements(Class<V> checkClass) {
+			this.checkClass = checkClass;
+		}
+
+		public static <V> Implements<V> build(Class<V> checkClass) {
+			return new Implements<V>(checkClass);
+		}
+
+		@Override
+		public boolean apply(MetaField<?> input) {
+			Class<?> fieldType = input.field.getType();
+
+			return checkClass.isAssignableFrom(fieldType);
+		}
+	}
+
+	private static <V> List<V> filter(List<V> in, Predicate<? super V> predicate) {
+		return Lists.newArrayList(Iterables.filter(in, predicate));
+	}
+
+	private List<MetaField<T>> findFields() {
 		List<MetaField<T>> metaFields = Lists.newArrayList();
 
 		Class<?> current = clazz;
@@ -28,14 +65,14 @@ public class Meta<T> {
 				if ((modifiers & Modifier.STATIC) != 0) {
 					continue;
 				}
-				MetaField<T> metaField = new MetaField<T>(clazz, field);
-				metaFields.add(metaField);
+
+				metaFields.add(new MetaField<T>(field));
 			}
 
 			current = current.getSuperclass();
 		}
 
-		return metaFields.toArray(new MetaField[metaFields.size()]);
+		return metaFields;
 	}
 
 	public static <T> Meta<T> get(Class<T> c) {
@@ -82,8 +119,8 @@ public class Meta<T> {
 
 		sb.append(clazz.getSimpleName());
 		sb.append('[');
-		for (int i = 0; i < toStringFields.length; i++) {
-			MetaField<T> field = toStringFields[i];
+		for (int i = 0; i < toStringFields.size(); i++) {
+			MetaField<T> field = toStringFields.get(i);
 			if (i != 0) {
 				sb.append(',');
 			}
@@ -99,6 +136,18 @@ public class Meta<T> {
 		sb.append(']');
 
 		return sb.toString();
+	}
+
+	public void closeAll(T item) {
+		for (MetaField<T> closeableField : closeableFields) {
+			Closeable value = (Closeable) closeableField.getValue(item);
+			if (value == null) {
+				continue;
+			}
+
+			Io.safeClose(value);
+			closeableField.setValue(item, null);
+		}
 	}
 
 }

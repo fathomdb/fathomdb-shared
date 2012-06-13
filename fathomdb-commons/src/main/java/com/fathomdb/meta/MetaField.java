@@ -3,12 +3,10 @@ package com.fathomdb.meta;
 import java.lang.reflect.Field;
 
 public class MetaField<T> {
-	final Class<T> clazz;
 	final Field field;
 
-	public MetaField(Class<T> clazz, Field field) {
+	public MetaField(Field field) {
 		super();
-		this.clazz = clazz;
 		this.field = field;
 
 		setAccessible();
@@ -47,9 +45,17 @@ public class MetaField<T> {
 		try {
 			fieldValue = field.get(o);
 		} catch (IllegalAccessException e) {
-			throw new IllegalStateException("Error fetching field: " + field, e);
+			throw new IllegalStateException("Error getting field: " + field, e);
 		}
 		return fieldValue;
+	}
+
+	public void setValue(T o, Object value) {
+		try {
+			field.set(o, value);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException("Error setting field: " + field, e);
+		}
 	}
 
 	@Override
