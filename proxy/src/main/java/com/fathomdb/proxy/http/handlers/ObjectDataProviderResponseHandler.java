@@ -8,13 +8,13 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.async.EasyAsync;
 import com.fathomdb.proxy.http.HttpException;
 import com.fathomdb.proxy.http.logger.RequestLogger;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider.Handler;
 import com.fathomdb.proxy.objectdata.StandardResponses;
-import com.fathomdb.proxy.openstack.EasyAsync;
 
 public class ObjectDataProviderResponseHandler implements RequestHandler {
 	static final Logger log = LoggerFactory.getLogger(ObjectDataProviderResponseHandler.class);

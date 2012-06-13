@@ -1,4 +1,4 @@
-package com.fathomdb.proxy.openstack;
+package com.fathomdb.async;
 
 import org.jboss.netty.channel.ChannelFuture;
 
@@ -18,6 +18,7 @@ public class AsyncFutureException extends RuntimeException {
 
 	@Override
 	public synchronized Throwable fillInStackTrace() {
+		// For performance, don't fill in stack-trace
 		return this;
 	}
 

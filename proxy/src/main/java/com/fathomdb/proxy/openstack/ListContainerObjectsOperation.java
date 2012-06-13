@@ -6,6 +6,7 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 
+import com.fathomdb.async.AsyncFutureException;
 import com.fathomdb.proxy.http.vfs.VfsItem;
 import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryBuilder;
 

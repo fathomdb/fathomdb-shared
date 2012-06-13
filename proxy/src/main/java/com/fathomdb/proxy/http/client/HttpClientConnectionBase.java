@@ -9,8 +9,8 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
+import com.fathomdb.async.AsyncFutureException;
 import com.fathomdb.proxy.http.HttpScheme;
-import com.fathomdb.proxy.openstack.AsyncFutureException;
 
 public abstract class HttpClientConnectionBase implements AutoCloseable {
 	final HttpScheme scheme;

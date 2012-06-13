@@ -10,7 +10,7 @@ import org.jboss.netty.channel.DefaultChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fathomdb.proxy.openstack.AsyncFutureException;
+import com.fathomdb.async.AsyncFutureException;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;

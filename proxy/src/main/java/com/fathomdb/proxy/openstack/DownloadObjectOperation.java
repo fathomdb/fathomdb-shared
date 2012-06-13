@@ -7,6 +7,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 
+import com.fathomdb.async.AsyncFutureException;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
 public class DownloadObjectOperation {

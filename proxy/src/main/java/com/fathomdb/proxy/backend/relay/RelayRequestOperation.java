@@ -8,9 +8,9 @@ import java.util.Map.Entry;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 
+import com.fathomdb.async.AsyncFutureException;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
-import com.fathomdb.proxy.openstack.AsyncFutureException;
 import com.google.common.collect.Maps;
 
 public class RelayRequestOperation {

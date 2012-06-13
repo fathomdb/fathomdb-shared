@@ -9,6 +9,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.util.CharsetUtil;
 
+import com.fathomdb.async.AsyncFutureException;
 import com.fathomdb.proxy.http.client.HttpClientConnection;
 
 public class KeystoneAuthenticationOperation {
