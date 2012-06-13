@@ -18,12 +18,17 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 	static final Logger log = LoggerFactory.getLogger(FilesystemConfigProvider.class);
 
 	private final File baseDir;
+	final boolean convertToLowerCase;
+
+	protected static final boolean NORMALIZE_LOWER_CASE = true;
+	protected static final boolean MIXED_CASE = false;
 
 	private final ScheduledExecutorService threadPool;
 
-	public FilesystemConfigProvider(ScheduledExecutorService threadPool, File baseDir) {
+	public FilesystemConfigProvider(ScheduledExecutorService threadPool, File baseDir, boolean convertToLowerCase) {
 		this.threadPool = threadPool;
 		this.baseDir = baseDir;
+		this.convertToLowerCase = convertToLowerCase;
 	}
 
 	@Override
@@ -43,9 +48,9 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 
 	@Override
 	protected T buildConfig(String key) {
-		safetyCheckHost(key);
+		String fileName = toFileName(key);
 
-		File file = new File(baseDir, key);
+		File file = new File(baseDir, fileName);
 		if (!file.exists()) {
 			// TODO: Return dummy HostConfig
 			return buildNullResult(key);
@@ -78,7 +83,53 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 		return String.valueOf(lastModified);
 	}
 
-	private static void safetyCheckHost(String host) {
+	private String toFileName(String key) {
+		char[] sanitizedChars = null;
+
+		for (int i = 0; i < key.length(); i++) {
+			char c = key.charAt(i);
+			char sanitized = c;
+
+			if (c >= 'a' && c <= 'z') {
+				// OK
+			} else if (c >= 'A' && c <= 'Z') {
+				if (convertToLowerCase) {
+					sanitized = (char) (c - 'A' + 'a');
+				}
+				// OK
+			} else if (c >= '0' && c <= '9') {
+				// OK
+			} else {
+				switch (c) {
+				case '.':
+				case '-':
+					break;
+
+				default:
+					throw new IllegalArgumentException();
+				}
+			}
+
+			if (sanitized != c) {
+				if (sanitizedChars == null) {
+					// Faster than doing char at a time, maybe?
+					sanitizedChars = key.toCharArray();
+				}
+			}
+
+			if (sanitizedChars != null) {
+				sanitizedChars[i] = sanitized;
+			}
+		}
+
+		if (sanitizedChars != null) {
+			return new String(sanitizedChars);
+		} else {
+			return key;
+		}
+	}
+
+	private static String toLowerCaseFileName(String host) {
 		for (int i = 0; i < host.length(); i++) {
 			char c = host.charAt(i);
 			if (c >= 'a' && c <= 'z') {
@@ -99,6 +150,8 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 				throw new IllegalArgumentException();
 			}
 		}
+
+		return host;
 	}
 
 	static final Object CONFIGURE_LOCK = new Object();

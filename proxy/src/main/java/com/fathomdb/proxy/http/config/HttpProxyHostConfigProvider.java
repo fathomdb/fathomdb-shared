@@ -17,7 +17,7 @@ import com.google.inject.Injector;
 public class HttpProxyHostConfigProvider extends FilesystemConfigProvider<HostConfig> {
 
 	public HttpProxyHostConfigProvider(File baseDir) {
-		super(ThreadPools.SYSTEM_TASK_POOL, baseDir);
+		super(ThreadPools.SYSTEM_TASK_POOL, baseDir, NORMALIZE_LOWER_CASE);
 	}
 
 	@Inject

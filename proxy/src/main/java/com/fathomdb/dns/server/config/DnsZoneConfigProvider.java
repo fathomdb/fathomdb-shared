@@ -17,7 +17,7 @@ import com.google.common.collect.Lists;
 public class DnsZoneConfigProvider extends FilesystemConfigProvider<DnsZoneConfig> {
 
 	public DnsZoneConfigProvider(File baseDir) {
-		super(ThreadPools.SYSTEM_TASK_POOL, baseDir);
+		super(ThreadPools.SYSTEM_TASK_POOL, baseDir, NORMALIZE_LOWER_CASE);
 	}
 
 	@Override
