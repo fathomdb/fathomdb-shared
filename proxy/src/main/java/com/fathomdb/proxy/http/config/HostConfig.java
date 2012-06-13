@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 
 import org.openstack.crypto.ByteString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fathomdb.config.ConfigObject;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
@@ -14,6 +16,8 @@ import com.fathomdb.utils.Hex;
 import com.google.inject.Injector;
 
 public class HostConfig extends ConfigObject {
+	static final Logger log = LoggerFactory.getLogger(HostConfig.class);
+
 	public static final HostConfig NOT_PRESENT = new HostConfig(null, null, null, null);
 	final String host;
 	final Properties properties;
@@ -34,6 +38,16 @@ public class HostConfig extends ConfigObject {
 			String openstackUrl = properties.getProperty("openstack.url");
 			if (openstackUrl == null) {
 				openstackUrl = "https://identity.api.rackspacecloud.com/v2.0/tokens";
+			} else {
+				if (!openstackUrl.endsWith("tokens")) {
+					log.info("Adding /tokens to url: " + openstackUrl);
+
+					if (!openstackUrl.endsWith("/")) {
+						openstackUrl += "/";
+					}
+
+					openstackUrl += "tokens";
+				}
 			}
 
 			URI authUrl;
