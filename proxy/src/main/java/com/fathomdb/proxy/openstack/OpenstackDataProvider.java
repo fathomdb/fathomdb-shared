@@ -1,43 +1,31 @@
 package com.fathomdb.proxy.openstack;
 
-import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.Set;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.handler.codec.http.Cookie;
-import org.jboss.netty.handler.codec.http.CookieDecoder;
-import org.jboss.netty.handler.codec.http.CookieEncoder;
-import org.jboss.netty.handler.codec.http.DefaultCookie;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.util.CharsetUtil;
 import org.openstack.crypto.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.cache.Cache;
 import com.fathomdb.cache.CacheFile.CacheLock;
+import com.fathomdb.meta.Meta;
 import com.fathomdb.proxy.cache.CachingObjectDataSink;
 import com.fathomdb.proxy.cache.ObjectDataSinkSplitter;
 import com.fathomdb.proxy.http.Dates;
 import com.fathomdb.proxy.http.config.HostConfig;
 import com.fathomdb.proxy.http.handlers.ContentType;
-import com.fathomdb.proxy.http.rules.ServerRuleChain;
-import com.fathomdb.proxy.http.rules.ServerRuleResolver;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.http.vfs.VfsItem;
+import com.fathomdb.proxy.http.vfs.VfsItemResolver.Resolved;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
+import com.fathomdb.proxy.objectdata.StandardResponses;
 import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
-import com.google.common.base.Splitter;
 
 public class OpenstackDataProvider extends ObjectDataProvider {
 	static final Logger log = LoggerFactory.getLogger(OpenstackDataProvider.class);
@@ -64,7 +52,9 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		return containerName;
 	}
 
-	class Handler extends ObjectDataProvider.Handler {
+	static final Meta<Handler> META_Handler = Meta.get(Handler.class);
+
+	class Handler extends ObjectDataProvider.HandlerBase {
 		public Handler(GenericRequest request) {
 			super(request);
 		}
@@ -80,220 +70,15 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			return openstackSession;
 		}
 
-		class Resolved {
-			String path;
-			VfsItem pathItem;
-			HttpResponse response;
-
-			public Resolved(String path, VfsItem pathItem, HttpResponse response) {
-				this.path = path;
-				this.pathItem = pathItem;
-				this.response = response;
-			}
-		}
-
-		Resolved resolved;
-
-		ServerRuleResolver serverRuleResolver;
-
-		Resolved resolve() {
-			if (resolved != null) {
-				return resolved;
-			}
-
-			HttpMethod method = request.getMethod();
-
-			if (method != HttpMethod.GET) {
-				HttpResponse response = buildError(HttpResponseStatus.METHOD_NOT_ALLOWED);
-				resolved = new Resolved(null, null, response);
-				return resolved;
-			}
-
-			String path = request.getUri();
-
-			if (path.startsWith("/")) {
-				path = path.substring(1);
-			}
-
-			String query;
-
-			int questionIndex = path.indexOf('?');
-			if (questionIndex != -1) {
-				query = path.substring(questionIndex + 1);
-				path = path.substring(0, questionIndex);
-			} else {
-				query = null;
-			}
-
-			VfsItem root = getDirectoryRoot();
-
-			VfsItem pathItem = findItem(path);
-
-			HttpResponse response = null;
-			if (pathItem != null) {
-				if (pathItem.isDirectory()) {
-					if (!path.isEmpty() && !path.endsWith("/")) {
-						// We need to send a redirect. See DirectorySlash in
-						// Apache for a great explanation
-
-						// The root (empty path) appears to be a special case
-
-						response = buildError(HttpResponseStatus.MOVED_PERMANENTLY);
-						// TODO: Does this need to be absolute??
-						String redirectRelative = "/" + path + "/";
-						// String redirectAbsolute =
-						// request.toAbsolute(redirectRelative);
-						response.setHeader(HttpHeaders.Names.LOCATION, redirectRelative);
-					} else {
-						boolean found = false;
-
-						if (serverRuleResolver == null) {
-							serverRuleResolver = new ServerRuleResolver(root);
-						}
-
-						ServerRuleChain rules = serverRuleResolver.resolveServerRules(path);
-						for (String documentIndex : rules.getDocumentIndexes()) {
-							VfsItem child = pathItem.findChild(documentIndex);
-							if (child != null) {
-								// Note that the rule chain is the same, because
-								// it lives in the same directory!
-								ruleChain = rules;
-
-								path = path + documentIndex;
-								pathItem = child;
-								found = true;
-								break;
-							}
-						}
-
-						if (!found) {
-							response = buildError(HttpResponseStatus.NOT_FOUND);
-						}
-					}
-				}
-			}
-
-			if (pathItem == null) {
-				response = buildError(HttpResponseStatus.NOT_FOUND);
-			}
-
-			resolved = new Resolved(path, pathItem, response);
-			return resolved;
-		}
-
-		ServerRuleChain ruleChain;
-
-		ServerRuleChain getRules() {
-			if (ruleChain == null) {
-				Resolved resolved = resolve();
-				VfsItem root = getDirectoryRoot();
-
-				if (serverRuleResolver == null) {
-					serverRuleResolver = new ServerRuleResolver(root);
-				}
-
-				ServerRuleChain rules = serverRuleResolver.resolveServerRules(resolved.path);
-				ruleChain = rules;
-			}
-			return ruleChain;
-		}
-
-		private HttpResponse buildError(HttpResponseStatus status) {
-			HttpResponse response = buildResponse(status);
-
-			// response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, 0);
-
-			String responseBody = "Error " + status;
-			response.setContent(ChannelBuffers.copiedBuffer(responseBody, CharsetUtil.UTF_8));
-			response.setHeader(HttpHeaders.Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
-			response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, response.getContent().readableBytes());
-
-			return response;
-		}
-
-		VfsItem findItem(String path) {
-			VfsItem root = getDirectoryRoot();
-
-			VfsItem current = root;
-
-			// We omit empty strings so we're not tricked by / or directory/
-			// Also, we want directory and directory/ to be the same in terms of
-			// resolution
-			for (String pathToken : Splitter.on('/').omitEmptyStrings().split(path)) {
-				current = current.getChild(pathToken);
-				if (current == null) {
-					return null;
-				}
-			}
-			return current;
-		}
-
-		ByteString getCacheKey(Resolved resolved) {
-			if (resolved.pathItem == null) {
-				return null;
-			}
-			return resolved.pathItem.getContentHash();
-		}
-
-		public boolean isStillValid(Resolved resolved, CacheLock found) {
-			// We rely on a hashed file system for expiration etc
-			return true;
-
-			// if (found != null) {
-			// // TODO: Check MD5
-			// return true;
-			// }
-			//
-			// return false;
-		}
-
 		VfsItem directoryRoot;
 
-		private VfsItem getDirectoryRoot() {
+		@Override
+		protected VfsItem getDirectoryRoot() {
 			if (directoryRoot == null) {
 				directoryRoot = openstackDirectoryCache.getAsync(openstackCredentials, getContainerName());
 			}
 
 			return directoryRoot;
-		}
-
-		private void sendCachedResponse(ObjectDataSink sink, Resolved resolved, CacheLock found) {
-			ByteBuffer buffer = found.getBuffer();
-
-			HttpResponse response = buildResponse(HttpResponseStatus.OK);
-
-			long contentLength = buffer.remaining();
-			if (contentLength > 0) {
-				response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, contentLength);
-			}
-
-			ContentType contentType = resolved.pathItem.getContentType();
-			if (contentType != null) {
-				response.setHeader(HttpHeaders.Names.CONTENT_TYPE, contentType.getContentType());
-			}
-
-			Date lastModified = resolved.pathItem.getLastModified();
-			if (lastModified != null) {
-				response.setHeader(HttpHeaders.Names.LAST_MODIFIED, Dates.format(lastModified));
-			}
-
-			getRules().addCacheHeaders(response);
-
-			sink.beginResponse(response);
-			if (contentLength > 0) {
-				sink.gotData(ChannelBuffers.wrappedBuffer(buffer), true);
-			}
-			sink.endData();
-		}
-
-		private void sendResponse(ObjectDataSink sink, HttpResponse response) {
-			// ChannelBuffer content = response.getContent();
-
-			sink.beginResponse(response);
-			// if (content != null && content.readable()) {
-			// sink.gotData(content);
-			// }
-			sink.endData();
 		}
 
 		DownloadObjectOperation downloadOperation;
@@ -303,7 +88,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 		@Override
 		public void handle(ObjectDataSink sink) {
-			Resolved resolved = resolve();
+			Resolved resolved = resolveToItem();
 
 			if (resolved.response != null) {
 				sendResponse(sink, resolved.response);
@@ -342,7 +127,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 					downloadTo = new ObjectDataSinkSplitter(new CachingObjectDataSink(cache, cacheKey), downloadTo);
 				}
 
-				HttpResponse response = buildResponse(HttpResponseStatus.OK);
+				HttpResponse response = StandardResponses.buildResponse(request, HttpResponseStatus.OK);
 
 				ContentType contentType = resolved.pathItem.getContentType();
 				if (contentType != null) {
@@ -364,48 +149,8 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 		@Override
 		public void close() {
-			if (openstackSession != null) {
-				openstackSession.close();
-			}
+			META_Handler.closeAll(this);
 		}
-
-		static final int SECONDS_IN_MINUTE = 60;
-		static final int SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
-		static final int SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
-		static final int SECONDS_IN_YEAR = SECONDS_IN_DAY * 365;
-		static final int SECONDS_IN_DECADE = 10 * SECONDS_IN_YEAR;
-
-		private HttpResponse buildResponse(HttpResponseStatus status) {
-			HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, status);
-
-			// Use cookies to allow tracking sessions in the debug log
-			String cookieName = "uuid";
-			boolean found = false;
-			String cookieString = request.getHeader(HttpHeaders.Names.COOKIE);
-			if (cookieString != null) {
-				CookieDecoder cookieDecoder = new CookieDecoder();
-				Set<Cookie> cookies = cookieDecoder.decode(cookieString);
-				if (!cookies.isEmpty()) {
-					for (Cookie cookie : cookies) {
-						if (cookie.getName().equals(cookieName)) {
-							found = true;
-						}
-					}
-				}
-			}
-
-			if (!found) {
-				CookieEncoder cookieEncoder = new CookieEncoder(true);
-				Cookie cookie = new DefaultCookie(cookieName, UUID.randomUUID().toString());
-				cookie.setMaxAge(SECONDS_IN_DECADE);
-
-				cookieEncoder.addCookie(cookie);
-				response.addHeader(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
-			}
-
-			return response;
-		}
-
 	}
 
 	@Override
