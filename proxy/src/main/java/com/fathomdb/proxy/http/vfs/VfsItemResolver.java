@@ -119,6 +119,8 @@ public class VfsItemResolver implements Closeable {
 						throw HttpException.NOT_FOUND;
 					}
 				}
+			} else {
+				ruleChain = serverRuleResolver.resolveServerRules(path);
 			}
 		}
 
