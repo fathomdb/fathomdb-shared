@@ -3,25 +3,27 @@ package com.fathomdb.proxy.openstack.fs;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.config.HasConfiguration;
 import com.fathomdb.meta.Meta;
 import com.fathomdb.proxy.http.client.ThreadPools;
+import com.fathomdb.proxy.http.vfs.VfsItem;
 import com.fathomdb.proxy.openstack.ListContainerObjectsOperation;
 import com.fathomdb.proxy.openstack.OpenstackClientPool;
 import com.fathomdb.proxy.openstack.OpenstackCredentials;
 import com.fathomdb.proxy.openstack.OpenstackSession;
 
+@Singleton
 public class OpenstackDirectoryCache implements HasConfiguration {
 	static final Logger log = LoggerFactory.getLogger(OpenstackDirectoryCache.class);
 
-	private final OpenstackClientPool openstackClientPool;
-
-	public OpenstackDirectoryCache(OpenstackClientPool openstackClientPool) {
-		this.openstackClientPool = openstackClientPool;
-	}
+	@Inject
+	OpenstackClientPool openstackClientPool;
 
 	public void initialize() {
 		ThreadPools.SYSTEM_TASK_POOL.scheduleWithFixedDelay(new UpdateChecker(), UpdateChecker.INTERVAL,
@@ -91,7 +93,7 @@ public class OpenstackDirectoryCache implements HasConfiguration {
 					listContainerObjects = new ListContainerObjectsOperation(session, key.containerName);
 				}
 
-				OpenstackItem item = listContainerObjects.get();
+				VfsItem item = listContainerObjects.get();
 				return new CacheEntry(item);
 			}
 
@@ -128,14 +130,14 @@ public class OpenstackDirectoryCache implements HasConfiguration {
 	}
 
 	public static class CacheEntry {
-		public final OpenstackItem root;
+		public final VfsItem root;
 
-		public CacheEntry(OpenstackItem root) {
+		public CacheEntry(VfsItem root) {
 			this.root = root;
 		}
 	}
 
-	public OpenstackItem getAsync(OpenstackCredentials credentials, String containerName) {
+	public VfsItem getAsync(OpenstackCredentials credentials, String containerName) {
 		CacheKey key = new CacheKey(credentials, containerName);
 		return cache.getAsync(key).root;
 	}

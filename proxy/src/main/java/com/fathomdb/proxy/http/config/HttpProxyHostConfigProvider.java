@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.inject.Inject;
+
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 
 import com.fathomdb.config.FilesystemConfigProvider;
 import com.fathomdb.proxy.http.client.ThreadPools;
 import com.fathomdb.proxy.http.server.GenericRequest;
+import com.google.inject.Injector;
 
 public class HttpProxyHostConfigProvider extends FilesystemConfigProvider<HostConfig> {
 
@@ -17,11 +20,16 @@ public class HttpProxyHostConfigProvider extends FilesystemConfigProvider<HostCo
 		super(ThreadPools.SYSTEM_TASK_POOL, baseDir);
 	}
 
+	@Inject
+	Injector injector;
+
 	@Override
 	protected HostConfig loadConfig(String key, String version, InputStream is) throws IOException {
 		Properties properties = new Properties();
 		properties.load(is);
-		return new HostConfig(version, key, properties);
+
+		HostConfig hostConfig = new HostConfig(injector, version, key, properties);
+		return hostConfig;
 	}
 
 	public HostConfig getConfig(GenericRequest request) {

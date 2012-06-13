@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openstack.crypto.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public class CacheFile implements Cache {
 	final MappedByteBuffer buffer;
 
 	// TODO: Replace with a memory efficient map?
-	final Map<HashKey, CacheFileEntry> entries;
+	final Map<ByteString, CacheFileEntry> entries;
 	final ZoneAllocator freeList;
 
 	static final int VERSION = 1;
@@ -63,12 +64,12 @@ public class CacheFile implements Cache {
 	final LockCollection locks = new LockCollection();
 
 	static class CacheFileEntry {
-		final HashKey key;
+		final ByteString key;
 
 		int position;
 		int length;
 
-		CacheFileEntry(HashKey key, int position, int length) {
+		CacheFileEntry(ByteString key, int position, int length) {
 			this.key = key;
 			this.position = position;
 			this.length = length;
@@ -119,7 +120,7 @@ public class CacheFile implements Cache {
 	}
 
 	@Override
-	public CacheLock lookup(HashKey key) {
+	public CacheLock lookup(ByteString key) {
 		CacheFileEntry entry;
 		synchronized (entries) {
 			entry = entries.get(key);
@@ -164,7 +165,12 @@ public class CacheFile implements Cache {
 	}
 
 	@Override
-	public void store(HashKey key, Allocation allocation) {
+	public void release(Allocation allocation) {
+		freeList.release(allocation.length, allocation.position);
+	}
+
+	@Override
+	public CacheLock store(ByteString key, Allocation allocation) {
 		if (this != allocation.getCacheFile()) {
 			throw new IllegalArgumentException();
 		}
@@ -175,10 +181,12 @@ public class CacheFile implements Cache {
 			isDirty = true;
 			entries.put(key, entry);
 		}
+
+		return readEntry(entry);
 	}
 
 	static class EntryData {
-		public Map<HashKey, CacheFileEntry> entries;
+		public Map<ByteString, CacheFileEntry> entries;
 		public int dataAreaStart;
 	}
 
@@ -222,7 +230,7 @@ public class CacheFile implements Cache {
 		metadata = metadata.slice();
 
 		int hashCapacity = Math.min(1024, entryCount + entryCount / 4);
-		Map<HashKey, CacheFileEntry> entries = new HashMap<HashKey, CacheFileEntry>(hashCapacity);
+		Map<ByteString, CacheFileEntry> entries = new HashMap<ByteString, CacheFileEntry>(hashCapacity);
 
 		metadata.rewind();
 		StrongHash actual = StrongHash.computeHash(metadata);
@@ -232,7 +240,7 @@ public class CacheFile implements Cache {
 
 		metadata.rewind();
 		for (int i = 0; i < entryCount; i++) {
-			HashKey key = HashKey.get(metadata);
+			ByteString key = ByteString.get(metadata);
 
 			int position = metadata.getInt();
 			int length = metadata.getInt();
@@ -330,7 +338,7 @@ public class CacheFile implements Cache {
 		int payloadStart = buffer.position();
 
 		for (CacheFileEntry entry : entries) {
-			HashKey key = entry.key;
+			ByteString key = entry.key;
 			key.put(buffer);
 			buffer.putInt(entry.position);
 			buffer.putInt(entry.length);

@@ -1,10 +1,12 @@
 package com.fathomdb.proxy.http.client;
 
+import javax.inject.Singleton;
+
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
+@Singleton
 public class HttpClient {
-
 	ClientBootstrap httpClientBootstrap;
 	ClientBootstrap httpsClientBootstrap;
 

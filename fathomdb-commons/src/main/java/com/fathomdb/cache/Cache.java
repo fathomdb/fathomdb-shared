@@ -1,14 +1,20 @@
 package com.fathomdb.cache;
 
+import org.openstack.crypto.ByteString;
+
 import com.fathomdb.cache.CacheFile.Allocation;
 import com.fathomdb.cache.CacheFile.CacheLock;
 
 public interface Cache {
 
-	CacheLock lookup(HashKey cacheKey);
+	CacheLock lookup(ByteString cacheKey);
 
 	Allocation allocate(int contentLength);
 
-	void store(HashKey cacheKey, Allocation allocation);
+	CacheLock store(ByteString cacheKey, Allocation allocation);
+
+	void release(Allocation allocation);
+
+	void writeMetadata();
 
 }

@@ -17,6 +17,8 @@ package com.fathomdb.proxy.http.server;
 
 import static org.jboss.netty.channel.Channels.pipeline;
 
+import javax.inject.Inject;
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.handler.codec.http.HttpContentCompressor;
@@ -26,11 +28,8 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import com.fathomdb.proxy.http.HttpScheme;
 
 public class HttpProxyServerPipelineFactory implements ChannelPipelineFactory {
-	final RequestHandlerProvider requestHandlerProvider;
-
-	public HttpProxyServerPipelineFactory(RequestHandlerProvider requestHandlerProvider) {
-		this.requestHandlerProvider = requestHandlerProvider;
-	}
+	@Inject
+	RequestHandlerProvider requestHandlerProvider;
 
 	@Override
 	public ChannelPipeline getPipeline() throws Exception {

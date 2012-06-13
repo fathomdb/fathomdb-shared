@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.jboss.netty.handler.codec.http.CookieDecoder;
@@ -17,43 +19,45 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.CharsetUtil;
+import org.openstack.crypto.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.cache.Cache;
-import com.fathomdb.cache.HashKey;
 import com.fathomdb.cache.CacheFile.CacheLock;
 import com.fathomdb.proxy.cache.CachingObjectDataSink;
 import com.fathomdb.proxy.cache.ObjectDataSinkSplitter;
 import com.fathomdb.proxy.http.Dates;
+import com.fathomdb.proxy.http.config.HostConfig;
 import com.fathomdb.proxy.http.handlers.ContentType;
+import com.fathomdb.proxy.http.rules.ServerRuleChain;
+import com.fathomdb.proxy.http.rules.ServerRuleResolver;
 import com.fathomdb.proxy.http.server.GenericRequest;
+import com.fathomdb.proxy.http.vfs.VfsItem;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryCache;
-import com.fathomdb.proxy.openstack.fs.OpenstackItem;
 import com.google.common.base.Splitter;
 
 public class OpenstackDataProvider extends ObjectDataProvider {
 	static final Logger log = LoggerFactory.getLogger(OpenstackDataProvider.class);
 
-	final OpenstackDirectoryCache openstackDirectoryCache;
+	@Inject
+	OpenstackDirectoryCache openstackDirectoryCache;
 
-	final OpenstackClientPool openstackClientPool;
+	@Inject
+	OpenstackClientPool openstackClientPool;
 
-	final OpenstackCredentials openstackCredentials;
+	@Inject
+	Cache cache;
 
-	final Cache cache;
+	String containerName;
+	OpenstackCredentials openstackCredentials;
 
-	final String containerName;
-
-	public OpenstackDataProvider(OpenstackDirectoryCache openstackDirectoryCache, Cache cache,
-			OpenstackCredentials openstackCredentials, OpenstackClientPool openstackClientPool, String containerName) {
-		this.openstackDirectoryCache = openstackDirectoryCache;
-		this.cache = cache;
-		this.openstackCredentials = openstackCredentials;
-		this.openstackClientPool = openstackClientPool;
-		this.containerName = containerName;
+	@Override
+	public void initialize(HostConfig config) {
+		containerName = config.getContainerName();
+		openstackCredentials = config.getOpenstackCredentials();
 	}
 
 	String getContainerName() {
@@ -78,10 +82,10 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 		class Resolved {
 			String path;
-			OpenstackItem pathItem;
+			VfsItem pathItem;
 			HttpResponse response;
 
-			public Resolved(String path, OpenstackItem pathItem, HttpResponse response) {
+			public Resolved(String path, VfsItem pathItem, HttpResponse response) {
 				this.path = path;
 				this.pathItem = pathItem;
 				this.response = response;
@@ -121,9 +125,9 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 				query = null;
 			}
 
-			OpenstackItem root = getDirectoryRoot();
+			VfsItem root = getDirectoryRoot();
 
-			OpenstackItem pathItem = findItem(path);
+			VfsItem pathItem = findItem(path);
 
 			HttpResponse response = null;
 			if (pathItem != null) {
@@ -149,7 +153,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 
 						ServerRuleChain rules = serverRuleResolver.resolveServerRules(path);
 						for (String documentIndex : rules.getDocumentIndexes()) {
-							OpenstackItem child = pathItem.getChild(documentIndex);
+							VfsItem child = pathItem.findChild(documentIndex);
 							if (child != null) {
 								// Note that the rule chain is the same, because
 								// it lives in the same directory!
@@ -182,7 +186,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 		ServerRuleChain getRules() {
 			if (ruleChain == null) {
 				Resolved resolved = resolve();
-				OpenstackItem root = getDirectoryRoot();
+				VfsItem root = getDirectoryRoot();
 
 				if (serverRuleResolver == null) {
 					serverRuleResolver = new ServerRuleResolver(root);
@@ -207,10 +211,10 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			return response;
 		}
 
-		OpenstackItem findItem(String path) {
-			OpenstackItem root = getDirectoryRoot();
+		VfsItem findItem(String path) {
+			VfsItem root = getDirectoryRoot();
 
-			OpenstackItem current = root;
+			VfsItem current = root;
 
 			// We omit empty strings so we're not tricked by / or directory/
 			// Also, we want directory and directory/ to be the same in terms of
@@ -224,7 +228,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			return current;
 		}
 
-		HashKey getCacheKey(Resolved resolved) {
+		ByteString getCacheKey(Resolved resolved) {
 			if (resolved.pathItem == null) {
 				return null;
 			}
@@ -243,9 +247,9 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 			// return false;
 		}
 
-		OpenstackItem directoryRoot;
+		VfsItem directoryRoot;
 
-		private OpenstackItem getDirectoryRoot() {
+		private VfsItem getDirectoryRoot() {
 			if (directoryRoot == null) {
 				directoryRoot = openstackDirectoryCache.getAsync(openstackCredentials, getContainerName());
 			}
@@ -306,7 +310,7 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 				return;
 			}
 
-			HashKey cacheKey = getCacheKey(resolved);
+			ByteString cacheKey = getCacheKey(resolved);
 
 			if (!didCacheLookup && cacheKey != null) {
 				didCacheLookup = true;
@@ -408,4 +412,5 @@ public class OpenstackDataProvider extends ObjectDataProvider {
 	public Handler buildHandler(GenericRequest request) {
 		return new Handler(request);
 	}
+
 }

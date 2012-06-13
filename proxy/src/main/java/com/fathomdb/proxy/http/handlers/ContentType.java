@@ -16,6 +16,9 @@ public class ContentType {
 
 	static final ConcurrentMap<String, ContentType> INSTANCES = Maps.newConcurrentMap();
 
+	public static final ContentType TYPE_X_DIRECTORY = ContentType.get("application/x-directory");
+	public static final ContentType TYPE_DIRECTORY = ContentType.get("application/directory");
+
 	public static ContentType get(String key) {
 		ContentType contentType = INSTANCES.get(key);
 

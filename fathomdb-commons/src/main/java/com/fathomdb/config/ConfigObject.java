@@ -7,9 +7,11 @@ public abstract class ConfigObject {
 		this.version = versionKey;
 	}
 
-	public abstract boolean isPresent();
-
 	public String getVersion() {
 		return version;
+	}
+
+	public boolean isPresent() {
+		return version != null;
 	}
 }

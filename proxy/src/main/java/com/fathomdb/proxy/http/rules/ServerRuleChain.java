@@ -1,4 +1,4 @@
-package com.fathomdb.proxy.openstack;
+package com.fathomdb.proxy.http.rules;
 
 import java.util.Collections;
 import java.util.Date;

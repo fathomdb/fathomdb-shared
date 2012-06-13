@@ -2,15 +2,15 @@ package com.fathomdb.proxy.http.client;
 
 import java.net.URI;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import com.fathomdb.proxy.http.HttpScheme;
 
+@Singleton
 public class HttpClientPool {
-	final HttpClient client;
-
-	public HttpClientPool(HttpClient client) {
-		super();
-		this.client = client;
-	}
+	@Inject
+	HttpClient client;
 
 	public HttpClientConnection getClient(HttpScheme scheme, String hostAndPort) {
 		// TODO: Implement pooling!!

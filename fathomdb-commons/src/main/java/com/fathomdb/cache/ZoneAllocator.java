@@ -229,6 +229,14 @@ public class ZoneAllocator {
 		return zone.allocate();
 	}
 
+	public void release(int size, int position) {
+		Zone zone = pickZone(size);
+		if (zone == null) {
+			throw new IllegalStateException();
+		}
+		zone.release(position);
+	}
+
 	public static ZoneAllocator buildFreeList(Iterable<CacheFileEntry> entries, int start, int limit) {
 		final FreeList freeList = new FreeList();
 
@@ -244,4 +252,5 @@ public class ZoneAllocator {
 
 		return new ZoneAllocator(freeList);
 	}
+
 }

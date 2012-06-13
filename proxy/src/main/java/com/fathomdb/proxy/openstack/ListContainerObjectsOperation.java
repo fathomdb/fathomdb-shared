@@ -6,8 +6,8 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 
+import com.fathomdb.proxy.http.vfs.VfsItem;
 import com.fathomdb.proxy.openstack.fs.OpenstackDirectoryBuilder;
-import com.fathomdb.proxy.openstack.fs.OpenstackItem;
 
 public class ListContainerObjectsOperation {
 	final OpenstackSession session;
@@ -20,7 +20,7 @@ public class ListContainerObjectsOperation {
 
 	ContainerListResponseHandler containerListingResponse;
 
-	public OpenstackItem get() throws AsyncFutureException {
+	public VfsItem get() throws AsyncFutureException {
 		if (containerListingResponse == null) {
 			String containerName = path;
 			if (containerName.startsWith("/")) {
@@ -49,7 +49,7 @@ public class ListContainerObjectsOperation {
 			throw new AsyncFutureException(containerListingResponse.getFuture(), "Swift container listing");
 		}
 
-		OpenstackItem root = (OpenstackItem) containerListingResponse.getResult();
+		VfsItem root = (VfsItem) containerListingResponse.getResult();
 
 		return root;
 	}

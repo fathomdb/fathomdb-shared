@@ -1,14 +1,15 @@
 package com.fathomdb.proxy.openstack;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import com.fathomdb.proxy.http.client.HttpClientPool;
 
+@Singleton
 public class OpenstackClientPool {
 
-	final HttpClientPool httpClientPool;
-
-	public OpenstackClientPool(HttpClientPool httpClientPool) {
-		this.httpClientPool = httpClientPool;
-	}
+	@Inject
+	HttpClientPool httpClientPool;
 
 	public OpenstackSession getClient(OpenstackCredentials credentials) {
 		return new OpenstackSession(this, credentials);

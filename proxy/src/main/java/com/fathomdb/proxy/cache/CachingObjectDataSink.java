@@ -5,18 +5,18 @@ import java.nio.ByteBuffer;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.openstack.crypto.ByteString;
 
 import com.fathomdb.cache.Cache;
-import com.fathomdb.cache.HashKey;
 import com.fathomdb.cache.CacheFile.Allocation;
 import com.fathomdb.proxy.objectdata.ObjectDataSink;
 
 public class CachingObjectDataSink implements ObjectDataSink {
 	final Cache cache;
 	private Allocation allocation;
-	private final HashKey cacheKey;
+	private final ByteString cacheKey;
 
-	public CachingObjectDataSink(Cache cache, HashKey cacheKey) {
+	public CachingObjectDataSink(Cache cache, ByteString cacheKey) {
 		this.cache = cache;
 		this.cacheKey = cacheKey;
 	}
