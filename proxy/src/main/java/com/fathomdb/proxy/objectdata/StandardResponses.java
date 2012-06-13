@@ -18,7 +18,7 @@ import org.jboss.netty.util.CharsetUtil;
 import com.fathomdb.proxy.http.server.GenericRequest;
 
 public class StandardResponses {
-	public static HttpResponse buildError(GenericRequest request, HttpResponseStatus status) {
+	public static HttpResponse buildErrorResponse(GenericRequest request, HttpResponseStatus status) {
 		HttpResponse response = buildResponse(request, status);
 
 		// response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, 0);

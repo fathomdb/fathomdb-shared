@@ -9,6 +9,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 
 import com.fathomdb.meta.Meta;
+import com.fathomdb.proxy.http.HttpException;
 import com.fathomdb.proxy.http.rules.ServerRuleChain;
 import com.fathomdb.proxy.http.rules.ServerRuleResolver;
 import com.fathomdb.proxy.http.server.GenericRequest;
@@ -42,19 +43,11 @@ public class VfsItemResolver implements Closeable {
 		}
 	}
 
-	Resolved resolved;
-
-	public Resolved resolve() {
-		if (resolved != null) {
-			return resolved;
-		}
-
+	public String getPath() throws HttpException {
 		HttpMethod method = request.getMethod();
 
 		if (method != HttpMethod.GET) {
-			HttpResponse response = StandardResponses.buildError(request, HttpResponseStatus.METHOD_NOT_ALLOWED);
-			resolved = new Resolved(null, null, response, null);
-			return resolved;
+			throw HttpException.METHOD_NOT_ALLOWED;
 		}
 
 		String path = request.getUri();
@@ -73,6 +66,18 @@ public class VfsItemResolver implements Closeable {
 			query = null;
 		}
 
+		return path;
+	}
+
+	Resolved resolved;
+
+	public Resolved resolve() {
+		if (resolved != null) {
+			return resolved;
+		}
+
+		String path = getPath();
+
 		VfsItem pathItem = findItem(path);
 		ServerRuleChain ruleChain = null;
 
@@ -85,7 +90,8 @@ public class VfsItemResolver implements Closeable {
 
 					// The root (empty path) appears to be a special case
 
-					response = StandardResponses.buildError(request, HttpResponseStatus.MOVED_PERMANENTLY);
+					// TODO: Move to exception, then remove response from resolver?
+					response = StandardResponses.buildErrorResponse(request, HttpResponseStatus.MOVED_PERMANENTLY);
 					// TODO: Does this need to be absolute??
 					String redirectRelative = "/" + path + "/";
 					// String redirectAbsolute =
@@ -110,14 +116,14 @@ public class VfsItemResolver implements Closeable {
 					}
 
 					if (!found) {
-						response = StandardResponses.buildError(request, HttpResponseStatus.NOT_FOUND);
+						throw HttpException.NOT_FOUND;
 					}
 				}
 			}
 		}
 
 		if (pathItem == null) {
-			response = StandardResponses.buildError(request, HttpResponseStatus.NOT_FOUND);
+			throw HttpException.NOT_FOUND;
 		}
 
 		resolved = new Resolved(path, pathItem, response, ruleChain);

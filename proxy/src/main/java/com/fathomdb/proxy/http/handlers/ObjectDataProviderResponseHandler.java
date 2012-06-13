@@ -3,13 +3,17 @@ package com.fathomdb.proxy.http.handlers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fathomdb.proxy.http.HttpException;
 import com.fathomdb.proxy.http.logger.RequestLogger;
 import com.fathomdb.proxy.http.server.GenericRequest;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider;
 import com.fathomdb.proxy.objectdata.ObjectDataProvider.Handler;
+import com.fathomdb.proxy.objectdata.StandardResponses;
 import com.fathomdb.proxy.openstack.EasyAsync;
 
 public class ObjectDataProviderResponseHandler implements RequestHandler {
@@ -42,6 +46,19 @@ public class ObjectDataProviderResponseHandler implements RequestHandler {
 
 			@Override
 			public void operationComplete(ChannelFuture future) throws Exception {
+				if (!future.isSuccess()) {
+					Throwable cause = future.getCause();
+					HttpResponseStatus status = HttpResponseStatus.INTERNAL_SERVER_ERROR;
+					if (cause instanceof HttpException) {
+						status = ((HttpException) cause).getStatus();
+					} else {
+						log.info("Internal error during processing: " + request, cause);
+					}
+					HttpResponse errorResponse = StandardResponses.buildErrorResponse(request, status);
+					response.beginResponse(errorResponse);
+					response.endData();
+				}
+
 				try {
 					handler.close();
 				} catch (Exception e) {
