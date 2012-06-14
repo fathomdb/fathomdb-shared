@@ -1,6 +1,9 @@
-package com.fathomdb.proxy.htaccess;
+package com.fathomdb.proxy.htaccess.expires;
 
+import com.fathomdb.proxy.htaccess.HtaccessTokenizer;
+import com.fathomdb.proxy.htaccess.ParseDirectiveNode;
 import com.fathomdb.proxy.http.handlers.ContentType;
+import com.fathomdb.proxy.http.rules.ServerRuleVisitor;
 
 public class ExpiresByType extends ExpirationDirective {
 	final ContentType contentType;
@@ -37,6 +40,11 @@ public class ExpiresByType extends ExpirationDirective {
 
 	public ContentType getContentType() {
 		return contentType;
+	}
+
+	@Override
+	public void accept(ServerRuleVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

@@ -1,4 +1,7 @@
-package com.fathomdb.proxy.htaccess;
+package com.fathomdb.proxy.htaccess.expires;
+
+import com.fathomdb.proxy.htaccess.ParseDirectiveNode;
+import com.fathomdb.proxy.http.rules.ServerRuleVisitor;
 
 public class ExpiresDefault extends ExpirationDirective {
 	ExpiresDefault(ParseDirectiveNode node, ExpirationTimeout timeout) {
@@ -13,6 +16,11 @@ public class ExpiresDefault extends ExpirationDirective {
 	@Override
 	public String toString() {
 		return "ExpiresDefault [" + super.toStringHelper() + "]";
+	}
+
+	@Override
+	public void accept(ServerRuleVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }

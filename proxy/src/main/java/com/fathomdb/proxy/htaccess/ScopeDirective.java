@@ -2,9 +2,10 @@ package com.fathomdb.proxy.htaccess;
 
 import java.util.List;
 
+import com.fathomdb.proxy.http.rules.ServerRuleVisitor;
 import com.google.common.collect.Lists;
 
-public class ScopeDirective extends Directive {
+public abstract class ScopeDirective extends Directive {
 
 	final List<Directive> children = Lists.newArrayList();
 
@@ -23,6 +24,12 @@ public class ScopeDirective extends Directive {
 	@Override
 	protected String toStringHelper() {
 		return ", children=" + children + super.toStringHelper();
+	}
+
+	protected void visitChildren(ServerRuleVisitor visitor) {
+		for (Directive child : children) {
+			child.accept(visitor);
+		}
 	}
 
 }

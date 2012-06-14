@@ -1,6 +1,8 @@
 package com.fathomdb.proxy.htaccess;
 
-public class Directive {
+import com.fathomdb.proxy.http.rules.ServerRuleVisitor;
+
+public abstract class Directive {
 	public final ParseNode node;
 
 	protected Directive(ParseNode node) {
@@ -12,4 +14,5 @@ public class Directive {
 		// return ", node=" + node;
 	}
 
+	public abstract void accept(ServerRuleVisitor visitor);
 }

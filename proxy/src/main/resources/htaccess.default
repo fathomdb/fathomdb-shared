@@ -23,3 +23,12 @@ ExpiresByType application/x-shockwave-flash "access 1 month"
 ExpiresByType text/javascript "access plus 1 week"
 ExpiresByType application/x-javascript "access plus 1 week"
 ExpiresByType application/javascript "access plus 1 week"
+
+<Files *.nocache.*>
+  ExpiresDefault "now"
+  #Header merge Cache-Control "public, max-age=0, must-revalidate"
+</Files>
+
+<Files *.cache.*>
+  ExpiresDefault "now plus 1 year"
+</Files>

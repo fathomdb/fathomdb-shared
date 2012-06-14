@@ -2,6 +2,8 @@ package com.fathomdb.proxy.htaccess;
 
 import java.util.regex.Pattern;
 
+import com.fathomdb.proxy.http.rules.ServerRuleVisitor;
+
 public class FilesDirective extends ScopeDirective {
 	private final Pattern regex;
 
@@ -82,4 +84,14 @@ public class FilesDirective extends ScopeDirective {
 		return "FilesDirective [regex=" + regex + super.toStringHelper() + "]";
 	}
 
+	@Override
+	public void accept(ServerRuleVisitor visitor) {
+		if (visitor.visit(this)) {
+			visitChildren(visitor);
+		}
+	}
+
+	public Pattern getRegex() {
+		return regex;
+	}
 }

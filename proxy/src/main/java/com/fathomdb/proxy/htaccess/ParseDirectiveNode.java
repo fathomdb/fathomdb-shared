@@ -1,5 +1,8 @@
 package com.fathomdb.proxy.htaccess;
 
+import com.fathomdb.proxy.htaccess.expires.ExpiresActive;
+import com.fathomdb.proxy.htaccess.expires.ExpiresByType;
+import com.fathomdb.proxy.htaccess.expires.ExpiresDefault;
 import com.google.common.base.Objects;
 
 public class ParseDirectiveNode extends ParseNode {

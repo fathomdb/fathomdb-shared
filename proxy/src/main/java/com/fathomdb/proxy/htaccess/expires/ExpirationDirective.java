@@ -1,12 +1,14 @@
-package com.fathomdb.proxy.htaccess;
+package com.fathomdb.proxy.htaccess.expires;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import com.fathomdb.proxy.htaccess.Directive;
+import com.fathomdb.proxy.htaccess.ParseDirectiveNode;
 import com.fathomdb.utils.EnumUtils;
 import com.google.common.base.Splitter;
 
-public class ExpirationDirective extends Directive {
+public abstract class ExpirationDirective extends Directive {
 	protected final ExpirationTimeout timeout;
 
 	public enum ExpirationBase {

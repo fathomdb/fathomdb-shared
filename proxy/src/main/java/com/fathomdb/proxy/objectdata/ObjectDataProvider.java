@@ -91,7 +91,7 @@ public abstract class ObjectDataProvider {
 				response.setHeader(HttpHeaders.Names.LAST_MODIFIED, Dates.format(lastModified));
 			}
 
-			getRules().addCacheHeaders(response);
+			getRules().addCacheHeaders(resolved, response);
 
 			sink.beginResponse(response);
 			if (contentLength > 0) {

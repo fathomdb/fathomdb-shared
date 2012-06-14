@@ -1,4 +1,10 @@
-package com.fathomdb.proxy.htaccess;
+package com.fathomdb.proxy.htaccess.expires;
+
+import com.fathomdb.proxy.htaccess.Directive;
+import com.fathomdb.proxy.htaccess.ParseDirectiveNode;
+import com.fathomdb.proxy.htaccess.ParseNode;
+import com.fathomdb.proxy.htaccess.Parsers;
+import com.fathomdb.proxy.http.rules.ServerRuleVisitor;
 
 public class ExpiresActive extends Directive {
 
@@ -17,6 +23,15 @@ public class ExpiresActive extends Directive {
 	@Override
 	public String toString() {
 		return "ExpiresActive [active=" + active + super.toStringHelper() + "]";
+	}
+
+	@Override
+	public void accept(ServerRuleVisitor visitor) {
+		visitor.visit(this);
+	}
+
+	public boolean isActive() {
+		return active;
 	}
 
 }

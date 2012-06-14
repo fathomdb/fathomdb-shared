@@ -1,5 +1,6 @@
 package com.fathomdb.proxy.htaccess;
 
+import com.fathomdb.proxy.http.rules.ServerRuleVisitor;
 import com.fathomdb.utils.EnumUtils;
 
 public class HeaderDirective extends Directive {
@@ -67,4 +68,8 @@ public class HeaderDirective extends Directive {
 				+ value + "]";
 	}
 
+	@Override
+	public void accept(ServerRuleVisitor visitor) {
+		visitor.visit(this);
+	}
 }

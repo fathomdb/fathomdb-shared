@@ -3,6 +3,7 @@ package com.fathomdb.proxy.htaccess;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fathomdb.proxy.http.rules.ServerRuleVisitor;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
@@ -48,6 +49,11 @@ public class DirectoryIndexDirective extends Directive {
 	public Iterable<String> getDirectoryIndexUrls() {
 		// TODO: Where the array => iterable function ??
 		return Arrays.asList(urls);
+	}
+
+	@Override
+	public void accept(ServerRuleVisitor visitor) {
+		visitor.visit(this);
 	}
 
 }
