@@ -48,9 +48,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 
 	@Override
 	protected T buildConfig(String key) {
-		String fileName = toFileName(key);
-
-		File file = new File(baseDir, fileName);
+		File file = toFile(key);
 		if (!file.exists()) {
 			// TODO: Return dummy HostConfig
 			return buildNullResult(key);
@@ -81,6 +79,12 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 	public String toVersion(File file) {
 		long lastModified = file.lastModified();
 		return String.valueOf(lastModified);
+	}
+
+	private File toFile(String key) {
+		String fileName = toFileName(key);
+		File file = new File(baseDir, fileName);
+		return file;
 	}
 
 	private String toFileName(String key) {
@@ -173,7 +177,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 						continue;
 					}
 
-					File file = new File(baseDir, key);
+					File file = toFile(key);
 					if (!file.exists()) {
 						if (!config.isPresent()) {
 							log.debug("Up-to-date (not present) on: " + key);
