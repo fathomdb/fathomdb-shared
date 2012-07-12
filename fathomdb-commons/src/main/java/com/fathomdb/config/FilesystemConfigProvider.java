@@ -110,7 +110,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 					break;
 
 				default:
-					throw new IllegalArgumentException();
+					throw new IllegalArgumentException("Unhandled character in key: " + key);
 				}
 			}
 
