@@ -2,9 +2,11 @@ package com.fathomdb.dns.server;
 
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.channels.DatagramChannel;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -51,9 +53,19 @@ public class DnsMessageHandler extends SimpleChannelUpstreamHandler {
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-		// TODO: Should we close a UDP channel?
-		e.getCause().printStackTrace();
-		e.getChannel().close();
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent event) throws Exception {
+		log.warn("Notified of uncaught exception", event.getCause());
+
+		Channel channel = event.getChannel();
+		if (channel instanceof DatagramChannel) {
+			log.warn("UDP channel, won't close: " + channel);
+		} else {
+			log.warn("Closing channel: " + channel);
+			try {
+				channel.close();
+			} catch (Exception e) {
+				log.warn("Ignoring error closing channel", e);
+			}
+		}
 	}
 }
