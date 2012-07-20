@@ -2,7 +2,6 @@ package com.fathomdb.dns.server;
 
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.nio.channels.DatagramChannel;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -31,6 +30,8 @@ public class DnsMessageHandler extends SimpleChannelUpstreamHandler {
 		byte[] data = query.getOriginalMessageData();
 
 		Socket s = null;
+
+		// TODO: Catch error and close TCP, rather than going via exceptionCaught??
 		byte[] reply = recordProvider.generateReply(query.getMessage(), data, data.length, s);
 
 		if (reply != null) {
@@ -57,10 +58,10 @@ public class DnsMessageHandler extends SimpleChannelUpstreamHandler {
 		log.warn("Notified of uncaught exception", event.getCause());
 
 		Channel channel = event.getChannel();
-		if (channel instanceof DatagramChannel) {
+		if (channel instanceof org.jboss.netty.channel.socket.DatagramChannel) {
 			log.warn("UDP channel, won't close: " + channel);
 		} else {
-			log.warn("Closing channel: " + channel);
+			log.warn("Closing channel: " + channel.getClass() + ": " + channel);
 			try {
 				channel.close();
 			} catch (Exception e) {

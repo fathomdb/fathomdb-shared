@@ -49,7 +49,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 	@Override
 	protected T buildConfig(String key) {
 		File file = toFile(key);
-		if (!file.exists()) {
+		if (file == null || !file.exists()) {
 			// TODO: Return dummy HostConfig
 			return buildNullResult(key);
 		}
@@ -83,6 +83,10 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 
 	private File toFile(String key) {
 		String fileName = toFileName(key);
+		if (fileName == null) {
+			return null;
+		}
+
 		File file = new File(baseDir, fileName);
 		return file;
 	}
@@ -110,7 +114,8 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 					break;
 
 				default:
-					throw new IllegalArgumentException("Unhandled character in key: " + key);
+					log.warn("Disallowed character in key: " + key);
+					return null;
 				}
 			}
 
@@ -178,7 +183,7 @@ public abstract class FilesystemConfigProvider<T extends ConfigObject> extends C
 					}
 
 					File file = toFile(key);
-					if (!file.exists()) {
+					if (file == null || !file.exists()) {
 						if (!config.isPresent()) {
 							log.debug("Up-to-date (not present) on: " + key);
 							continue;
