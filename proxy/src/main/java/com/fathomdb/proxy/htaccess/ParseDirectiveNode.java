@@ -32,7 +32,9 @@ public class ParseDirectiveNode extends ParseNode {
 			return HeaderDirective.parse(this);
 		} else if (Objects.equal(key, "DirectoryIndex")) {
 			return DirectoryIndexDirective.parse(this);
-		} else {
+		}
+		// We have some extensions...
+		else {
 			throw new IllegalArgumentException("Unknown directive: " + key);
 		}
 	}

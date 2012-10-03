@@ -11,6 +11,11 @@ public class HtaccessParserTest {
 	public void test1() throws IOException {
 		ParseScopeNode root = parse("htaccess1");
 		dump(root);
+
+		// HttpResponse response = new HttpResponse() {
+		//
+		// }
+		// ExpirationVisitor visitor = new ExpirationVisitor();
 	}
 
 	@Test
