@@ -5,8 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import org.openstack.utils.Io;
-
+import com.fathomdb.io.IoUtils;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -145,7 +144,7 @@ public class Meta<T> {
 				continue;
 			}
 
-			Io.safeClose(value);
+			IoUtils.safeClose(value);
 			closeableField.setValue(item, null);
 		}
 	}
