@@ -9,6 +9,7 @@
 
     <modules>
         <module>fathomdb-commons</module>
+        <module>fathomdb-crypto</module>
     </modules>
 
     <properties>
