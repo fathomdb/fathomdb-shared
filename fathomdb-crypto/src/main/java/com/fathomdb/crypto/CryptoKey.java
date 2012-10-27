@@ -19,9 +19,9 @@ public abstract class CryptoKey {
 	// @SuppressWarnings("unused")
 	// private static final Logger log = LoggerFactory.getLogger(CryptoKey.class);
 
-	public abstract byte[] decrypt(byte[] iv, byte[] ciphertext);
+	public abstract byte[] decrypt(byte[] ciphertext);
 
-	public abstract byte[] encrypt(byte[] iv, byte[] plaintext);
+	public abstract byte[] encrypt(byte[] plaintext);
 
 	protected static Cipher getCipher(String algorithm) {
 		try {

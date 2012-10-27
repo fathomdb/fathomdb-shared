@@ -14,6 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteStreams;
 
+/**
+ * Deprecated: Doesn't use an IV, and is ECB mode
+ * 
+ * @author justinsb
+ * 
+ */
 @Deprecated
 public class AesCryptoKey extends CryptoKey {
 	@SuppressWarnings("unused")
@@ -30,22 +36,19 @@ public class AesCryptoKey extends CryptoKey {
 	}
 
 	@Override
-	public byte[] decrypt(byte[] iv, byte[] ciphertext) {
-		// This is why this is deprecated, along with ECB mode
-		iv = null;
+	public byte[] decrypt(byte[] ciphertext) {
 
 		Cipher cipher = getCipher(CIPHER);
 
+		byte[] iv = null; // Deprecated
 		return decrypt(cipher, secret, iv, ciphertext);
 	}
 
 	@Override
-	public byte[] encrypt(byte[] iv, byte[] plaintext) {
-		// This is why this is deprecated, along with ECB mode
-		iv = null;
-
+	public byte[] encrypt(byte[] plaintext) {
 		Cipher cipher = getCipher(CIPHER);
 
+		byte[] iv = null; // Deprecated
 		return encrypt(cipher, secret, iv, plaintext);
 	}
 

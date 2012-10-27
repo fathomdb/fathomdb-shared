@@ -80,20 +80,12 @@ public class FathomdbCrypto {
 		}
 	}
 
-	public static byte[] decrypt(CryptoKey secret, byte[] iv, byte[] ciphertext) {
-		return secret.decrypt(iv, ciphertext);
-	}
-
 	public static byte[] decrypt(CryptoKey secret, byte[] ciphertext) {
-		return decrypt(secret, null, ciphertext);
-	}
-
-	public static byte[] encrypt(CryptoKey secret, byte[] iv, byte[] plaintext) {
-		return secret.encrypt(iv, plaintext);
+		return secret.decrypt(ciphertext);
 	}
 
 	public static byte[] encrypt(CryptoKey secret, byte[] plaintext) {
-		return encrypt(secret, null, plaintext);
+		return secret.encrypt(plaintext);
 	}
 
 	public static CryptoKey deriveKey(byte[] salt, String password) {
