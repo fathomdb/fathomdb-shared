@@ -10,15 +10,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.interfaces.PBEKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Bytes;
 
 public class AesCbcCryptoKey extends CryptoKey {
-	private static final Logger log = LoggerFactory.getLogger(AesCbcCryptoKey.class);
-
 	private static final String CIPHER = "AES/CBC/PKCS5Padding";
 	private static final int DEFAULT_KEYSIZE_BITS = 128;
 

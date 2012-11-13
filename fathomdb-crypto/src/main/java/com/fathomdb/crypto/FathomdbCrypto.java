@@ -6,15 +6,9 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.io.Closeables;
 
 public class FathomdbCrypto {
-	@SuppressWarnings("unused")
-	private static final Logger log = LoggerFactory.getLogger(FathomdbCrypto.class);
-
 	private static final byte ALGORITHM_AES = 1;
 	private static final byte AES_DEPRECATED = 1;
 	private static final byte AES_CBC = 2;

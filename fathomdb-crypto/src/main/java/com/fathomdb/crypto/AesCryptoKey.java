@@ -22,7 +22,6 @@ import com.google.common.io.ByteStreams;
  */
 @Deprecated
 public class AesCryptoKey extends CryptoKey {
-	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger(AesCryptoKey.class);
 
 	final SecretKey secret;
