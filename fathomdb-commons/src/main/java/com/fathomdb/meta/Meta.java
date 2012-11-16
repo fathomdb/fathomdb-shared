@@ -3,12 +3,10 @@ package com.fathomdb.meta;
 import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fathomdb.io.IoUtils;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 public class Meta<T> {
 	final Class<T> clazz;
@@ -24,38 +22,27 @@ public class Meta<T> {
 		this.allFields = findFields();
 		this.identityFields = toArray(allFields);
 		this.toStringFields = allFields;
-		this.closeableFields = filter(allFields, Implements.build(Closeable.class));
+		this.closeableFields = filter(allFields, Closeable.class);
 	}
 
-	private MetaField<T>[] toArray(List<MetaField<T>> fields) {
-		return fields.toArray(new MetaField[fields.size()]);
+	private static <T> MetaField<T>[] toArray(List<MetaField<T>> list) {
+		return list.toArray(new MetaField[list.size()]);
 	}
 
-	static class Implements<V> implements Predicate<MetaField<?>> {
-		final Class<V> checkClass;
-
-		public Implements(Class<V> checkClass) {
-			this.checkClass = checkClass;
+	private List<MetaField<T>> filter(List<MetaField<T>> fields, Class<?> checkClass) {
+		List<MetaField<T>> matches = new ArrayList<MetaField<T>>();
+		for (MetaField<T> field : fields) {
+			Class<?> fieldType = field.field.getType();
+			if (checkClass.isAssignableFrom(fieldType)) {
+				matches.add(field);
+			}
 		}
 
-		public static <V> Implements<V> build(Class<V> checkClass) {
-			return new Implements<V>(checkClass);
-		}
-
-		@Override
-		public boolean apply(MetaField<?> input) {
-			Class<?> fieldType = input.field.getType();
-
-			return checkClass.isAssignableFrom(fieldType);
-		}
-	}
-
-	private static <V> List<V> filter(List<V> in, Predicate<? super V> predicate) {
-		return Lists.newArrayList(Iterables.filter(in, predicate));
+		return matches;
 	}
 
 	private List<MetaField<T>> findFields() {
-		List<MetaField<T>> metaFields = Lists.newArrayList();
+		List<MetaField<T>> metaFields = new ArrayList<MetaField<T>>();
 
 		Class<?> current = clazz;
 		while (current != null) {

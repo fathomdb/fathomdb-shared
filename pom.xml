@@ -10,6 +10,7 @@
     <modules>
         <module>fathomdb-commons</module>
         <module>fathomdb-crypto</module>
+        <module>fathomdb-http</module>
     </modules>
 
     <properties>
@@ -32,7 +33,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>11.0.2</version>
+                <version>13.0.1</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

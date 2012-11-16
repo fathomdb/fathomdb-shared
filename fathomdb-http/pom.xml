@@ -8,11 +8,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>fathomdb-commons</artifactId>
-    <name>FathomDB :: Commons</name>
+    <artifactId>fathomdb-http</artifactId>
+    <name>FathomDB :: HTTP</name>
 
     <properties>
-        <version.openstack>0.1-SNAPSHOT</version.openstack>
     </properties>
 
     <dependencies>
@@ -25,6 +24,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-commons</artifactId>
         </dependency>
     </dependencies>
 </project>
