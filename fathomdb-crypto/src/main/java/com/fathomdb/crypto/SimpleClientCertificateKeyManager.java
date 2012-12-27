@@ -4,10 +4,16 @@ import java.net.Socket;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 import javax.net.ssl.X509KeyManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SimpleClientCertificateKeyManager implements X509KeyManager {
+	private static final Logger log = LoggerFactory.getLogger(SimpleClientCertificateKeyManager.class);
+
 	private static final String ALIAS = "cert";
 
 	final PrivateKey privateKey;
@@ -36,12 +42,16 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 
 	@Override
 	public String[] getServerAliases(String keyType, Principal[] issuers) {
+		log.warn("getServerAliases not implemented");
+
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
+		log.warn("chooseServerAlias not implemented");
+
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException();
 	}
@@ -49,6 +59,8 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 	@Override
 	public X509Certificate[] getCertificateChain(String alias) {
 		if (!alias.equals(ALIAS)) {
+			log.warn("Alias mismatch: " + alias);
+
 			throw new IllegalArgumentException();
 		}
 
@@ -58,10 +70,17 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 	@Override
 	public PrivateKey getPrivateKey(String alias) {
 		if (!alias.equals(ALIAS)) {
+			log.warn("Alias mismatch: " + alias);
+
 			throw new IllegalArgumentException();
 		}
 
 		return privateKey;
-
 	}
+
+	@Override
+	public String toString() {
+		return "SimpleClientCertificateKeyManager [certificateChain=" + Arrays.toString(certificateChain) + "]";
+	}
+
 }
