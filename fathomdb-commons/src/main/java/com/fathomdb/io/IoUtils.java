@@ -1,8 +1,10 @@
 package com.fathomdb.io;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -163,6 +165,50 @@ public class IoUtils {
 			return readAll(in);
 		} finally {
 			IoUtils.safeClose(in);
+		}
+	}
+
+	public static byte[] readAllBinary(InputStream input) throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		IoUtils.copyStream(input, output);
+		return output.toByteArray();
+	}
+
+	public static byte[] readAllBinary(FileInputStream input) throws IOException {
+		long fileSize = input.getChannel().size();
+		int bytesToRead = (int) fileSize;
+
+		byte[] data = new byte[bytesToRead];
+		int offset = 0;
+		while (bytesToRead > 0) {
+			int bytesRead = input.read(data, offset, bytesToRead);
+			if (bytesRead <= 0) {
+				throw new IllegalStateException("Cannot read file fully");
+			}
+			bytesToRead -= bytesRead;
+			offset += bytesRead;
+		}
+
+		return data;
+	}
+
+	public static byte[] readAllBinary(File file) throws IOException {
+		FileInputStream in = new FileInputStream(file);
+		try {
+			return readAllBinary(in);
+		} finally {
+			IoUtils.safeClose(in);
+		}
+	}
+
+	public static String readAllResource(Class<?> context, String resourceName) throws IOException {
+		InputStream resourceAsStream = context.getResourceAsStream(resourceName);
+		String text;
+		try {
+			text = IoUtils.readAll(resourceAsStream);
+			return text;
+		} finally {
+			IoUtils.safeClose(resourceAsStream);
 		}
 	}
 
