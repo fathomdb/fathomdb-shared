@@ -157,4 +157,13 @@ public class IoUtils {
 		return new File(filename);
 	}
 
+	public static String readAll(File file) throws IOException {
+		BufferedReader in = new BufferedReader(Utf8.openFile(file));
+		try {
+			return readAll(in);
+		} finally {
+			IoUtils.safeClose(in);
+		}
+	}
+
 }
