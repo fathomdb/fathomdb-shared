@@ -11,10 +11,6 @@
     <artifactId>fathomdb-commons</artifactId>
     <name>FathomDB :: Commons</name>
 
-    <properties>
-        <version.openstack>0.1-SNAPSHOT</version.openstack>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

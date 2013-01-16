@@ -27,6 +27,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-commons</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <scope>provided</scope>
