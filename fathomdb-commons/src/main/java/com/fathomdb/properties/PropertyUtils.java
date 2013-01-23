@@ -29,10 +29,10 @@ public class PropertyUtils {
 		}
 	}
 
-	public static Properties getChildProperties(Properties base, String prefix) {
-		Properties children = new Properties();
+	public static <K, V> Map<String, V> getChildProperties(Map<K, V> base, String prefix) {
+		Map<String, V> children = Maps.newHashMap();
 
-		for (Map.Entry<Object, Object> entry : base.entrySet()) {
+		for (Map.Entry<K, V> entry : base.entrySet()) {
 			Object keyObject = entry.getKey();
 			if (!(keyObject instanceof String)) {
 				continue;
@@ -94,5 +94,13 @@ public class PropertyUtils {
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+
+	public static Map<String, String> toMap(Properties properties) {
+		Map<String, String> map = Maps.newHashMap();
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			map.put((String) entry.getKey(), (String) entry.getValue());
+		}
+		return map;
 	}
 }

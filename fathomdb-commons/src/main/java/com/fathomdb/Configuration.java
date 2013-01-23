@@ -1,12 +1,14 @@
 package com.fathomdb;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.Map;
 
 public interface Configuration {
 	String get(String key);
 
 	String lookup(String key, String defaultValue);
+
+	boolean lookup(String key, boolean defaultValue);
 
 	int lookup(String key, int defaultValue);
 
@@ -16,5 +18,5 @@ public interface Configuration {
 
 	File lookupFile(String key, String defaultValue);
 
-	Properties getChildProperties(String prefix);
+	Map<String, String> getChildProperties(String prefix);
 }
