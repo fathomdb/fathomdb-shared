@@ -1,5 +1,6 @@
 package com.fathomdb;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -66,5 +67,14 @@ public class RandomUtil {
 
 		sb.setLength(length);
 		return sb.toString();
+	}
+
+	public <T> T pick(List<T> list) {
+		int size = list.size();
+		if (size == 0) {
+			throw new IllegalArgumentException();
+		}
+		int i = random.nextInt(size);
+		return list.get(i);
 	}
 }
