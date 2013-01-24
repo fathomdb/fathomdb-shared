@@ -26,6 +26,24 @@
             </dependency>
 
             <dependency>
+                <groupId>com.fathomdb</groupId>
+                <artifactId>fathomdb-crypto</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fathomdb</groupId>
+                <artifactId>fathomdb-http</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
+
+            <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>1.2.16</version>

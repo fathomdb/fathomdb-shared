@@ -30,5 +30,16 @@
             <groupId>com.fathomdb</groupId>
             <artifactId>fathomdb-commons</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.fathomdb</groupId>
+            <artifactId>fathomdb-crypto</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

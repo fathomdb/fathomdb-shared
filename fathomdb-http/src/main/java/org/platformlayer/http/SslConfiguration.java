@@ -10,6 +10,14 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import com.fathomdb.Configuration;
+import com.fathomdb.crypto.CertificateAndKey;
+import com.fathomdb.crypto.EncryptionStore;
+import com.fathomdb.crypto.SimpleClientCertificateKeyManager;
+import com.fathomdb.crypto.ssl.AcceptAllHostnameVerifier;
+import com.fathomdb.crypto.ssl.PublicKeyTrustManager;
+import com.google.common.base.Splitter;
+
 public class SslConfiguration {
 	public static final SslConfiguration EMPTY = new SslConfiguration(null, null, null);
 
@@ -58,6 +66,34 @@ public class SslConfiguration {
 	public String toString() {
 		return "SslConfiguration [keyManager=" + keyManager + ", trustManager=" + trustManager + ", hostnameVerifier="
 				+ hostnameVerifier + "]";
+	}
+
+	public static SslConfiguration fromConfiguration(EncryptionStore encryptionStore, Configuration configuration,
+			String prefix) {
+		if (!prefix.isEmpty() && !prefix.endsWith(".")) {
+			prefix += ".";
+		}
+
+		String cert = configuration.get(prefix + "ssl.cert");
+
+		CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey(cert);
+
+		HostnameVerifier hostnameVerifier = null;
+
+		KeyManager keyManager = new SimpleClientCertificateKeyManager(certificateAndKey);
+
+		TrustManager trustManager = null;
+
+		String trustKeys = configuration.lookup(prefix + "ssl.keys", null);
+
+		if (trustKeys != null) {
+			trustManager = new PublicKeyTrustManager(Splitter.on(',').trimResults().split(trustKeys));
+
+			hostnameVerifier = new AcceptAllHostnameVerifier();
+		}
+
+		SslConfiguration sslConfiguration = new SslConfiguration(keyManager, trustManager, hostnameVerifier);
+		return sslConfiguration;
 	}
 
 }
