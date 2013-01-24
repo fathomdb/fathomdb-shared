@@ -74,18 +74,17 @@ public class SslConfiguration {
 			prefix += ".";
 		}
 
-		String cert = configuration.get(prefix + "ssl.cert");
-
-		CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey(cert);
-
 		HostnameVerifier hostnameVerifier = null;
-
-		KeyManager keyManager = new SimpleClientCertificateKeyManager(certificateAndKey);
-
 		TrustManager trustManager = null;
+		KeyManager keyManager = null;
+
+		String cert = configuration.lookup(prefix + "ssl.cert", null);
+		if (cert != null) {
+			CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey(cert);
+			keyManager = new SimpleClientCertificateKeyManager(certificateAndKey);
+		}
 
 		String trustKeys = configuration.lookup(prefix + "ssl.keys", null);
-
 		if (trustKeys != null) {
 			trustManager = new PublicKeyTrustManager(Splitter.on(',').trimResults().split(trustKeys));
 
