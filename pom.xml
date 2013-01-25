@@ -12,6 +12,7 @@
         <module>fathomdb-crypto</module>
         <module>fathomdb-http</module>
         <module>fathomdb-cli</module>
+        <module>fathomdb-nailgun</module>
     </modules>
 
     <properties>
@@ -69,6 +70,18 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.6.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>args4j</groupId>
+                <artifactId>args4j</artifactId>
+                <version>2.0.16</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>1.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
