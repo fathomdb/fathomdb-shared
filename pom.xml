@@ -11,6 +11,7 @@
         <module>fathomdb-commons</module>
         <module>fathomdb-crypto</module>
         <module>fathomdb-http</module>
+        <module>fathomdb-cli</module>
     </modules>
 
     <properties>
