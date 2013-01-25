@@ -62,15 +62,23 @@ public class Ansi {
 
 	private final AnsiWriter writer;
 
+	private boolean needReset;
+
 	public Ansi(PrintWriter writer) {
 		this.writer = new AnsiWriter(writer);
 	}
 
 	public void reset() {
-		doAction(RESET);
+		if (needReset) {
+			doAction(RESET);
+			needReset = false;
+		}
 	}
 
 	public Action doAction(Action action) {
+		if (action != RESET) {
+			needReset = true;
+		}
 		return action.doAction(writer);
 	}
 
