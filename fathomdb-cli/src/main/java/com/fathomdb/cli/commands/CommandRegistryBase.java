@@ -47,7 +47,12 @@ public class CommandRegistryBase implements CommandRegistry {
 	protected void discoverCommands(Package package1) {
 		Discovery discovery = new Discovery();
 		List<Class<?>> classes = discovery.findClasses(getClass().getPackage());
-		List<CommandRunner> instances = discovery.buildInstances(CommandRunner.class, classes);
+		discoverCommands(classes);
+	}
+
+	protected void discoverCommands(Iterable<? extends Class<?>> classes) {
+		List<CommandRunner> instances = Discovery.buildInstances(
+				CommandRunner.class, classes);
 		for (CommandRunner commandRunner : instances) {
 			addCommand(commandRunner);
 		}

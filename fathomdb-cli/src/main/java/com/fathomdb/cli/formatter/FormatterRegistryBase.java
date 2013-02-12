@@ -40,7 +40,12 @@ public class FormatterRegistryBase implements FormatterRegistry {
 	protected void discoverFormatters(Package package1) {
 		Discovery discovery = new Discovery();
 		List<Class<?>> classes = discovery.findClasses(getClass().getPackage());
-		List<Formatter> formatters = discovery.buildInstances(Formatter.class, classes);
+		discoverFormatters(classes);
+	}
+
+	protected void discoverFormatters(Iterable<? extends Class<?>> classes) {
+		List<Formatter> formatters = Discovery.buildInstances(Formatter.class,
+				classes);
 		for (Formatter formatter : formatters) {
 			addFormatter(formatter);
 		}

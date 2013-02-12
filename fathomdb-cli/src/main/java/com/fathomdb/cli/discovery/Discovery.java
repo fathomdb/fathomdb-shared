@@ -118,7 +118,8 @@ public class Discovery {
 						}
 
 						if (!name.startsWith(prefix)) {
-							// System.out.println("Does not start with " + prefix);
+							// System.out.println("Does not start with " +
+							// prefix);
 							continue;
 						}
 
@@ -141,7 +142,7 @@ public class Discovery {
 		return classes;
 	}
 
-	public <T> List<T> buildInstances(Class<T> baseClass, List<Class<?>> classes) {
+	public static <T> List<T> buildInstances(Class<T> baseClass, Iterable<? extends Class> classes) {
 		List<T> instances = Lists.newArrayList();
 
 		for (Class<?> clazz : classes) {
