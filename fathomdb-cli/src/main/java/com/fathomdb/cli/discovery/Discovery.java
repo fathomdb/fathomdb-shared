@@ -11,9 +11,14 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 
 public class Discovery {
+	private static final Logger log = LoggerFactory.getLogger(Discovery.class);
+
 	final ClassLoader classLoader;
 
 	public Discovery(ClassLoader classLoader) {
@@ -43,7 +48,19 @@ public class Discovery {
 				urls.add(resource.nextElement());
 			}
 		} else {
-			throw new UnsupportedOperationException("Unknown classloader type: " + classLoader.getClass().getName());
+			log.warn("Doing generic classpath discovery for classloader: " + classLoader.getClass().getName());
+			String path = inPackage.getName().replace('.', '/');
+			Enumeration<URL> resource;
+			try {
+				resource = classLoader.getResources(path);
+			} catch (IOException e) {
+				throw new IllegalStateException("Error doing class discovery", e);
+			}
+			while (resource.hasMoreElements()) {
+				urls.add(resource.nextElement());
+			}
+
+			// throw new UnsupportedOperationException("Unknown classloader type: " + classLoader.getClass().getName());
 		}
 
 		for (URL url : urls) {
