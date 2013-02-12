@@ -43,7 +43,7 @@ public class Discovery {
 				urls.add(resource.nextElement());
 			}
 		} else {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("Unknown classloader type: " + classLoader.getClass().getName());
 		}
 
 		for (URL url : urls) {
@@ -76,7 +76,7 @@ public class Discovery {
 						}
 					}
 				} else {
-					throw new UnsupportedOperationException();
+					throw new IllegalStateException("No file for file URL: " + url);
 				}
 			} else if ("jar".equals(protocol)) {
 				try {
