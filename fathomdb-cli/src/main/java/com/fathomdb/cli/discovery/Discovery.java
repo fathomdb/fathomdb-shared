@@ -48,19 +48,14 @@ public class Discovery {
 				urls.add(resource.nextElement());
 			}
 		} else {
-			log.warn("Doing generic classpath discovery for classloader: " + classLoader.getClass().getName());
-			String path = inPackage.getName().replace('.', '/');
-			Enumeration<URL> resource;
-			try {
-				resource = classLoader.getResources(path);
-			} catch (IOException e) {
-				throw new IllegalStateException("Error doing class discovery", e);
-			}
-			while (resource.hasMoreElements()) {
-				urls.add(resource.nextElement());
-			}
-
-			// throw new UnsupportedOperationException("Unknown classloader type: " + classLoader.getClass().getName());
+			/*
+			 * log.warn("Doing generic classpath discovery for classloader: " + classLoader.getClass().getName());
+			 * String path = inPackage.getName().replace('.', '/'); Enumeration<URL> resource; try { resource =
+			 * classLoader.getResources(path); } catch (IOException e) { throw new
+			 * IllegalStateException("Error doing class discovery", e); } while (resource.hasMoreElements()) {
+			 * urls.add(resource.nextElement()); }
+			 */
+			throw new UnsupportedOperationException("Unknown classloader type: " + classLoader.getClass().getName());
 		}
 
 		for (URL url : urls) {
