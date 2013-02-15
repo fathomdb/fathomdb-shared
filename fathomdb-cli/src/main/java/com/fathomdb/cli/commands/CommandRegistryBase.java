@@ -51,6 +51,10 @@ public class CommandRegistryBase implements CommandRegistry {
 	}
 
 	protected void discoverCommands(Iterable<? extends Class<?>> classes) {
+		if (classes == null) {
+			return;
+		}
+
 		List<CommandRunner> instances = Discovery.buildInstances(
 				CommandRunner.class, classes);
 		for (CommandRunner commandRunner : instances) {
