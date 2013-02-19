@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.fathomdb.Casts;
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.output.OutputSink;
 import com.google.common.collect.Lists;
 
@@ -22,10 +23,9 @@ public abstract class SimpleFormatter<T> implements Formatter {
 	}
 
 	@Override
-	public void visitObject(Object o, OutputSink sink) throws IOException {
-		visit(Casts.checkedCast(o, clazz), sink);
+	public void visitObject(CliContext context, Object o, OutputSink sink) throws IOException {
+		visit(context, Casts.checkedCast(o, clazz), sink);
 	}
 
-	public abstract void visit(T o, OutputSink sink) throws IOException;
-
+	public abstract void visit(CliContext context, T o, OutputSink sink) throws IOException;
 }

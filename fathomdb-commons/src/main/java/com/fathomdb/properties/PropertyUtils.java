@@ -103,4 +103,12 @@ public class PropertyUtils {
 		}
 		return map;
 	}
+
+	public static Map<String, String> prefixProperties(Map<String, String> config, String prefix) {
+		Map<String, String> prefixed = Maps.newHashMap();
+		for (Entry<String, String> entry : config.entrySet()) {
+			prefixed.put(prefix + entry.getKey(), entry.getValue());
+		}
+		return prefixed;
+	}
 }

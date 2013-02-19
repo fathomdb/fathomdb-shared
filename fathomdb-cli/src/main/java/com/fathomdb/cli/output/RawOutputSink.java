@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import com.fathomdb.cli.CliContext;
+
 public class RawOutputSink implements OutputSink {
 
 	private final PrintWriter out;
 
-	public RawOutputSink(PrintWriter out) {
+	public RawOutputSink(CliContext context, PrintWriter out) {
 		this.out = out;
 	}
 

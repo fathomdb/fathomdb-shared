@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.formatter.DefaultFormatter;
 import com.fathomdb.cli.formatter.Formatter;
 import com.fathomdb.cli.formatter.FormatterRegistry;
@@ -15,7 +16,7 @@ public class ActionOutputSink implements OutputSink {
 	private final PrintWriter out;
 	private final FormatterRegistry formatterRegistry;
 
-	public ActionOutputSink(FormatterRegistry formatterRegistry, PrintWriter out) {
+	public ActionOutputSink(CliContext context, FormatterRegistry formatterRegistry, PrintWriter out) {
 		this.formatterRegistry = formatterRegistry;
 		this.out = out;
 	}

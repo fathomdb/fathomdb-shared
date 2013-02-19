@@ -77,7 +77,7 @@ public abstract class CommandRunnerBase implements CommandRunner, Cloneable {
 			list.add(o);
 			write = list;
 		}
-		FormattedList<?> list = FormattedList.build(context.getFormatterRegistry(), (Iterable) write, false);
+		FormattedList<?> list = FormattedList.build(context, context.getFormatterRegistry(), (Iterable) write, false);
 		writer.print(list.toString());
 	}
 

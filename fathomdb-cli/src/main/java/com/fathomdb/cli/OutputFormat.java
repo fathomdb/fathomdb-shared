@@ -13,16 +13,16 @@ public enum OutputFormat {
 	public OutputSink buildOutputSink(CliContext context, PrintWriter out) {
 		switch (this) {
 		case Json:
-			return new RawOutputSink(out);
+			return new RawOutputSink(context, out);
 		case Xml:
-			return new RawOutputSink(out);
+			return new RawOutputSink(context, out);
 			// return new XmlOutputSink(out);
 		case Text:
-			return new TextOutputSink(context.getFormatterRegistry(), out, true);
+			return new TextOutputSink(context, context.getFormatterRegistry(), out, true);
 		case Raw:
-			return new RawOutputSink(out);
+			return new RawOutputSink(context, out);
 		case Action:
-			return new ActionOutputSink(context.getFormatterRegistry(), out);
+			return new ActionOutputSink(context, context.getFormatterRegistry(), out);
 		default:
 			throw new IllegalStateException();
 		}

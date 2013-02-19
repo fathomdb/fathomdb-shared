@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.formatter.DefaultFormatter;
 import com.fathomdb.cli.formatter.Formatter;
 import com.fathomdb.cli.formatter.FormatterRegistry;
@@ -19,9 +20,11 @@ public class TextOutputSink implements OutputSink {
 	final PrintWriter out;
 	final FormatterRegistry formatterRegistry;
 	final boolean decorate;
+	final CliContext context;
 
-	public TextOutputSink(FormatterRegistry formatterRegistry, PrintWriter out, boolean decorate) {
+	public TextOutputSink(CliContext context, FormatterRegistry formatterRegistry, PrintWriter out, boolean decorate) {
 		super();
+		this.context = context;
 		this.formatterRegistry = formatterRegistry;
 		this.out = out;
 		this.decorate = decorate;
@@ -79,7 +82,7 @@ public class TextOutputSink implements OutputSink {
 		if (formatter == null) {
 			formatter = DefaultFormatter.INSTANCE;
 		}
-		formatter.visitObject(o, this);
+		formatter.visitObject(context, o, this);
 	}
 
 	@Override

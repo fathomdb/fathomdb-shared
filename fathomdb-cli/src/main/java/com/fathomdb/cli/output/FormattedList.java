@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.formatter.FormatterRegistry;
 import com.google.common.collect.Lists;
 
@@ -18,26 +19,29 @@ public class FormattedList<T> implements Iterable<T> {
 	final boolean decorate;
 
 	final List<T> items;
+	final CliContext context;
 
-	public FormattedList(FormatterRegistry registry, Iterable<T> items, boolean decorate) {
+	public FormattedList(CliContext context, FormatterRegistry registry, Iterable<T> items, boolean decorate) {
+		this.context = context;
 		this.items = Lists.newArrayList(items);
 		this.registry = registry;
 		this.decorate = decorate;
 	}
 
-	public FormattedList(FormatterRegistry registry, boolean decorate) {
-		this(registry, Collections.<T> emptyList(), decorate);
+	public FormattedList(CliContext context, FormatterRegistry registry, boolean decorate) {
+		this(context, registry, Collections.<T> emptyList(), decorate);
 	}
 
-	public static <T> FormattedList<T> build(FormatterRegistry registry, Iterable<T> items, boolean decorate) {
-		return new FormattedList<T>(registry, items, decorate);
+	public static <T> FormattedList<T> build(CliContext context, FormatterRegistry registry, Iterable<T> items,
+			boolean decorate) {
+		return new FormattedList<T>(context, registry, items, decorate);
 	}
 
 	@Override
 	public String toString() {
 		Writer writer = new StringWriter();
 		PrintWriter out = new PrintWriter(writer);
-		TextOutputSink sink = new TextOutputSink(registry, out, decorate);
+		TextOutputSink sink = new TextOutputSink(context, registry, out, decorate);
 
 		try {
 			for (T item : this) {

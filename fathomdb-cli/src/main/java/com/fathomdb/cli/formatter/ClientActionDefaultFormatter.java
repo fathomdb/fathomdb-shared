@@ -3,6 +3,7 @@ package com.fathomdb.cli.formatter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import com.fathomdb.cli.CliContext;
 import com.fathomdb.cli.output.ClientAction;
 import com.fathomdb.cli.output.ClientActionFormatter;
 import com.fathomdb.cli.output.OutputSink;
@@ -17,7 +18,7 @@ public class ClientActionDefaultFormatter extends SimpleFormatter<ClientAction> 
 	}
 
 	@Override
-	public void visit(ClientAction o, OutputSink sink) throws IOException {
+	public void visit(CliContext context, ClientAction o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = Maps.newLinkedHashMap();
 
 		values.put("action", o.getAction());
