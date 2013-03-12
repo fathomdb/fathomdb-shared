@@ -11,6 +11,8 @@ import javax.net.ssl.X509KeyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
+
 public class SimpleClientCertificateKeyManager implements X509KeyManager {
 	private static final Logger log = LoggerFactory.getLogger(SimpleClientCertificateKeyManager.class);
 
@@ -31,12 +33,13 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 
 	@Override
 	public String[] getClientAliases(String keyType, Principal[] issuers) {
-		// TODO Auto-generated method stub
+		log.warn("getClientAliases not supported");
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
+		log.debug("Using client alias: " + ALIAS);
 		return ALIAS;
 	}
 
@@ -44,7 +47,6 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 	public String[] getServerAliases(String keyType, Principal[] issuers) {
 		log.warn("getServerAliases not implemented");
 
-		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException();
 	}
 
@@ -52,7 +54,6 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 	public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
 		log.warn("chooseServerAlias not implemented");
 
-		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException();
 	}
 
@@ -64,6 +65,9 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 			throw new IllegalArgumentException();
 		}
 
+		log.info("Using client certificate: " + alias + " length=" + certificateChain.length);
+		log.debug("Client certificate = " + Joiner.on("\n").join(certificateChain));
+
 		return certificateChain;
 	}
 
@@ -74,6 +78,8 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 
 			throw new IllegalArgumentException();
 		}
+
+		log.info("Using private key: " + alias);
 
 		return privateKey;
 	}
