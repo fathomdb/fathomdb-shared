@@ -6,14 +6,15 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
-import javax.net.ssl.X509KeyManager;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.X509ExtendedKeyManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 
-public class SimpleClientCertificateKeyManager implements X509KeyManager {
+public class SimpleClientCertificateKeyManager extends X509ExtendedKeyManager {
 	private static final Logger log = LoggerFactory.getLogger(SimpleClientCertificateKeyManager.class);
 
 	private static final String ALIAS = "cert";
@@ -85,8 +86,20 @@ public class SimpleClientCertificateKeyManager implements X509KeyManager {
 	}
 
 	@Override
+	public String chooseEngineClientAlias(String[] keyType, Principal[] issuers, SSLEngine engine) {
+		log.debug("Using client alias (chooseEngineClientAlias): " + ALIAS);
+		return ALIAS;
+	}
+
+	@Override
+	public String chooseEngineServerAlias(String keyType, Principal[] issuers, SSLEngine engine) {
+		log.warn("chooseEngineServerAlias not implemented");
+
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public String toString() {
 		return "SimpleClientCertificateKeyManager [certificateChain=" + Arrays.toString(certificateChain) + "]";
 	}
-
 }
