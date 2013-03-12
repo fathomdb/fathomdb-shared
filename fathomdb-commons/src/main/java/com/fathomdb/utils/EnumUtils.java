@@ -39,4 +39,18 @@ public class EnumUtils {
 		return null;
 	}
 
+	public static <T extends Enum<T>> T valueOfCaseInsensitive(String name, T defaultValue) {
+		if (name == null) {
+			return defaultValue;
+		}
+
+		Class<T> enumType = (Class<T>) defaultValue.getClass();
+		for (T enumValue : EnumSet.allOf(enumType)) {
+			if (enumValue.toString().equalsIgnoreCase(name)) {
+				return enumValue;
+			}
+		}
+		return defaultValue;
+	}
+
 }
