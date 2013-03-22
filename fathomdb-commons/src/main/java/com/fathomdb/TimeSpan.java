@@ -362,4 +362,9 @@ public class TimeSpan implements Comparable<TimeSpan> {
 		return new TimeSpan(s);
 	}
 
+	public static TimeSpan seconds(int i) {
+		long ms = i * 1000L;
+		return TimeSpan.fromMilliseconds(ms);
+	}
+
 }
