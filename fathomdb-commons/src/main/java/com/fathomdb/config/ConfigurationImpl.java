@@ -2,6 +2,9 @@ package com.fathomdb.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +17,11 @@ import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
 import com.fathomdb.properties.PropertyUtils;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.net.InetAddresses;
 
 public class ConfigurationImpl implements Configuration {
 	private static final Logger log = LoggerFactory.getLogger(ConfigurationImpl.class);
@@ -207,4 +212,32 @@ public class ConfigurationImpl implements Configuration {
 		String s = lookup(key, Boolean.toString(defaultValue));
 		return Boolean.parseBoolean(s);
 	}
+
+	@Override
+	public List<InetSocketAddress> lookupList(String key, InetSocketAddress... defaults) {
+		List<InetSocketAddress> ret = Lists.newArrayList();
+		String s = find(key);
+		if (s == null) {
+			ret.addAll(Arrays.asList(defaults));
+		} else {
+			for (String v : Splitter.on(',').split(s)) {
+				InetSocketAddress inetSocketAddress = parseInetSocketAddress(v);
+				ret.add(inetSocketAddress);
+			}
+		}
+		return ret;
+	}
+
+	public static InetSocketAddress parseInetSocketAddress(String s) {
+		int colonIndex = s.indexOf(':');
+		if (colonIndex == -1) {
+			throw new IllegalArgumentException("Cannot parse address: " + s);
+		}
+
+		InetAddress addr = InetAddresses.forString(s.substring(0, colonIndex).trim());
+		int port = Integer.valueOf(s.substring(colonIndex + 1));
+
+		return new InetSocketAddress(addr, port);
+	}
+
 }

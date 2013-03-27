@@ -13,6 +13,7 @@
         <module>fathomdb-http</module>
         <module>fathomdb-cli</module>
         <module>fathomdb-nailgun</module>
+        <module>fathomdb-ratelimit</module>
     </modules>
 
     <properties>

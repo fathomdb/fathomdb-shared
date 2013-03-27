@@ -1,9 +1,14 @@
 package com.fathomdb.ratelimit;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.internal.OperationFuture;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +16,8 @@ import com.fathomdb.TimeSpan;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class RateLimit {
 	private static final Logger log = LoggerFactory.getLogger(RateLimit.class);
@@ -23,6 +30,20 @@ public class RateLimit {
 	final int writeToMemcacheThreshold;
 	final int readFromMemcacheThreshold;
 	final LoadingCache<String, Counter> localCache;
+
+	public static class AsyncIncrement {
+		public final String key;
+		int delta;
+
+		public AsyncIncrement(String key, int delta) {
+			this.key = key;
+			this.delta = delta;
+		}
+	}
+
+	final LinkedBlockingQueue<AsyncIncrement> queuedAdds;
+
+	final Thread flushMemcacheThread;
 
 	public RateLimit(RateLimitSystem system, String prefix, TimeSpan window,
 			int limit, int writeToMemcacheThreshold) {
@@ -42,6 +63,14 @@ public class RateLimit {
 						return new Counter();
 					}
 				});
+
+		int maxCapacity = 100000;
+		this.queuedAdds = new LinkedBlockingQueue<AsyncIncrement>(maxCapacity);
+
+		this.flushMemcacheThread = new Thread(new FlusherThreadRunnable(),
+				"RateLimitMemcacheFlusher");
+		flushMemcacheThread.setDaemon(true);
+		flushMemcacheThread.start();
 	}
 
 	public RateLimit(RateLimitSystem system, String prefix, TimeSpan window,
@@ -73,10 +102,8 @@ public class RateLimit {
 			String memcacheKey = buildMemcachePath(cacheKey);
 
 			try {
-				if (count == writeToMemcacheThreshold) {
-					// We send a zero-increment; it avoids transcoding
-					count = (int) client.incr(memcacheKey, 0, count, window);
-				}
+				// We send a zero-increment; it avoids transcoding
+				count = (int) client.incr(memcacheKey, 0, count, window);
 
 				synchronized (counter) {
 					if (count > counter.count) {
@@ -89,7 +116,11 @@ public class RateLimit {
 			}
 		}
 
-		return count > limit;
+		boolean overLimit = (count > limit);
+		if (overLimit) {
+			log.info("Counter is over rate limit: " + prefix + ":" + key);
+		}
+		return overLimit;
 	}
 
 	private Counter getCounter(String cacheKey) {
@@ -124,28 +155,89 @@ public class RateLimit {
 		}
 
 		try {
-			// TODO: Async/batch version
 			if (count >= writeToMemcacheThreshold) {
 				MemcachedClient client = system.getClient();
 				String memcacheKey = buildMemcachePath(cacheKey);
 
-				// TODO: Make this async?
+				int memcacheDelta;
+
 				if (count == writeToMemcacheThreshold) {
-					count = (int) client
-							.incr(memcacheKey, count, count, window);
+					memcacheDelta = count;
 				} else {
-					count = (int) client.incr(memcacheKey, 1, count, window);
+					memcacheDelta = 1;
 				}
 
-				synchronized (counter) {
-					if (count > counter.count) {
-						counter.count = count;
+				boolean ASYNC = true;
+				if (ASYNC) {
+					AsyncIncrement op = new AsyncIncrement(memcacheKey,
+							memcacheDelta);
+					if (!queuedAdds.offer(op)) {
+						log.warn("Unable to add memcache add operation to queue");
+					}
+				} else {
+					count = (int) client.incr(memcacheKey, memcacheDelta,
+							count, window);
+
+					synchronized (counter) {
+						if (count > counter.count) {
+							counter.count = count;
+						}
 					}
 				}
 			}
 		} catch (Exception e) {
 			// If memcache fails, we fall back to local counting
 			log.warn("Error incrementing memcache counter", e);
+		}
+	}
+
+	class FlusherThreadRunnable implements Runnable {
+
+		private void flushQueue() throws InterruptedException {
+			AsyncIncrement head = queuedAdds.take();
+
+			List<AsyncIncrement> adds = Lists.newArrayList();
+			adds.add(head);
+
+			queuedAdds.drainTo(adds);
+
+			Map<String, AsyncIncrement> addsByKey = Maps.newHashMap();
+			for (AsyncIncrement add : adds) {
+				AsyncIncrement existing = addsByKey.get(add.key);
+				if (existing == null) {
+					addsByKey.put(add.key, add);
+				} else {
+					existing.delta += add.delta;
+				}
+			}
+
+			MemcachedClient client = system.getClient();
+
+			List<OperationFuture<Long>> futures = Lists.newArrayList();
+			for (AsyncIncrement add : addsByKey.values()) {
+				OperationFuture<Long> future = client.asyncIncr(add.key,
+						add.delta);
+				futures.add(future);
+			}
+
+			for (OperationFuture<Long> future : futures) {
+				try {
+					future.get(1, TimeUnit.SECONDS);
+				} catch (Exception e) {
+					log.warn("Error flushing counts to memcache", e);
+				}
+			}
+		}
+
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					flushQueue();
+				} catch (Exception e) {
+					log.warn("Error while flushing memcache queue", e);
+				}
+			}
 		}
 	}
 

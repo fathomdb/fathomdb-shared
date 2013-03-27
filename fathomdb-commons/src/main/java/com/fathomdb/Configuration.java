@@ -1,6 +1,8 @@
 package com.fathomdb;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Map;
 
 public interface Configuration {
@@ -19,4 +21,6 @@ public interface Configuration {
 	File lookupFile(String key, String defaultValue);
 
 	Map<String, String> getChildProperties(String prefix);
+
+	List<InetSocketAddress> lookupList(String key, InetSocketAddress... inetSocketAddress);
 }

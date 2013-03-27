@@ -8,6 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import net.spy.memcached.ConnectionFactoryBuilder;
+import net.spy.memcached.FailureMode;
 import net.spy.memcached.ConnectionFactoryBuilder.Protocol;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.auth.AuthDescriptor;
@@ -35,6 +36,8 @@ public class RateLimitSystem implements Closeable {
 		builder.setProtocol(Protocol.BINARY);
 		builder.setOpTimeout(2000);
 
+		builder.setFailureMode(FailureMode.Cancel);
+		
 		String username = config.find("memcache.username");
 		if (username != null) {
 			String password = config.get("memcache.password");
