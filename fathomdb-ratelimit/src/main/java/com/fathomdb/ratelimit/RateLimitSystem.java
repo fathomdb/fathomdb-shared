@@ -8,8 +8,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import net.spy.memcached.ConnectionFactoryBuilder;
-import net.spy.memcached.FailureMode;
 import net.spy.memcached.ConnectionFactoryBuilder.Protocol;
+import net.spy.memcached.FailureMode;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.auth.AuthDescriptor;
 import net.spy.memcached.auth.PlainCallbackHandler;
@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
+import com.google.common.base.Joiner;
 
 public class RateLimitSystem implements Closeable {
 	private static final Logger log = LoggerFactory.getLogger(RateLimitSystem.class);
@@ -30,17 +31,18 @@ public class RateLimitSystem implements Closeable {
 
 	@Inject
 	public RateLimitSystem(Configuration config) {
-		this.memcacheAddresses = config.lookupList("memcache.servers", new InetSocketAddress("127.0.0.1", 11211));
+		InetSocketAddress defaultMemcache = new InetSocketAddress("127.0.0.1", 11211);
+		this.memcacheAddresses = config.lookupList("ratelimit.memcache.servers", defaultMemcache);
 
 		ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
 		builder.setProtocol(Protocol.BINARY);
 		builder.setOpTimeout(2000);
 
 		builder.setFailureMode(FailureMode.Cancel);
-		
-		String username = config.find("memcache.username");
+
+		String username = config.find("ratelimit.memcache.username");
 		if (username != null) {
-			String password = config.get("memcache.password");
+			String password = config.get("ratelimit.memcache.password");
 			AuthDescriptor auth = new AuthDescriptor(new String[] { "CRAM-MD5" }, new PlainCallbackHandler(username,
 					password));
 
@@ -48,6 +50,8 @@ public class RateLimitSystem implements Closeable {
 		}
 
 		this.builder = builder;
+
+		log.info("Using memcache: " + Joiner.on(",").join(memcacheAddresses));
 
 		try {
 			this.client = new MemcachedClient(builder.build(), memcacheAddresses);
