@@ -45,8 +45,7 @@ public class RateLimit {
 
 	final Thread flushMemcacheThread;
 
-	public RateLimit(RateLimitSystem system, String prefix, TimeSpan window,
-			int limit, int writeToMemcacheThreshold) {
+	public RateLimit(RateLimitSystem system, String prefix, TimeSpan window, int limit, int writeToMemcacheThreshold) {
 		super();
 		this.system = system;
 		this.prefix = prefix;
@@ -55,8 +54,7 @@ public class RateLimit {
 		this.writeToMemcacheThreshold = writeToMemcacheThreshold;
 		this.readFromMemcacheThreshold = writeToMemcacheThreshold;
 
-		this.localCache = CacheBuilder.newBuilder()
-				.expireAfterWrite(window.getTotalSeconds(), TimeUnit.SECONDS)
+		this.localCache = CacheBuilder.newBuilder().expireAfterWrite(window.getTotalSeconds(), TimeUnit.SECONDS)
 				.build(new CacheLoader<String, Counter>() {
 					@Override
 					public Counter load(String key) throws Exception {
@@ -67,14 +65,12 @@ public class RateLimit {
 		int maxCapacity = 100000;
 		this.queuedAdds = new LinkedBlockingQueue<AsyncIncrement>(maxCapacity);
 
-		this.flushMemcacheThread = new Thread(new FlusherThreadRunnable(),
-				"RateLimitMemcacheFlusher");
+		this.flushMemcacheThread = new Thread(new FlusherThreadRunnable(), "RateLimitMemcacheFlusher");
 		flushMemcacheThread.setDaemon(true);
 		flushMemcacheThread.start();
 	}
 
-	public RateLimit(RateLimitSystem system, String prefix, TimeSpan window,
-			int limit) {
+	public RateLimit(RateLimitSystem system, String prefix, TimeSpan window, int limit) {
 		this(system, prefix, window, limit, limit / 4);
 	}
 
@@ -99,20 +95,22 @@ public class RateLimit {
 		if (count >= readFromMemcacheThreshold) {
 			// Read the latest from memcache
 			MemcachedClient client = system.getClient();
-			String memcacheKey = buildMemcachePath(cacheKey);
+			if (client != null) {
+				String memcacheKey = buildMemcachePath(cacheKey);
 
-			try {
-				// We send a zero-increment; it avoids transcoding
-				count = (int) client.incr(memcacheKey, 0, count, window);
+				try {
+					// We send a zero-increment; it avoids transcoding
+					count = (int) client.incr(memcacheKey, 0, count, window);
 
-				synchronized (counter) {
-					if (count > counter.count) {
-						counter.count = count;
+					synchronized (counter) {
+						if (count > counter.count) {
+							counter.count = count;
+						}
 					}
+				} catch (Exception e) {
+					// If memcache fails, we'll just fall back to local counting
+					log.warn("Error getting count from memcache", e);
 				}
-			} catch (Exception e) {
-				// If memcache fails, we'll just fall back to local counting
-				log.warn("Error getting count from memcache", e);
 			}
 		}
 
@@ -157,30 +155,30 @@ public class RateLimit {
 		try {
 			if (count >= writeToMemcacheThreshold) {
 				MemcachedClient client = system.getClient();
-				String memcacheKey = buildMemcachePath(cacheKey);
+				if (client != null) {
+					String memcacheKey = buildMemcachePath(cacheKey);
 
-				int memcacheDelta;
+					int memcacheDelta;
 
-				if (count == writeToMemcacheThreshold) {
-					memcacheDelta = count;
-				} else {
-					memcacheDelta = 1;
-				}
-
-				boolean ASYNC = true;
-				if (ASYNC) {
-					AsyncIncrement op = new AsyncIncrement(memcacheKey,
-							memcacheDelta);
-					if (!queuedAdds.offer(op)) {
-						log.warn("Unable to add memcache add operation to queue");
+					if (count == writeToMemcacheThreshold) {
+						memcacheDelta = count;
+					} else {
+						memcacheDelta = 1;
 					}
-				} else {
-					count = (int) client.incr(memcacheKey, memcacheDelta,
-							count, window);
 
-					synchronized (counter) {
-						if (count > counter.count) {
-							counter.count = count;
+					boolean ASYNC = true;
+					if (ASYNC) {
+						AsyncIncrement op = new AsyncIncrement(memcacheKey, memcacheDelta);
+						if (!queuedAdds.offer(op)) {
+							log.warn("Unable to add memcache add operation to queue");
+						}
+					} else {
+						count = (int) client.incr(memcacheKey, memcacheDelta, count, window);
+
+						synchronized (counter) {
+							if (count > counter.count) {
+								counter.count = count;
+							}
 						}
 					}
 				}
@@ -215,8 +213,7 @@ public class RateLimit {
 
 			List<OperationFuture<Long>> futures = Lists.newArrayList();
 			for (AsyncIncrement add : addsByKey.values()) {
-				OperationFuture<Long> future = client.asyncIncr(add.key,
-						add.delta);
+				OperationFuture<Long> future = client.asyncIncr(add.key, add.delta);
 				futures.add(future);
 			}
 

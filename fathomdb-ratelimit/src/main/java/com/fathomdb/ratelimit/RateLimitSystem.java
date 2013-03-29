@@ -31,13 +31,11 @@ public class RateLimitSystem implements Closeable {
 
 	@Inject
 	public RateLimitSystem(Configuration config) {
-		InetSocketAddress defaultMemcache = new InetSocketAddress("127.0.0.1", 11211);
-		this.memcacheAddresses = config.lookupList("ratelimit.memcache.servers", defaultMemcache);
+		this.memcacheAddresses = config.lookupList("ratelimit.memcache.servers", new InetSocketAddress[0]);
 
 		ConnectionFactoryBuilder builder = new ConnectionFactoryBuilder();
 		builder.setProtocol(Protocol.BINARY);
 		builder.setOpTimeout(2000);
-
 		builder.setFailureMode(FailureMode.Cancel);
 
 		String username = config.find("ratelimit.memcache.username");
@@ -51,12 +49,17 @@ public class RateLimitSystem implements Closeable {
 
 		this.builder = builder;
 
-		log.info("Using memcache: " + Joiner.on(",").join(memcacheAddresses));
+		if (!memcacheAddresses.isEmpty()) {
+			log.info("Using memcache: " + Joiner.on(",").join(memcacheAddresses));
 
-		try {
-			this.client = new MemcachedClient(builder.build(), memcacheAddresses);
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Error building memcache client", e);
+			try {
+				this.client = new MemcachedClient(builder.build(), memcacheAddresses);
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Error building memcache client", e);
+			}
+		} else {
+			log.info("Memcache not configured; will rate-limit using local counts");
+			this.client = null;
 		}
 	}
 
