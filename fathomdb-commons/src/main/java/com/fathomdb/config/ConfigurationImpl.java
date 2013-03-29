@@ -229,7 +229,7 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	public static InetSocketAddress parseInetSocketAddress(String s) {
-		int colonIndex = s.indexOf(':');
+		int colonIndex = s.lastIndexOf(':');
 		if (colonIndex == -1) {
 			throw new IllegalArgumentException("Cannot parse address: " + s);
 		}
