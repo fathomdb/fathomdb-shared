@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.ConnectionFactoryBuilder.Protocol;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.fathomdb.Configuration;
 import com.google.common.base.Joiner;
 
+@Singleton
 public class RateLimitSystem implements Closeable {
 	private static final Logger log = LoggerFactory.getLogger(RateLimitSystem.class);
 
