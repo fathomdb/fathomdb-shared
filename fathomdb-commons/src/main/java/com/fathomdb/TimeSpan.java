@@ -32,6 +32,9 @@ public class TimeSpan implements Comparable<TimeSpan> {
 
 	public static final TimeSpan ONE_YEAR_ROUGHLY = new TimeSpan("365d", 365L * 24L * 60L * 60L * 1000L);
 
+	private static final long DAY = 24L * 60L * 60L * 1000L;
+	public static final TimeSpan ONE_WEEK = new TimeSpan("7d", 7L * DAY);
+
 	final long totalMilliseconds;
 	final String stringRepresentation;
 
