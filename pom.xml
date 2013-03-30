@@ -15,6 +15,7 @@
 		<module>fathomdb-nailgun</module>
 		<module>fathomdb-ratelimit</module>
 		<module>fathomdb-templates</module>
+		<module>fathomdb-discovery</module>
 	</modules>
 
 	<properties>
