@@ -1,5 +1,6 @@
 package com.fathomdb.cli.formatter;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class DefaultFormatter implements Formatter {
 	}
 
 	@Override
-	public void visitObject(CliContext context, Object o, OutputSink sink) {
+	public void visitObject(CliContext context, Object o, OutputSink sink) throws IOException {
 		LinkedHashMap<String, Object> values = new LinkedHashMap<String, Object>();
 		values.put("class", o.getClass().getSimpleName());
 		values.put("value", o);

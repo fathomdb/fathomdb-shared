@@ -86,7 +86,7 @@ public class TextOutputSink implements OutputSink {
 	}
 
 	@Override
-	public void outputRow(Map<String, Object> map) {
+	public void outputRow(Map<String, Object> map) throws IOException {
 		Map<Column, String> rowValues = new HashMap<Column, String>();
 
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -109,9 +109,16 @@ public class TextOutputSink implements OutputSink {
 
 	final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss yyyy-MM-dd");
 
-	private String toString(Object value) {
+	private String toString(Object value) throws IOException {
 		if (value == null) {
 			return "-";
+		}
+
+		Formatter formatter = formatterRegistry.getFormatter(value.getClass());
+		if (formatter != null) {
+			StringOutputSink stringSink = new StringOutputSink();
+			formatter.visitObject(context, value, stringSink);
+			return stringSink.getString();
 		}
 
 		if (value instanceof Calendar) {

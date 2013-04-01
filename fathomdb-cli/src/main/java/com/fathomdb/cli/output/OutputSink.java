@@ -6,7 +6,7 @@ import java.util.Map;
 public interface OutputSink {
 	void visitObject(Object o) throws IOException;
 
-	void outputRow(Map<String, Object> values);
+	void outputRow(Map<String, Object> values) throws IOException;
 
 	void flush();
 
