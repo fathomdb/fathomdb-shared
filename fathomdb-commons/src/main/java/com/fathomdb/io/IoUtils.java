@@ -212,4 +212,10 @@ public class IoUtils {
 		}
 	}
 
+	public static void mkdirs(File dir) throws IOException {
+		if (!dir.mkdirs()) {
+			throw new IOException("Unable to create directory: " + dir);
+		}
+	}
+
 }
