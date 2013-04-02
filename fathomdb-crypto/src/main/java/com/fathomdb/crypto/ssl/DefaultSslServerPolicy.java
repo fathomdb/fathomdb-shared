@@ -21,10 +21,13 @@ public class DefaultSslServerPolicy extends SslServerPolicy {
 	final KeyManager keyManager;
 	final TrustManager trustManager;
 
-	public DefaultSslServerPolicy(KeyManager keyManager, TrustManager trustManager) {
+	final boolean needClientAuth;
+
+	public DefaultSslServerPolicy(KeyManager keyManager, TrustManager trustManager, boolean needClientAuth) {
 		super();
 		this.keyManager = keyManager;
 		this.trustManager = trustManager;
+		this.needClientAuth = needClientAuth;
 	}
 
 	synchronized SSLContext getSslContext() {
@@ -60,6 +63,7 @@ public class DefaultSslServerPolicy extends SslServerPolicy {
 	public SSLEngine createSSLEngine() {
 		SSLContext sslContext = getSslContext();
 		SSLEngine sslEngine = sslContext.createSSLEngine();
+		sslEngine.setNeedClientAuth(needClientAuth);
 
 		SslPolicy.DEFAULT.applyPolicy(sslContext, sslEngine);
 
