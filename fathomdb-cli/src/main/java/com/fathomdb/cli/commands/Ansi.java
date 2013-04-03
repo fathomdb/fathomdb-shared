@@ -48,7 +48,16 @@ public class Ansi {
 			writer.escape(code);
 			return TEXT_COLOR_DEFAULT;
 		}
+	}
 
+	public static enum Color {
+		Default(39), Black(30), Red(31), Green(32), Yellow(33), Blue(34), Magenta(35), Cyan(36), White(37);
+
+		final int code;
+
+		private Color(int code) {
+			this.code = code;
+		}
 	}
 
 	public static final Action TEXT_COLOR_BLACK = new ColorAction(30);
@@ -110,17 +119,18 @@ public class Ansi {
 		writer.writer.println();
 	}
 
-	// public static final String ANSI_RESET = "\u001B[0m";
-	// public static final String ANSI_BLACK = "\u001B[30m";
-	// public static final String ANSI_RED = "\u001B[31m";
-	// public static final String ANSI_GREEN = "\u001B[32m";
-	// public static final String ANSI_YELLOW = "\u001B[33m";
-	// public static final String ANSI_BLUE = "\u001B[34m";
-	// public static final String ANSI_PURPLE = "\u001B[35m";
-	// public static final String ANSI_CYAN = "\u001B[36m";
-	// public static final String ANSI_WHITE = "\u001B[37m";
-	// // TODO Auto-generated method stub
-	//
-	// }
+	public void println(Color color, String s) {
+		if (color != Color.Default) {
+			writer.escape(color.code);
+		}
+
+		writer.writer.print(s);
+
+		if (color != Color.Default) {
+			writer.escape(Color.Default.code);
+		}
+
+		writer.writer.println();
+	}
 
 }
