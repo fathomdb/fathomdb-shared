@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
-import com.fathomdb.cli.discovery.Discovery;
 import com.google.common.collect.Lists;
 
 public class CommandRegistryBase implements CommandRegistry {
@@ -44,21 +44,28 @@ public class CommandRegistryBase implements CommandRegistry {
 		return commands;
 	}
 
-	protected void discoverCommands(Package package1) {
-		Discovery discovery = new Discovery();
-		List<Class<?>> classes = discovery.findClasses(getClass().getPackage());
-		discoverCommands(classes);
-	}
-
-	protected void discoverCommands(Iterable<? extends Class<?>> classes) {
-		if (classes == null) {
-			return;
-		}
-
-		List<CommandRunner> instances = Discovery.buildInstances(
-				CommandRunner.class, classes);
-		for (CommandRunner commandRunner : instances) {
+	protected void discoverCommands() {
+		ServiceLoader<CommandRunner> serviceLoader = ServiceLoader.load(CommandRunner.class);
+		for (CommandRunner commandRunner : serviceLoader) {
 			addCommand(commandRunner);
 		}
 	}
+
+	// protected void discoverCommands() {
+	// Discovery discovery = Discovery.build();
+	//
+	// Collection<Class> classes = discovery.findAnnotatedClasses(Cmdlet.class);
+	// discoverCommands(classes);
+	// }
+	//
+	// protected void discoverCommands(Iterable<Class> classes) {
+	// if (classes == null) {
+	// return;
+	// }
+	//
+	// List<CommandRunner> instances = Discovery.buildInstances(CommandRunner.class, classes);
+	// for (CommandRunner commandRunner : instances) {
+	// addCommand(commandRunner);
+	// }
+	// }
 }

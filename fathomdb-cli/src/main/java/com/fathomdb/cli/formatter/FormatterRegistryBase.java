@@ -1,10 +1,8 @@
 package com.fathomdb.cli.formatter;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import com.fathomdb.cli.discovery.Discovery;
+import java.util.ServiceLoader;
 
 public class FormatterRegistryBase implements FormatterRegistry {
 	final Map<Class<?>, Formatter> registry = new HashMap<Class<?>, Formatter>();
@@ -37,17 +35,23 @@ public class FormatterRegistryBase implements FormatterRegistry {
 		}
 	}
 
-	protected void discoverFormatters(Package package1) {
-		Discovery discovery = new Discovery();
-		List<Class<?>> classes = discovery.findClasses(getClass().getPackage());
-		discoverFormatters(classes);
-	}
-
-	protected void discoverFormatters(Iterable<? extends Class<?>> classes) {
-		List<Formatter> formatters = Discovery.buildInstances(Formatter.class,
-				classes);
-		for (Formatter formatter : formatters) {
+	protected void discoverFormatters() {
+		ServiceLoader<Formatter> serviceLoader = ServiceLoader.load(Formatter.class);
+		for (Formatter formatter : serviceLoader) {
 			addFormatter(formatter);
 		}
 	}
+
+	// protected void discoverFormatters() {
+	// Discovery discovery = Discovery.build();
+	// Collection<Class> classes = discovery.findAnnotatedClasses(Formatlet.class);
+	// discoverFormatters(classes);
+	// }
+	//
+	// protected void discoverFormatters(Iterable<Class> classes) {
+	// List<Formatter> formatters = Discovery.buildInstances(Formatter.class, classes);
+	// for (Formatter formatter : formatters) {
+	// addFormatter(formatter);
+	// }
+	// }
 }
