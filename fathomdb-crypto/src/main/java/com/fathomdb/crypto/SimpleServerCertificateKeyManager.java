@@ -12,8 +12,6 @@ import javax.net.ssl.X509ExtendedKeyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Joiner;
-
 public class SimpleServerCertificateKeyManager extends X509ExtendedKeyManager {
 	private static final Logger log = LoggerFactory.getLogger(SimpleServerCertificateKeyManager.class);
 
@@ -62,8 +60,8 @@ public class SimpleServerCertificateKeyManager extends X509ExtendedKeyManager {
 			throw new IllegalArgumentException();
 		}
 
-		log.info("Using server certificate: " + alias + " length=" + certificateChain.length);
-		log.debug("Server certificate = " + Joiner.on("\n").join(certificateChain));
+		// log.info("Using server certificate: " + alias + " length=" + certificateChain.length);
+		// log.debug("Server certificate = " + Joiner.on("\n").join(certificateChain));
 
 		return certificateChain;
 	}
@@ -76,7 +74,7 @@ public class SimpleServerCertificateKeyManager extends X509ExtendedKeyManager {
 			throw new IllegalArgumentException();
 		}
 
-		log.info("Using private key: " + alias);
+		// log.info("Using private key: " + alias);
 
 		return privateKey;
 	}
@@ -90,7 +88,7 @@ public class SimpleServerCertificateKeyManager extends X509ExtendedKeyManager {
 
 	@Override
 	public String chooseEngineServerAlias(String keyType, Principal[] issuers, SSLEngine engine) {
-		log.debug("Using client alias (chooseEngineServerAlias): " + ALIAS);
+		// log.debug("Using client alias (chooseEngineServerAlias): " + ALIAS);
 		return ALIAS;
 	}
 

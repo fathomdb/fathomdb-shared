@@ -12,8 +12,6 @@ import javax.net.ssl.X509ExtendedKeyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Joiner;
-
 public class SimpleClientCertificateKeyManager extends X509ExtendedKeyManager {
 	private static final Logger log = LoggerFactory.getLogger(SimpleClientCertificateKeyManager.class);
 
@@ -40,7 +38,7 @@ public class SimpleClientCertificateKeyManager extends X509ExtendedKeyManager {
 
 	@Override
 	public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
-		log.debug("Using client alias: " + ALIAS);
+		// log.debug("Using client alias: " + ALIAS);
 		return ALIAS;
 	}
 
@@ -66,8 +64,8 @@ public class SimpleClientCertificateKeyManager extends X509ExtendedKeyManager {
 			throw new IllegalArgumentException();
 		}
 
-		log.info("Using client certificate: " + alias + " length=" + certificateChain.length);
-		log.debug("Client certificate = " + Joiner.on("\n").join(certificateChain));
+		// log.info("Using client certificate: " + alias + " length=" + certificateChain.length);
+		// log.debug("Client certificate = " + Joiner.on("\n").join(certificateChain));
 
 		return certificateChain;
 	}
@@ -80,14 +78,14 @@ public class SimpleClientCertificateKeyManager extends X509ExtendedKeyManager {
 			throw new IllegalArgumentException();
 		}
 
-		log.info("Using private key: " + alias);
+		// log.info("Using private key: " + alias);
 
 		return privateKey;
 	}
 
 	@Override
 	public String chooseEngineClientAlias(String[] keyType, Principal[] issuers, SSLEngine engine) {
-		log.debug("Using client alias (chooseEngineClientAlias): " + ALIAS);
+		// log.debug("Using client alias (chooseEngineClientAlias): " + ALIAS);
 		return ALIAS;
 	}
 
