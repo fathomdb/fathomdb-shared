@@ -132,4 +132,10 @@ public class KnownCaTrustManager implements X509TrustManager {
 		return Joiner.on('/').join(sigs);
 	}
 
+	@Override
+	public String toString() {
+		return "KnownCaTrustManager [trustedServerCas=" + trustedServerCas + ", trustedClientCas=" + trustedClientCas
+				+ "]";
+	}
+
 }
