@@ -68,6 +68,16 @@ public class KnownCaTrustManager implements X509TrustManager {
 		}
 	}
 
+	static String getSig(int i, String[] chainSignatures, X509Certificate[] chain) {
+		String sig = chainSignatures[i];
+		if (sig == null) {
+			PublicKey certPublicKey = chain[i].getPublicKey();
+			sig = OpenSshUtils.getSignatureString(certPublicKey);
+			chainSignatures[i] = sig;
+		}
+		return sig;
+	}
+
 	static boolean matchesCa(List<String[]> trustedCas, X509Certificate[] chain) {
 		boolean found = false;
 
@@ -79,12 +89,7 @@ public class KnownCaTrustManager implements X509TrustManager {
 
 			boolean match = true;
 			for (int i = 0; i < trusted.length; i++) {
-				String sig = chainSignatures[chain.length - 1 - i];
-				if (sig == null) {
-					PublicKey certPublicKey = chain[chain.length - 1 - i].getPublicKey();
-					sig = OpenSshUtils.getSignatureString(certPublicKey);
-					chainSignatures[chain.length - 1 - i] = sig;
-				}
+				String sig = getSig(chain.length - 1 - i, chainSignatures, chain);
 
 				if (!trusted[trusted.length - i - 1].equals(sig)) {
 					match = false;
@@ -99,6 +104,11 @@ public class KnownCaTrustManager implements X509TrustManager {
 		}
 
 		if (!found) {
+			// Populate signatures
+			for (int i = 0; i < chainSignatures.length; i++) {
+				getSig(i, chainSignatures, chain);
+			}
+
 			log.warn("Certificate is not trusted (" + Joiner.on(",").join(chainSignatures) + ")");
 		}
 
@@ -120,6 +130,12 @@ public class KnownCaTrustManager implements X509TrustManager {
 		}
 
 		return Joiner.on('/').join(sigs);
+	}
+
+	@Override
+	public String toString() {
+		return "KnownCaTrustManager [trustedServerCas=" + trustedServerCas + ", trustedClientCas=" + trustedClientCas
+				+ "]";
 	}
 
 }
