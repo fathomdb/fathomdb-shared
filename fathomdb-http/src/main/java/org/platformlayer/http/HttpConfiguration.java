@@ -4,5 +4,5 @@ import java.io.Closeable;
 import java.net.URI;
 
 public interface HttpConfiguration extends Closeable {
-	HttpRequest buildRequest(String method, URI uri);
+	HttpRequest buildRequest(HttpMethod method, URI uri);
 }

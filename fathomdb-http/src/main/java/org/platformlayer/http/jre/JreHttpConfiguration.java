@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.platformlayer.http.HttpConfiguration;
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.SslConfiguration;
 
@@ -20,7 +21,7 @@ public class JreHttpConfiguration implements HttpConfiguration {
 	}
 
 	@Override
-	public HttpRequest buildRequest(String method, URI uri) {
+	public HttpRequest buildRequest(HttpMethod method, URI uri) {
 		try {
 			return new JreHttpRequest(method, uri, sslConfiguration);
 		} catch (IOException e) {

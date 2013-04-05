@@ -7,14 +7,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.net.ssl.KeyManager;
-import javax.xml.bind.UnmarshalException;
+import javax.xml.bind.JAXBException;
 
 import org.platformlayer.http.HttpConfiguration;
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.HttpStrategy;
 import org.platformlayer.http.SslConfiguration;
-import org.platformlayer.xml.JaxbHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,14 +42,14 @@ public class JreRestfulClient implements RestfulClient {
 	}
 
 	public class JreRequest<T> implements RestfulRequest<T> {
-		String method;
+		HttpMethod method;
 		String relativeUri;
 		HttpPayload postObject;
 		Class<T> responseClass;
 
 		SslConfiguration sslConfiguration = null;
 
-		JreRequest(String method, String relativeUri, HttpPayload postObject, Class<T> responseClass) {
+		JreRequest(HttpMethod method, String relativeUri, HttpPayload postObject, Class<T> responseClass) {
 			super();
 			this.method = method;
 			this.relativeUri = relativeUri;
@@ -135,8 +135,8 @@ public class JreRestfulClient implements RestfulClient {
 
 	<T> T deserializeXml(InputStream is, Class<T> clazz) throws RestClientException {
 		try {
-			return JaxbHelper.deserializeXmlObject(is, clazz, true);
-		} catch (UnmarshalException e) {
+			return JaxbXmlCodec.deserializeXmlObject(is, clazz, true);
+		} catch (JAXBException e) {
 			throw new RestClientException("Error reading XML response data", e);
 		}
 	}
@@ -151,7 +151,7 @@ public class JreRestfulClient implements RestfulClient {
 	}
 
 	@Override
-	public <T> RestfulRequest<T> buildRequest(String method, String relativeUri, HttpPayload postObject,
+	public <T> RestfulRequest<T> buildRequest(HttpMethod method, String relativeUri, HttpPayload postObject,
 			Class<T> responseClass) {
 		return new JreRequest<T>(method, relativeUri, postObject, responseClass);
 	}

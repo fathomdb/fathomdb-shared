@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.platformlayer.http.HttpMethod;
 import org.platformlayer.http.HttpRequest;
 import org.platformlayer.http.HttpResponse;
 import org.platformlayer.http.SslConfiguration;
@@ -28,11 +29,11 @@ public class JreHttpRequest implements HttpRequest {
 
 	final HttpURLConnection httpConn;
 	final URI uri;
-	final String method;
+	final HttpMethod method;
 
 	final SslConfiguration sslConfiguration;
 
-	JreHttpRequest(String method, URI uri, SslConfiguration sslConfiguration) throws IOException {
+	JreHttpRequest(HttpMethod method, URI uri, SslConfiguration sslConfiguration) throws IOException {
 		this.method = method;
 		this.sslConfiguration = sslConfiguration;
 		this.uri = uri;
@@ -40,12 +41,25 @@ public class JreHttpRequest implements HttpRequest {
 		URL url = uri.toURL();
 
 		httpConn = (HttpURLConnection) url.openConnection();
+
+		switch (method) {
+		case GET:
+		case DELETE:
+			httpConn.setDoOutput(false);
+			break;
+
+		case POST:
+		case PUT:
+			httpConn.setDoOutput(true);
+			break;
+		default:
+			throw new IllegalStateException();
+		}
 		httpConn.setDoInput(true);
-		httpConn.setDoOutput(true);
 		httpConn.setUseCaches(false);
 		httpConn.setDefaultUseCaches(false);
 		httpConn.setAllowUserInteraction(false);
-		httpConn.setRequestMethod(method);
+		httpConn.setRequestMethod(method.getHttpMethod());
 
 		configureSslParameters();
 	}
@@ -154,7 +168,7 @@ public class JreHttpRequest implements HttpRequest {
 		return uri;
 	}
 
-	public String getMethod() {
+	public HttpMethod getMethod() {
 		return method;
 	}
 

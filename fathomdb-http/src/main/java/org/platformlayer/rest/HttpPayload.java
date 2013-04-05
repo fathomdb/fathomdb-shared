@@ -1,9 +1,5 @@
 package org.platformlayer.rest;
 
-import javax.xml.bind.JAXBException;
-
-import org.platformlayer.xml.JaxbHelper;
-
 import com.fathomdb.io.ByteSource;
 
 public class HttpPayload {
@@ -18,10 +14,10 @@ public class HttpPayload {
 	public static HttpPayload asXml(Object object) throws RestClientException {
 		try {
 			boolean formatted = false;
-			String content = JaxbHelper.toXml(object, formatted);
+			String content = JaxbXmlCodec.toXml(object, formatted);
 
 			return fromStringUtf8("application/xml", content);
-		} catch (JAXBException e) {
+		} catch (Exception e) {
 			throw new RestClientException("Error serializing data", e);
 		}
 	}
