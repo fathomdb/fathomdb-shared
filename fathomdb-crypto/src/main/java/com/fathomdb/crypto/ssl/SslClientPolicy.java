@@ -5,7 +5,6 @@ import java.security.GeneralSecurityException;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
 public class SslClientPolicy {
@@ -34,11 +33,11 @@ public class SslClientPolicy {
 		return sslEngine;
 	}
 
-	public void verifySession(SSLSession session) {
-		// BrowserCompatHostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
-		// if (!hostnameVerifier.verify(hostname, session)) {
-		// throw new SecurityException("Peer verification failed for hostname: " + hostname);
-		// }
-	}
+	// public void verifySession(SSLSession session) {
+	// // BrowserCompatHostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
+	// // if (!hostnameVerifier.verify(hostname, session)) {
+	// // throw new SecurityException("Peer verification failed for hostname: " + hostname);
+	// // }
+	// }
 
 }
