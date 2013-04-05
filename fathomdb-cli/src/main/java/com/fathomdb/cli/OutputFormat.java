@@ -18,11 +18,11 @@ public enum OutputFormat {
 			return new RawOutputSink(context, out);
 			// return new XmlOutputSink(out);
 		case Text:
-			return new TextOutputSink(context, context.getFormatterRegistry(), out, true);
+			return new TextOutputSink(context, out, true);
 		case Raw:
 			return new RawOutputSink(context, out);
 		case Action:
-			return new ActionOutputSink(context, context.getFormatterRegistry(), out);
+			return new ActionOutputSink(context, out);
 		default:
 			throw new IllegalStateException();
 		}

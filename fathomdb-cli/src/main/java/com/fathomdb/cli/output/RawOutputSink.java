@@ -1,22 +1,17 @@
 package com.fathomdb.cli.output;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
 
 import com.fathomdb.cli.CliContext;
 
-public class RawOutputSink implements OutputSink {
-
+public class RawOutputSink extends OutputSinkBase {
 	private final PrintWriter out;
 
 	public RawOutputSink(CliContext context, PrintWriter out) {
-		this.out = out;
-	}
+		super(context);
 
-	@Override
-	public void visitObject(Object o) throws IOException {
-		throw new UnsupportedOperationException();
+		this.out = out;
 	}
 
 	@Override

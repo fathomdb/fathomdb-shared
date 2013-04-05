@@ -1,5 +1,6 @@
 package com.fathomdb.cli.commands;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import com.fathomdb.cli.autocomplete.HasAutoCompletor;
 import com.fathomdb.cli.autocomplete.SimpleArgumentAutoCompleter;
 import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.output.FormattedList;
+import com.fathomdb.cli.output.OutputSink;
 import com.google.common.collect.Lists;
 
 public abstract class CommandRunnerBase implements CommandRunner, Cloneable {
@@ -77,7 +79,7 @@ public abstract class CommandRunnerBase implements CommandRunner, Cloneable {
 			list.add(o);
 			write = list;
 		}
-		FormattedList<?> list = FormattedList.build(context, context.getFormatterRegistry(), (Iterable) write, false);
+		FormattedList<?> list = FormattedList.build(context, (Iterable) write, false);
 		writer.print(list.toString());
 	}
 
@@ -122,6 +124,21 @@ public abstract class CommandRunnerBase implements CommandRunner, Cloneable {
 
 	public OutputFormat getOutputFormat() {
 		return format;
+	}
+
+	@Override
+	public void outputResults(OutputSink outputSink, Object results) throws IOException {
+		Object formatted = convertToOutputFormat(results);
+		if (formatted instanceof Iterable) {
+			for (Object item : (Iterable) formatted) {
+				outputSink.visitObject(item);
+			}
+		} else {
+			outputSink.visitObject(formatted);
+		}
+
+		outputSink.finishOutput();
+		outputSink.flush();
 	}
 
 	// protected static String getOptionsHelp(CmdLineParser parser) {

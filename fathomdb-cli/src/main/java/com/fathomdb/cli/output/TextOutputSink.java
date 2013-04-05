@@ -12,20 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.fathomdb.cli.CliContext;
-import com.fathomdb.cli.formatter.DefaultFormatter;
 import com.fathomdb.cli.formatter.Formatter;
-import com.fathomdb.cli.formatter.FormatterRegistry;
 
-public class TextOutputSink implements OutputSink {
+public class TextOutputSink extends OutputSinkBase {
 	final PrintWriter out;
-	final FormatterRegistry formatterRegistry;
 	final boolean decorate;
-	final CliContext context;
 
-	public TextOutputSink(CliContext context, FormatterRegistry formatterRegistry, PrintWriter out, boolean decorate) {
-		super();
-		this.context = context;
-		this.formatterRegistry = formatterRegistry;
+	public TextOutputSink(CliContext context, PrintWriter out, boolean decorate) {
+		super(context);
 		this.out = out;
 		this.decorate = decorate;
 	}
@@ -75,15 +69,6 @@ public class TextOutputSink implements OutputSink {
 	}
 
 	final List<Row> rows = new ArrayList<Row>();
-
-	@Override
-	public void visitObject(Object o) throws IOException {
-		Formatter formatter = formatterRegistry.getFormatter(o.getClass());
-		if (formatter == null) {
-			formatter = DefaultFormatter.INSTANCE;
-		}
-		formatter.visitObject(context, o, this);
-	}
 
 	@Override
 	public void outputRow(Map<String, Object> map) throws IOException {

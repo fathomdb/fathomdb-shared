@@ -14,7 +14,6 @@ import org.kohsuke.args4j.CmdLineException;
 import com.fathomdb.Utf8;
 import com.fathomdb.cli.commands.CommandRunner;
 import com.fathomdb.cli.output.OutputSink;
-import com.fathomdb.cli.output.RawOutputSink;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
@@ -174,21 +173,7 @@ class CliSimpleRepl implements Repl {
 	}
 
 	protected void outputResults(CommandRunner commandRunner, Object results) throws IOException {
-		if (outputSink instanceof RawOutputSink) {
-			commandRunner.formatRaw(results, ((RawOutputSink) outputSink).getWriter());
-		} else {
-			Object formatted = commandRunner.convertToOutputFormat(results);
-			if (formatted instanceof Iterable) {
-				for (Object item : (Iterable) formatted) {
-					outputSink.visitObject(item);
-				}
-			} else {
-				outputSink.visitObject(formatted);
-			}
-		}
-
-		outputSink.finishOutput();
-		outputSink.flush();
+		commandRunner.outputResults(outputSink, results);
 	}
 
 	public boolean runScripts(List<File> scriptFiles) throws IOException {

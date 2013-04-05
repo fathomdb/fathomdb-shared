@@ -16,8 +16,8 @@ public class ActionOutputSink implements OutputSink {
 	private final PrintWriter out;
 	private final FormatterRegistry formatterRegistry;
 
-	public ActionOutputSink(CliContext context, FormatterRegistry formatterRegistry, PrintWriter out) {
-		this.formatterRegistry = formatterRegistry;
+	public ActionOutputSink(CliContext context, PrintWriter out) {
+		this.formatterRegistry = context.getFormatterRegistry();
 		this.out = out;
 	}
 
