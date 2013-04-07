@@ -18,6 +18,7 @@ import com.fathomdb.cli.autocomplete.SimpleArgumentAutoCompleter;
 import com.fathomdb.cli.autocomplete.SimpleAutoCompleter;
 import com.fathomdb.cli.output.FormattedList;
 import com.fathomdb.cli.output.OutputSink;
+import com.fathomdb.cli.output.RawOutputSink;
 import com.google.common.collect.Lists;
 
 public abstract class CommandRunnerBase implements CommandRunner, Cloneable {
@@ -129,6 +130,12 @@ public abstract class CommandRunnerBase implements CommandRunner, Cloneable {
 	@Override
 	public void outputResults(OutputSink outputSink, Object results) throws IOException {
 		Object formatted = convertToOutputFormat(results);
+
+		if (outputSink instanceof RawOutputSink) {
+			formatRaw(results, ((RawOutputSink) outputSink).getWriter());
+			return;
+		}
+
 		if (formatted instanceof Iterable) {
 			for (Object item : (Iterable) formatted) {
 				outputSink.visitObject(item);
