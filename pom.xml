@@ -16,6 +16,9 @@
 		<module>fathomdb-ratelimit</module>
 		<module>fathomdb-templates</module>
 		<module>fathomdb-discovery</module>
+		<module>fathomdb-server</module>
+                <module>fathomdb-jpa</module>
+                <module>fathomdb-metrics</module>
 	</modules>
 
 	<properties>
