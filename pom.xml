@@ -12,7 +12,7 @@
 		<module>fathomdb-crypto</module>
 		<module>fathomdb-http</module>
 		<module>fathomdb-cli</module>
-		<module>fathomdb-nailgun</module>
+<!--		<module>fathomdb-nailgun</module> -->
 		<module>fathomdb-ratelimit</module>
 		<module>fathomdb-templates</module>
 		<module>fathomdb-discovery</module>
