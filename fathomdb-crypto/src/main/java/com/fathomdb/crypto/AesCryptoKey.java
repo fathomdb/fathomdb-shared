@@ -3,6 +3,7 @@ package com.fathomdb.crypto;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -49,6 +50,11 @@ public class AesCryptoKey extends CryptoKey {
 
 		byte[] iv = null; // Deprecated
 		return encrypt(cipher, secret, iv, plaintext);
+	}
+
+	@Override
+	public ByteBuffer encrypt(ByteBuffer plaintext) {
+		throw new UnsupportedOperationException();
 	}
 
 	static AesCryptoKey read(InputStream is) throws IOException {
