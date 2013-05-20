@@ -105,6 +105,14 @@ public class ConfigurationImpl implements Configuration {
 		return children;
 	}
 
+	@Override
+	public Configuration getChildTree(String prefix) {
+		Map<String, String> childProperties = getChildProperties(prefix);
+		List<Map<String, String>> propertyList = Lists.newArrayList();
+		propertyList.add(childProperties);
+		return new ConfigurationImpl(basePath, propertyList);
+	}
+
 	private Set<String> getKeySet() {
 		Set<String> keys = Sets.newHashSet();
 

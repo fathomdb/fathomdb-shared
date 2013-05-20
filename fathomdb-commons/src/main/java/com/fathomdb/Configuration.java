@@ -22,5 +22,7 @@ public interface Configuration {
 
 	Map<String, String> getChildProperties(String prefix);
 
+	Configuration getChildTree(String prefix);
+
 	List<InetSocketAddress> lookupList(String key, InetSocketAddress... inetSocketAddress);
 }
