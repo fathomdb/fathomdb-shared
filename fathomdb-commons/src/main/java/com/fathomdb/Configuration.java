@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface Configuration {
 	String get(String key);
@@ -24,5 +25,7 @@ public interface Configuration {
 
 	Configuration getChildTree(String prefix);
 
+	Set<String> getKeys();
+	
 	List<InetSocketAddress> lookupList(String key, InetSocketAddress... inetSocketAddress);
 }

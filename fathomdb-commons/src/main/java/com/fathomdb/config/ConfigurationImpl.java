@@ -92,7 +92,7 @@ public class ConfigurationImpl implements Configuration {
 	public Map<String, String> getChildProperties(String prefix) {
 		Map<String, String> children = Maps.newHashMap();
 
-		Set<String> keySet = getKeySet();
+		Set<String> keySet = getKeys();
 		for (String key : keySet) {
 			if (!key.startsWith(prefix)) {
 				continue;
@@ -113,7 +113,8 @@ public class ConfigurationImpl implements Configuration {
 		return new ConfigurationImpl(basePath, propertyList);
 	}
 
-	private Set<String> getKeySet() {
+	@Override
+	public Set<String> getKeys() {
 		Set<String> keys = Sets.newHashSet();
 
 		for (Map<String, String> propertyMap : properties) {
@@ -247,5 +248,6 @@ public class ConfigurationImpl implements Configuration {
 
 		return new InetSocketAddress(addr, port);
 	}
+
 
 }
