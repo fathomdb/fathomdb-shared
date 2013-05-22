@@ -8,7 +8,6 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
-
 import com.fathomdb.jpa.impl.DatabaseNameMapping;
 import com.fathomdb.jpa.impl.FieldMap;
 import com.google.common.base.Joiner;
@@ -258,6 +257,8 @@ class QueryDescriptor {
 
 		String limit = null;
 		Object limitArg = null;
+		String offset = null;
+		Object offsetArg = null;
 
 		List<String> filterSql = Lists.newArrayList();
 		List<Object> filterParameters = Lists.newArrayList();
@@ -269,6 +270,11 @@ class QueryDescriptor {
 					continue;
 				limit = "LIMIT ?";
 				limitArg = arg;
+			} else if (filter.isOffset()) {
+				if (arg == null)
+					continue;
+				offset = "OFFSET ?";
+				offsetArg = arg;
 			} else {
 				if (arg == null)
 					continue;
@@ -309,10 +315,15 @@ class QueryDescriptor {
 			sb.append(this.sql);
 		}
 
-		// Limit must come at the end
+		// Limit / offset must come at the end
 		if (limit != null) {
 			sb.append(" LIMIT ?");
 			sqlBuilder.parameters.add(limitArg);
+		}
+
+		if (offset != null) {
+			sb.append(" OFFSET ?");
+			sqlBuilder.parameters.add(offsetArg);
 		}
 
 		sqlBuilder.sql = sb.toString();

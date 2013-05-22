@@ -12,11 +12,16 @@ public class QueryFilterDescriptor {
 
 	public String getSql() {
 		assert !isLimit();
+		assert !isOffset();
 		return annotation.value();
 	}
 
 	public boolean isLimit() {
 		return QueryFilter.LIMIT.equals(annotation.value());
+	}
+
+	public boolean isOffset() {
+		return QueryFilter.OFFSET.equals(annotation.value());
 	}
 
 }
