@@ -21,7 +21,9 @@ public class MappedColumn {
 		// TODO: Precompute whether we need a transform?
 
 		if (EnumWithKey.class.isAssignableFrom(fieldType)) {
-			value = EnumWithKeys.fromKey((Class<? extends EnumWithKey>) fieldType, (String) value);
+			if (value != null) {
+				value = EnumWithKeys.fromKey((Class<? extends EnumWithKey>) fieldType, (String) value);
+			}
 		}
 
 		if (char.class.isAssignableFrom(fieldType)) {
