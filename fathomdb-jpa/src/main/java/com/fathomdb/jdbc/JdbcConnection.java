@@ -67,6 +67,8 @@ public class JdbcConnection {
 			}
 		} catch (SQLFeatureNotSupportedException e) {
 			log.info("Unable to force prepare of statement - not supported");
+		} catch (Exception e) {
+			log.info("Unable to force prepare of statement {}", e.getMessage());
 		}
 
 		// if (actual instanceof AbstractJdbc2Statement) {

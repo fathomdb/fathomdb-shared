@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface QueryFilter {
 	public final static String LIMIT = ";;limit;;";
+	public final static String OFFSET = ";;offset;;";
 
 	// TODO: It would be nice to infer the filter from the parameter name
 	// e.g. @QueryFilter Integer limit => LIMIT ?
