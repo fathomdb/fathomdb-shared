@@ -85,7 +85,7 @@ public class AesCbcCryptoKey extends CryptoKey {
 		return new AesCbcCryptoKey(secret);
 	}
 
-	static AesCbcCryptoKey deriveKey(int iterationCount, byte[] salt, String password) {
+	public static AesCbcCryptoKey deriveKey(int iterationCount, byte[] salt, String password) {
 		PBEKey pbeKey = KeyDerivationFunctions.doPbkdf2(iterationCount, salt, password, DEFAULT_KEYSIZE_BITS);
 		SecretKey secretKey = new SecretKeySpec(pbeKey.getEncoded(), "AES");
 		return new AesCbcCryptoKey(secretKey);
