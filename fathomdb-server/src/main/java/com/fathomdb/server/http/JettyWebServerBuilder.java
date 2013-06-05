@@ -11,9 +11,12 @@ import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.bio.SocketConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -39,12 +42,15 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 
 	final Server server;
 
+	final HandlerCollection handlers;
 	final ContextHandlerCollection contexts;
 
 	public JettyWebServerBuilder() {
 		this.server = new Server();
+		this.handlers = new HandlerCollection();
 		this.contexts = new ContextHandlerCollection();
-		this.server.setHandler(contexts);
+		this.handlers.addHandler(this.contexts);
+		this.server.setHandler(this.handlers);
 	}
 
 	@Override
@@ -84,6 +90,21 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 		SelectChannelConnector connector = new SelectChannelConnector();
 		connector.setPort(port);
 		return connector;
+	}
+
+	@Override
+	public void enableRequestLogging() {
+		NCSARequestLog requestLog = new NCSARequestLog(
+				"./weblogs/jetty-yyyy_mm_dd.request.log");
+		// requestLog.setRetainDays(90);
+		requestLog.setAppend(true);
+		requestLog.setExtended(false);
+		requestLog.setLogLatency(true);
+		requestLog.setLogTimeZone("GMT");
+
+		RequestLogHandler requestLogHandler = new RequestLogHandler();
+		requestLogHandler.setRequestLog(requestLog);
+		handlers.addHandler(requestLogHandler);
 	}
 
 	public ServletContextHandler addContext(String path) {

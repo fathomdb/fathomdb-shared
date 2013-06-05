@@ -18,4 +18,6 @@ public interface WebServerBuilder {
 	void addHttpsConnector(int port, Set<SslOption> options) throws Exception;
 
 	void addWar(String key, File file);
+
+	void enableRequestLogging();
 }
