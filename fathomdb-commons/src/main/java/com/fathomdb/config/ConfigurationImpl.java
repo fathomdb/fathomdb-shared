@@ -24,7 +24,8 @@ import com.google.common.collect.Sets;
 import com.google.common.net.InetAddresses;
 
 public class ConfigurationImpl implements Configuration {
-	private static final Logger log = LoggerFactory.getLogger(ConfigurationImpl.class);
+	private static final Logger log = LoggerFactory
+			.getLogger(ConfigurationImpl.class);
 
 	final File basePath;
 	final List<Map<String, String>> properties;
@@ -39,11 +40,13 @@ public class ConfigurationImpl implements Configuration {
 	// private Properties loadProperties(Properties applicationProperties) {
 	// Properties systemProperties;
 	// try {
-	// String propertiesString = ResourceUtils.get(Configuration.class, "system_settings.properties");
+	// String propertiesString = ResourceUtils.get(Configuration.class,
+	// "system_settings.properties");
 	// systemProperties = new Properties();
 	// systemProperties.load(new StringReader(propertiesString));
 	// } catch (IOException e) {
-	// throw new IllegalStateException("Error loading resource system_settings.properties");
+	// throw new
+	// IllegalStateException("Error loading resource system_settings.properties");
 	// }
 	//
 	// Properties properties = new Properties(systemProperties);
@@ -77,14 +80,15 @@ public class ConfigurationImpl implements Configuration {
 	public String get(String key) {
 		String value = find(key);
 		if (value == null) {
-			throw new IllegalArgumentException("Required value not found: " + key);
+			throw new IllegalArgumentException("Required value not found: "
+					+ key);
 		}
 		return value;
 	}
 
 	@Override
 	public String find(String key) {
-		String value = lookup(key, null);
+		String value = lookup(key, (String) null);
 		return value;
 	}
 
@@ -99,7 +103,7 @@ public class ConfigurationImpl implements Configuration {
 			}
 
 			String suffix = key.substring(prefix.length());
-			children.put(suffix, lookup(key, null));
+			children.put(suffix, lookup(key, (String) null));
 		}
 
 		return children;
@@ -145,7 +149,8 @@ public class ConfigurationImpl implements Configuration {
 		}
 
 		if (configFilePath == null) {
-			configFilePath = new File(new File("."), "configuration.properties").getAbsolutePath();
+			configFilePath = new File(new File("."), "configuration.properties")
+					.getAbsolutePath();
 		}
 
 		File configFile = new File(configFilePath);
@@ -167,7 +172,9 @@ public class ConfigurationImpl implements Configuration {
 					propertiesList.add(PropertyUtils.toMap(properties));
 					log.info("Loaded configuration file: " + configFile);
 				} catch (IOException e) {
-					throw new IllegalStateException("Error loading configuration file: " + configFile, e);
+					throw new IllegalStateException(
+							"Error loading configuration file: " + configFile,
+							e);
 				}
 			} else {
 				log.warn("Configuration file not found: " + configFile);
@@ -177,8 +184,9 @@ public class ConfigurationImpl implements Configuration {
 		{
 			Properties systemProperties = System.getProperties();
 
-			Map<String, String> confProperties = PropertyUtils.getChildProperties(
-					PropertyUtils.toMap(systemProperties), "conf.");
+			Map<String, String> confProperties = PropertyUtils
+					.getChildProperties(PropertyUtils.toMap(systemProperties),
+							"conf.");
 			if (!confProperties.isEmpty()) {
 				propertiesList.add(confProperties);
 			}
@@ -189,12 +197,14 @@ public class ConfigurationImpl implements Configuration {
 		return new ConfigurationImpl(configFile.getParentFile(), propertiesList);
 	}
 
-	public static ConfigurationImpl from(File basePath, List<Map<String, String>> propertiesList) {
+	public static ConfigurationImpl from(File basePath,
+			List<Map<String, String>> propertiesList) {
 		return new ConfigurationImpl(basePath, propertiesList);
 	}
 
 	public static ConfigurationImpl from(File basePath, Properties properties) {
-		return new ConfigurationImpl(basePath, Collections.singletonList(PropertyUtils.toMap(properties)));
+		return new ConfigurationImpl(basePath,
+				Collections.singletonList(PropertyUtils.toMap(properties)));
 	}
 
 	@Override
@@ -223,7 +233,8 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	@Override
-	public List<InetSocketAddress> lookupList(String key, InetSocketAddress... defaults) {
+	public List<InetSocketAddress> lookupList(String key,
+			InetSocketAddress... defaults) {
 		List<InetSocketAddress> ret = Lists.newArrayList();
 		String s = find(key);
 		if (s == null) {
@@ -243,11 +254,20 @@ public class ConfigurationImpl implements Configuration {
 			throw new IllegalArgumentException("Cannot parse address: " + s);
 		}
 
-		InetAddress addr = InetAddresses.forString(s.substring(0, colonIndex).trim());
+		InetAddress addr = InetAddresses.forString(s.substring(0, colonIndex)
+				.trim());
 		int port = Integer.valueOf(s.substring(colonIndex + 1));
 
 		return new InetSocketAddress(addr, port);
 	}
 
+	@Override
+	public InetAddress lookup(String key, InetAddress defaultValue) {
+		String value = lookup(key, (String) null);
+		if (value == null) {
+			return defaultValue;
+		}
+		return InetAddresses.forString(value);
+	}
 
 }

@@ -78,13 +78,13 @@ public class SslConfiguration {
 		TrustManager trustManager = null;
 		KeyManager keyManager = null;
 
-		String cert = configuration.lookup(prefix + "ssl.cert", null);
+		String cert = configuration.find(prefix + "ssl.cert");
 		if (cert != null) {
 			CertificateAndKey certificateAndKey = encryptionStore.getCertificateAndKey(cert);
 			keyManager = new SimpleClientCertificateKeyManager(certificateAndKey);
 		}
 
-		String trustKeys = configuration.lookup(prefix + "ssl.keys", null);
+		String trustKeys = configuration.find(prefix + "ssl.keys");
 		if (trustKeys != null) {
 			trustManager = new PublicKeyTrustManager(Splitter.on(',').trimResults().split(trustKeys));
 

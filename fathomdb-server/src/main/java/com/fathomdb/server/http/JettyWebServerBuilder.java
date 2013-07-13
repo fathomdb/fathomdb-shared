@@ -1,6 +1,7 @@
 package com.fathomdb.server.http;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.security.KeyStore;
 import java.util.EnumSet;
 import java.util.Set;
@@ -68,26 +69,38 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 	}
 
 	@Override
-	public void addHttpConnector(int port, boolean async) {
+	public void addHttpConnector(InetAddress address, int port, boolean async) {
 		Connector connector;
 		if (async) {
-			connector = buildSelectChannelConnector(port);
+			connector = buildSelectChannelConnector(address, port);
 		} else {
-			connector = buildSocketConnector(port);
+			connector = buildSocketConnector(address, port);
 		}
 
 		// connector.setHost("127.0.0.1");
 		server.addConnector(connector);
 	}
 
-	protected Connector buildSocketConnector(int port) {
+	@Override
+	public void addHttpConnector(int port, boolean async) {
+		addHttpConnector(null, port, async);
+	}
+
+	protected Connector buildSocketConnector(InetAddress address, int port) {
 		SocketConnector connector = new SocketConnector();
+		if (address != null) {
+			connector.setHost(address.getHostAddress());
+		}
 		connector.setPort(port);
 		return connector;
 	}
 
-	protected Connector buildSelectChannelConnector(int port) {
+	protected Connector buildSelectChannelConnector(InetAddress address,
+			int port) {
 		SelectChannelConnector connector = new SelectChannelConnector();
+		if (address != null) {
+			connector.setHost(address.getHostAddress());
+		}
 		connector.setPort(port);
 		return connector;
 	}
@@ -124,7 +137,8 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 	public void addGuiceContext(String path, Injector injector) {
 		ServletContextHandler context = addContext(path);
 
-		GuiceServletConfig servletConfig = injector.getInstance(GuiceServletConfig.class);
+		GuiceServletConfig servletConfig = injector
+				.getInstance(GuiceServletConfig.class);
 		context.addEventListener(servletConfig);
 
 		// Must add DefaultServlet for embedded Jetty
@@ -138,7 +152,14 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 	}
 
 	@Override
-	public void addHttpsConnector(int port, Set<SslOption> options) throws Exception {
+	public void addHttpsConnector(int port, Set<SslOption> options)
+			throws Exception {
+		addHttpsConnector(null, port, options);
+	}
+
+	@Override
+	public void addHttpsConnector(InetAddress address, int port,
+			Set<SslOption> options) throws Exception {
 		SslContextFactory sslContextFactory;
 		if (options.contains(SslOption.AllowAnyClientCertificate)) {
 			CustomTrustManagerSslContextFactory customSslContextFactory = new CustomTrustManagerSslContextFactory();
@@ -147,14 +168,16 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 
 			sslContextFactory = customSslContextFactory;
 		} else {
-			sslContextFactory = new SslContextFactory(SslContextFactory.DEFAULT_KEYSTORE_PATH);
+			sslContextFactory = new SslContextFactory(
+					SslContextFactory.DEFAULT_KEYSTORE_PATH);
 		}
 
 		// TODO: Preconfigure a better SSLContext??
 		SSLContext sslContext = SSLContext.getDefault();
-		sslContextFactory
-				.setIncludeCipherSuites(SslPolicy.DEFAULT.getEngineConfig(sslContext).getEnabledCipherSuites());
-		sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT.getEngineConfig(sslContext).getEnabledProtocols());
+		sslContextFactory.setIncludeCipherSuites(SslPolicy.DEFAULT
+				.getEngineConfig(sslContext).getEnabledCipherSuites());
+		sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT
+				.getEngineConfig(sslContext).getEnabledProtocols());
 
 		{
 			CertificateAndKey certificateAndKey = getCertificateAndKey();
@@ -175,7 +198,11 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 			sslContextFactory.setWantClientAuth(true);
 		}
 
-		SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
+		SslSelectChannelConnector connector = new SslSelectChannelConnector(
+				sslContextFactory);
+		if (address != null) {
+			connector.setHost(address.getHostAddress());
+		}
 		connector.setPort(port);
 		server.addConnector(connector);
 	}
@@ -195,7 +222,8 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 		contextPath = "/" + contextPath;
 		context.setContextPath(contextPath);
 
-		context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+		context.setInitParameter(
+				"org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
 		contexts.addHandler(context);
 	}
