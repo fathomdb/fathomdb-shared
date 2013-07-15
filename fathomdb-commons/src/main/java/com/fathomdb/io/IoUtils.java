@@ -153,7 +153,8 @@ public class IoUtils {
 
 	public static File resolve(String filename) {
 		if (filename.startsWith("~/")) {
-			filename = filename.replace("~/", System.getProperty("user.home") + File.separator);
+			filename = System.getProperty("user.home") + File.separator
+					+ filename.substring(2);
 		}
 
 		return new File(filename);

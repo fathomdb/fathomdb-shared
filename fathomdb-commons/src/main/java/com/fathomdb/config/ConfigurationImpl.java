@@ -214,6 +214,12 @@ public class ConfigurationImpl implements Configuration {
 			assert defaultPath == null;
 			return null;
 		}
+
+		if (value.startsWith("~/")) {
+			value = System.getProperty("user.home") + File.separator
+					+ value.substring(2);
+		}
+
 		if (value.startsWith("/")) {
 			return new File(value);
 		} else {
