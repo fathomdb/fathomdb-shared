@@ -12,13 +12,13 @@
 		<module>fathomdb-crypto</module>
 		<module>fathomdb-http</module>
 		<module>fathomdb-cli</module>
-		<module>fathomdb-nailgun</module> 
+		<module>fathomdb-nailgun</module>
 		<module>fathomdb-ratelimit</module>
 		<module>fathomdb-templates</module>
 		<module>fathomdb-discovery</module>
 		<module>fathomdb-server</module>
-                <module>fathomdb-jpa</module>
-                <module>fathomdb-metrics</module>
+		<module>fathomdb-jpa</module>
+		<module>fathomdb-metrics</module>
 	</modules>
 
 	<properties>
@@ -100,6 +100,18 @@
 				<groupId>jline</groupId>
 				<artifactId>jline</artifactId>
 				<version>1.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.inject</groupId>
+				<artifactId>guice</artifactId>
+				<version>3.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.inject.extensions</groupId>
+				<artifactId>guice-servlet</artifactId>
+				<version>3.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
