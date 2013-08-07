@@ -49,6 +49,8 @@ public class JdbcConnection {
 		return preparedStatement;
 	}
 
+	static int warnCount = 0;
+
 	private void ensurePrepared(PreparedStatement preparedStatement) throws SQLException {
 		PreparedStatement actual = preparedStatement;
 
@@ -66,9 +68,15 @@ public class JdbcConnection {
 				pgStatement.setPrepareThreshold(1);
 			}
 		} catch (SQLFeatureNotSupportedException e) {
-			log.info("Unable to force prepare of statement - not supported");
+			if (warnCount < 10) {
+				log.info("Unable to force prepare of statement - not supported");
+				warnCount++;
+			}
 		} catch (Exception e) {
-			log.info("Unable to force prepare of statement {}", e.getMessage());
+			if (warnCount < 20) {
+				warnCount++;
+				log.info("Unable to force prepare of statement {}", e.getMessage());
+			}
 		}
 
 		// if (actual instanceof AbstractJdbc2Statement) {

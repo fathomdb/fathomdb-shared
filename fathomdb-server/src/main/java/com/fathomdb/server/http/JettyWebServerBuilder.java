@@ -113,6 +113,7 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 		requestLog.setAppend(true);
 		requestLog.setExtended(false);
 		requestLog.setLogLatency(true);
+		requestLog.setLogDispatch(true);
 		requestLog.setLogTimeZone("GMT");
 
 		RequestLogHandler requestLogHandler = new RequestLogHandler();
