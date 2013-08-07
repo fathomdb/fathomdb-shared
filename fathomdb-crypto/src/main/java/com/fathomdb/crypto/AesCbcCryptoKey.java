@@ -16,6 +16,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.primitives.Bytes;
 
 public class AesCbcCryptoKey extends CryptoKey {
+	private static final String ALGORITHM = "AES";
 	private static final String CIPHER = "AES/CBC/PKCS5Padding";
 	private static final int DEFAULT_KEYSIZE_BITS = 128;
 
@@ -101,7 +102,7 @@ public class AesCbcCryptoKey extends CryptoKey {
 		byte[] keyData = new byte[length];
 		ByteStreams.readFully(is, keyData);
 
-		SecretKeySpec key = new SecretKeySpec(keyData, CIPHER);
+		SecretKeySpec key = new SecretKeySpec(keyData, ALGORITHM);
 		return new AesCbcCryptoKey(key, DEFAULT_KEYSIZE_BITS);
 	}
 
@@ -114,13 +115,13 @@ public class AesCbcCryptoKey extends CryptoKey {
 	}
 
 	static AesCbcCryptoKey generateKey() {
-		SecretKey secret = generateKey("AES", DEFAULT_KEYSIZE_BITS);
+		SecretKey secret = generateKey(ALGORITHM, DEFAULT_KEYSIZE_BITS);
 		return new AesCbcCryptoKey(secret, DEFAULT_KEYSIZE_BITS);
 	}
 
 	public static AesCbcCryptoKey deriveKey(int iterationCount, byte[] salt, String password) {
 		PBEKey pbeKey = KeyDerivationFunctions.doPbkdf2(iterationCount, salt, password, DEFAULT_KEYSIZE_BITS);
-		SecretKey secretKey = new SecretKeySpec(pbeKey.getEncoded(), "AES");
+		SecretKey secretKey = new SecretKeySpec(pbeKey.getEncoded(), ALGORITHM);
 		return new AesCbcCryptoKey(secretKey, DEFAULT_KEYSIZE_BITS);
 	}
 
