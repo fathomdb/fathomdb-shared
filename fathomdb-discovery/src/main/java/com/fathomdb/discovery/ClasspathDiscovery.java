@@ -34,7 +34,6 @@ public class ClasspathDiscovery extends Discovery {
 
 		for (String packageName : packages) {
 			this.packages.add(packageName);
-			this.packages.add(packageName.replace('.', '/'));
 		}
 	}
 
@@ -44,11 +43,6 @@ public class ClasspathDiscovery extends Discovery {
 
 	public ClasspathDiscovery(String... packages) {
 		this(Arrays.asList(packages));
-	}
-
-	@Override
-	public List<Class> findClassesInPackage(Package inPackage) {
-		throw new UnsupportedOperationException();
 	}
 
 	class ClasspathMap {
@@ -159,7 +153,8 @@ public class ClasspathDiscovery extends Discovery {
 					continue;
 				}
 
-				if (isFiltered(name)) {
+				String qualifiedName = name.replace(".class", "").replace('/', '.');
+				if (isFiltered(qualifiedName)) {
 					// log.debug("Class filtered out: {}", name);
 					continue;
 				}
@@ -168,8 +163,6 @@ public class ClasspathDiscovery extends Discovery {
 				// // prefix);
 				// continue;
 				// }
-
-				String qualifiedName = name.replace(".class", "").replace('/', '.');
 
 				try {
 					Class<?> clazz = Class.forName(qualifiedName);
@@ -253,6 +246,11 @@ public class ClasspathDiscovery extends Discovery {
 
 	@Override
 	public <T extends Annotation> Collection<Class> findAnnotatedClasses(Class<T> class1) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<Class> findClassesInPackage(Package inPackage) {
 		throw new UnsupportedOperationException();
 	}
 

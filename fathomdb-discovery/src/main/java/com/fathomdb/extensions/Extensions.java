@@ -85,7 +85,7 @@ public class Extensions {
         }
 
         if (count == 0) {
-            log.info("No Annotated extensions found");
+            log.info("No extensions found");
         }
     }
 
