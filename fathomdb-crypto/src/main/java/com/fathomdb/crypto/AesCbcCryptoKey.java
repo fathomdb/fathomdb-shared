@@ -28,6 +28,11 @@ public class AesCbcCryptoKey extends CryptoKey {
 		this.keysizeBits = keysizeBits;
 	}
 
+	@Deprecated
+	public static AesCbcCryptoKey fromJce(SecretKey secret, int keysizeBits) {
+		return new AesCbcCryptoKey(secret, keysizeBits);
+	}
+
 	static final byte VERSION_1 = 0x78;
 
 	@Override
@@ -128,5 +133,10 @@ public class AesCbcCryptoKey extends CryptoKey {
 	public int getMaxEncryptionExtraBytes() {
 		// keysize twice: once for IV, once for padding
 		return 1 + (2 * keysizeBits / 8);
+	}
+
+	@Deprecated
+	public SecretKey getJce() {
+		return secret;
 	}
 }
