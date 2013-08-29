@@ -36,197 +36,194 @@ import com.fathomdb.crypto.ssl.SslPolicy;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
+import com.google.inject.servlet.GuiceServletContextListener;
 
 public class JettyWebServerBuilder implements WebServerBuilder {
-	@Inject(optional = true)
-	EncryptionStore encryptionStore;
+    @Inject(optional = true)
+    EncryptionStore encryptionStore;
 
-	final Server server;
+    final Server server;
 
-	final HandlerCollection handlers;
-	final ContextHandlerCollection contexts;
+    final HandlerCollection handlers;
+    final ContextHandlerCollection contexts;
 
-	public JettyWebServerBuilder() {
-		this.server = new Server();
-		this.handlers = new HandlerCollection();
-		this.contexts = new ContextHandlerCollection();
-		this.handlers.addHandler(this.contexts);
-		this.server.setHandler(this.handlers);
-	}
+    public JettyWebServerBuilder() {
+        this.server = new Server();
+        this.handlers = new HandlerCollection();
+        this.contexts = new ContextHandlerCollection();
+        this.handlers.addHandler(this.contexts);
+        this.server.setHandler(this.handlers);
+    }
 
-	@Override
-	public Server start() throws Exception {
-		if (server.getThreadPool() == null) {
-			server.setThreadPool(buildThreadPool());
-		}
+    @Override
+    public Server start() throws Exception {
+        if (server.getThreadPool() == null) {
+            server.setThreadPool(buildThreadPool());
+        }
 
-		server.start();
-		return server;
-	}
+        server.start();
+        return server;
+    }
 
-	protected ThreadPool buildThreadPool() {
-		return new QueuedThreadPool();
-	}
+    protected ThreadPool buildThreadPool() {
+        return new QueuedThreadPool();
+    }
 
-	@Override
-	public void addHttpConnector(InetAddress address, int port, boolean async) {
-		Connector connector;
-		if (async) {
-			connector = buildSelectChannelConnector(address, port);
-		} else {
-			connector = buildSocketConnector(address, port);
-		}
+    @Override
+    public void addHttpConnector(InetAddress address, int port, boolean async) {
+        Connector connector;
+        if (async) {
+            connector = buildSelectChannelConnector(address, port);
+        } else {
+            connector = buildSocketConnector(address, port);
+        }
 
-		// connector.setHost("127.0.0.1");
-		server.addConnector(connector);
-	}
+        // connector.setHost("127.0.0.1");
+        server.addConnector(connector);
+    }
 
-	@Override
-	public void addHttpConnector(int port, boolean async) {
-		addHttpConnector(null, port, async);
-	}
+    @Override
+    public void addHttpConnector(int port, boolean async) {
+        addHttpConnector(null, port, async);
+    }
 
-	protected Connector buildSocketConnector(InetAddress address, int port) {
-		SocketConnector connector = new SocketConnector();
-		if (address != null) {
-			connector.setHost(address.getHostAddress());
-		}
-		connector.setPort(port);
-		return connector;
-	}
+    protected Connector buildSocketConnector(InetAddress address, int port) {
+        SocketConnector connector = new SocketConnector();
+        if (address != null) {
+            connector.setHost(address.getHostAddress());
+        }
+        connector.setPort(port);
+        return connector;
+    }
 
-	protected Connector buildSelectChannelConnector(InetAddress address,
-			int port) {
-		SelectChannelConnector connector = new SelectChannelConnector();
-		if (address != null) {
-			connector.setHost(address.getHostAddress());
-		}
-		connector.setPort(port);
-		return connector;
-	}
+    protected Connector buildSelectChannelConnector(InetAddress address, int port) {
+        SelectChannelConnector connector = new SelectChannelConnector();
+        if (address != null) {
+            connector.setHost(address.getHostAddress());
+        }
+        connector.setPort(port);
+        return connector;
+    }
 
-	@Override
-	public void enableRequestLogging() {
-		NCSARequestLog requestLog = new NCSARequestLog(
-				"./weblogs/jetty-yyyy_mm_dd.request.log");
-		// requestLog.setRetainDays(90);
-		requestLog.setAppend(true);
-		requestLog.setExtended(false);
-		requestLog.setLogLatency(true);
-		requestLog.setLogDispatch(true);
-		requestLog.setLogTimeZone("GMT");
+    @Override
+    public void enableRequestLogging() {
+        NCSARequestLog requestLog = new NCSARequestLog("./weblogs/jetty-yyyy_mm_dd.request.log");
+        // requestLog.setRetainDays(90);
+        requestLog.setAppend(true);
+        requestLog.setExtended(false);
+        requestLog.setLogLatency(true);
+        requestLog.setLogDispatch(true);
+        requestLog.setLogTimeZone("GMT");
 
-		RequestLogHandler requestLogHandler = new RequestLogHandler();
-		requestLogHandler.setRequestLog(requestLog);
-		handlers.addHandler(requestLogHandler);
-	}
+        RequestLogHandler requestLogHandler = new RequestLogHandler();
+        requestLogHandler.setRequestLog(requestLog);
+        handlers.addHandler(requestLogHandler);
+    }
 
-	public ServletContextHandler addContext(String path) {
-		ServletContextHandler context = new ServletContextHandler();
-		context.setContextPath("/");
+    public ServletContextHandler addContext(String path) {
+        ServletContextHandler context = new ServletContextHandler();
+        context.setContextPath("/");
 
-		contexts.addHandler(decorateContext(context));
+        contexts.addHandler(decorateContext(context));
 
-		return context;
-	}
+        return context;
+    }
 
-	protected Handler decorateContext(ServletContextHandler context) {
-		return context;
-	}
+    protected Handler decorateContext(ServletContextHandler context) {
+        return context;
+    }
 
-	@Override
-	public void addGuiceContext(String path, Injector injector) {
-		ServletContextHandler context = addContext(path);
+    @Override
+    public void addGuiceContext(String path, Injector injector) {
+        GuiceServletConfig servletConfig = injector.getInstance(GuiceServletConfig.class);
+        addGuiceContext(path, servletConfig);
+    }
 
-		GuiceServletConfig servletConfig = injector
-				.getInstance(GuiceServletConfig.class);
-		context.addEventListener(servletConfig);
+    @Override
+    public void addGuiceContext(String path, GuiceServletContextListener servletConfig) {
+        ServletContextHandler context = addContext(path);
 
-		// Must add DefaultServlet for embedded Jetty
-		// Failing to do this will cause 404 errors.
-		context.addServlet(DefaultServlet.class, "/");
+        context.addEventListener(servletConfig);
 
-		FilterHolder filterHolder = new FilterHolder(GuiceFilter.class);
-		context.addFilter(filterHolder, "*", EnumSet.of(DispatcherType.REQUEST));
+        // Must add DefaultServlet for embedded Jetty
+        // Failing to do this will cause 404 errors.
+        context.addServlet(DefaultServlet.class, "/");
 
-		context.setClassLoader(Thread.currentThread().getContextClassLoader());
-	}
+        FilterHolder filterHolder = new FilterHolder(GuiceFilter.class);
+        context.addFilter(filterHolder, "*", EnumSet.of(DispatcherType.REQUEST));
 
-	@Override
-	public void addHttpsConnector(int port, Set<SslOption> options)
-			throws Exception {
-		addHttpsConnector(null, port, options);
-	}
+        context.setClassLoader(Thread.currentThread().getContextClassLoader());
+    }
 
-	@Override
-	public void addHttpsConnector(InetAddress address, int port,
-			Set<SslOption> options) throws Exception {
-		SslContextFactory sslContextFactory;
-		if (options.contains(SslOption.AllowAnyClientCertificate)) {
-			CustomTrustManagerSslContextFactory customSslContextFactory = new CustomTrustManagerSslContextFactory();
-			TrustManager[] trustManagers = new TrustManager[] { new AcceptAllClientCertificatesTrustManager() };
-			customSslContextFactory.setTrustManagers(trustManagers);
+    @Override
+    public void addHttpsConnector(int port, Set<SslOption> options) throws Exception {
+        addHttpsConnector(null, port, options);
+    }
 
-			sslContextFactory = customSslContextFactory;
-		} else {
-			sslContextFactory = new SslContextFactory(
-					SslContextFactory.DEFAULT_KEYSTORE_PATH);
-		}
+    @Override
+    public void addHttpsConnector(InetAddress address, int port, Set<SslOption> options) throws Exception {
+        SslContextFactory sslContextFactory;
+        if (options.contains(SslOption.AllowAnyClientCertificate)) {
+            CustomTrustManagerSslContextFactory customSslContextFactory = new CustomTrustManagerSslContextFactory();
+            TrustManager[] trustManagers = new TrustManager[] { new AcceptAllClientCertificatesTrustManager() };
+            customSslContextFactory.setTrustManagers(trustManagers);
 
-		// TODO: Preconfigure a better SSLContext??
-		SSLContext sslContext = SSLContext.getDefault();
-		sslContextFactory.setIncludeCipherSuites(SslPolicy.DEFAULT
-				.getEngineConfig(sslContext).getEnabledCipherSuites());
-		sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT
-				.getEngineConfig(sslContext).getEnabledProtocols());
+            sslContextFactory = customSslContextFactory;
+        } else {
+            sslContextFactory = new SslContextFactory(SslContextFactory.DEFAULT_KEYSTORE_PATH);
+        }
 
-		{
-			CertificateAndKey certificateAndKey = getCertificateAndKey();
+        // TODO: Preconfigure a better SSLContext??
+        SSLContext sslContext = SSLContext.getDefault();
+        sslContextFactory
+                .setIncludeCipherSuites(SslPolicy.DEFAULT.getEngineConfig(sslContext).getEnabledCipherSuites());
+        sslContextFactory.setIncludeProtocols(SslPolicy.DEFAULT.getEngineConfig(sslContext).getEnabledProtocols());
 
-			String secret = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
-			KeyStore keystore = KeyStoreUtils.createEmpty(secret);
+        {
+            CertificateAndKey certificateAndKey = getCertificateAndKey();
 
-			String alias = "https";
+            String secret = KeyStoreUtils.DEFAULT_KEYSTORE_SECRET;
+            KeyStore keystore = KeyStoreUtils.createEmpty(secret);
 
-			KeyStoreUtils.put(keystore, alias, certificateAndKey, secret);
+            String alias = "https";
 
-			sslContextFactory.setKeyStore(keystore);
-			sslContextFactory.setKeyStorePassword(secret);
-			sslContextFactory.setCertAlias(alias);
-		}
+            KeyStoreUtils.put(keystore, alias, certificateAndKey, secret);
 
-		if (options.contains(SslOption.WantClientCertificate)) {
-			sslContextFactory.setWantClientAuth(true);
-		}
+            sslContextFactory.setKeyStore(keystore);
+            sslContextFactory.setKeyStorePassword(secret);
+            sslContextFactory.setCertAlias(alias);
+        }
 
-		SslSelectChannelConnector connector = new SslSelectChannelConnector(
-				sslContextFactory);
-		if (address != null) {
-			connector.setHost(address.getHostAddress());
-		}
-		connector.setPort(port);
-		server.addConnector(connector);
-	}
+        if (options.contains(SslOption.WantClientCertificate)) {
+            sslContextFactory.setWantClientAuth(true);
+        }
 
-	private CertificateAndKey getCertificateAndKey() throws Exception {
-		if (encryptionStore == null) {
-			throw new IllegalStateException("EncryptionStore must be bound");
-		}
+        SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
+        if (address != null) {
+            connector.setHost(address.getHostAddress());
+        }
+        connector.setPort(port);
+        server.addConnector(connector);
+    }
 
-		return encryptionStore.getCertificateAndKey("https");
-	}
+    private CertificateAndKey getCertificateAndKey() throws Exception {
+        if (encryptionStore == null) {
+            throw new IllegalStateException("EncryptionStore must be bound");
+        }
 
-	@Override
-	public void addWar(String contextPath, File war) {
-		final WebAppContext context = new WebAppContext();
-		context.setWar(war.getAbsolutePath());
-		contextPath = "/" + contextPath;
-		context.setContextPath(contextPath);
+        return encryptionStore.getCertificateAndKey("https");
+    }
 
-		context.setInitParameter(
-				"org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+    @Override
+    public void addWar(String contextPath, File war) {
+        final WebAppContext context = new WebAppContext();
+        context.setWar(war.getAbsolutePath());
+        contextPath = "/" + contextPath;
+        context.setContextPath(contextPath);
 
-		contexts.addHandler(context);
-	}
+        context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+
+        contexts.addHandler(context);
+    }
 
 }
