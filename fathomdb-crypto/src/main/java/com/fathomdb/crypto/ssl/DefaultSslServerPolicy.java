@@ -12,62 +12,62 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DefaultSslServerPolicy extends SslServerPolicy {
-	private static final Logger log = LoggerFactory.getLogger(DefaultSslServerPolicy.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultSslServerPolicy.class);
 
-	private static final String PROTOCOL = "TLS";
+    private static final String PROTOCOL = "TLS";
 
-	SSLContext sslContext;
+    SSLContext sslContext;
 
-	final KeyManager keyManager;
-	final TrustManager trustManager;
+    final KeyManager keyManager;
+    final TrustManager trustManager;
 
-	final boolean needClientAuth;
+    final boolean needClientAuth;
 
-	public DefaultSslServerPolicy(KeyManager keyManager, TrustManager trustManager, boolean needClientAuth) {
-		super();
-		this.keyManager = keyManager;
-		this.trustManager = trustManager;
-		this.needClientAuth = needClientAuth;
-	}
+    public DefaultSslServerPolicy(KeyManager keyManager, TrustManager trustManager, boolean needClientAuth) {
+        this.keyManager = keyManager;
+        this.trustManager = trustManager;
+        this.needClientAuth = needClientAuth;
+    }
 
-	synchronized SSLContext getSslContext() {
-		if (sslContext == null) {
-			sslContext = buildSslContext();
-		}
-		return sslContext;
-	}
+    synchronized SSLContext getSslContext() {
+        if (sslContext == null) {
+            sslContext = buildSslContext();
+        }
+        return sslContext;
+    }
 
-	SSLContext buildSslContext() {
-		try {
-			SSLContext serverContext = SSLContext.getInstance(PROTOCOL);
+    SSLContext buildSslContext() {
+        try {
+            SSLContext serverContext = SSLContext.getInstance(PROTOCOL);
 
-			KeyManager[] keyManagers = null;
-			if (keyManager != null) {
-				keyManagers = new KeyManager[] { keyManager };
-			}
+            KeyManager[] keyManagers = null;
+            if (keyManager != null) {
+                keyManagers = new KeyManager[] { keyManager };
+            }
 
-			TrustManager[] trustManagers = null;
+            TrustManager[] trustManagers = null;
 
-			if (trustManager != null) {
-				trustManagers = new TrustManager[] { trustManager };
-			}
+            if (trustManager != null) {
+                trustManagers = new TrustManager[] { trustManager };
+            }
 
-			serverContext.init(keyManagers, trustManagers, new SecureRandom());
+            serverContext.init(keyManagers, trustManagers, new SecureRandom());
 
-			return serverContext;
-		} catch (GeneralSecurityException e) {
-			throw new IllegalStateException("Error building SSL engine", e);
-		}
-	}
+            return serverContext;
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("Error building SSL engine", e);
+        }
+    }
 
-	public SSLEngine createSSLEngine() {
-		SSLContext sslContext = getSslContext();
-		SSLEngine sslEngine = sslContext.createSSLEngine();
-		sslEngine.setNeedClientAuth(needClientAuth);
+    @Override
+    public SSLEngine createSSLEngine() {
+        SSLContext sslContext = getSslContext();
+        SSLEngine sslEngine = sslContext.createSSLEngine();
+        sslEngine.setNeedClientAuth(needClientAuth);
 
-		SslPolicy.DEFAULT.applyPolicy(sslContext, sslEngine);
+        SslPolicy.DEFAULT.applyPolicy(sslContext, sslEngine);
 
-		return sslEngine;
+        return sslEngine;
 
-	}
+    }
 }

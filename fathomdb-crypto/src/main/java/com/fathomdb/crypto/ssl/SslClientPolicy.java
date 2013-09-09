@@ -8,36 +8,37 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 
 public class SslClientPolicy {
-	final TrustManager[] trustManagers;
-	final KeyManager[] keyManagers;
+    final TrustManager[] trustManagers;
+    final KeyManager[] keyManagers;
 
-	public SslClientPolicy(KeyManager[] keyManagers, TrustManager[] trustManagers) {
-		super();
-		this.trustManagers = trustManagers;
-		this.keyManagers = keyManagers;
-	}
+    public SslClientPolicy(KeyManager[] keyManagers, TrustManager[] trustManagers) {
+        this.trustManagers = trustManagers;
+        this.keyManagers = keyManagers;
+    }
 
-	public SSLEngine createEngine() throws GeneralSecurityException {
-		SSLContext sslContext = SSLContext.getInstance("TLS");
+    public SSLEngine createEngine() throws GeneralSecurityException {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
 
-		sslContext.init(keyManagers, trustManagers, null);
+        sslContext.init(keyManagers, trustManagers, null);
 
-		SSLEngine sslEngine = sslContext.createSSLEngine();
+        SSLEngine sslEngine = sslContext.createSSLEngine();
 
-		// SSLParameters sslParams = new SSLParameters();
-		// sslParams.setEndpointIdentificationAlgorithm("HTTPS");
-		// sslEngine.setSSLParameters(sslParams);
+        // SSLParameters sslParams = new SSLParameters();
+        // sslParams.setEndpointIdentificationAlgorithm("HTTPS");
+        // sslEngine.setSSLParameters(sslParams);
 
-		// SslPolicy.DEFAULT.applyPolicy(sslEngine);
+        // SslPolicy.DEFAULT.applyPolicy(sslEngine);
 
-		return sslEngine;
-	}
+        return sslEngine;
+    }
 
-	// public void verifySession(SSLSession session) {
-	// // BrowserCompatHostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
-	// // if (!hostnameVerifier.verify(hostname, session)) {
-	// // throw new SecurityException("Peer verification failed for hostname: " + hostname);
-	// // }
-	// }
+    // public void verifySession(SSLSession session) {
+    // // BrowserCompatHostnameVerifier hostnameVerifier = new
+    // BrowserCompatHostnameVerifier();
+    // // if (!hostnameVerifier.verify(hostname, session)) {
+    // // throw new SecurityException("Peer verification failed for hostname: "
+    // + hostname);
+    // // }
+    // }
 
 }

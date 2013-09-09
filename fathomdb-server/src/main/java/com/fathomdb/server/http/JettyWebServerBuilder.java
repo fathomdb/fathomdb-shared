@@ -33,6 +33,7 @@ import com.fathomdb.crypto.EncryptionStore;
 import com.fathomdb.crypto.KeyStoreUtils;
 import com.fathomdb.crypto.ssl.AcceptAllClientCertificatesTrustManager;
 import com.fathomdb.crypto.ssl.SslPolicy;
+import com.google.common.net.InetAddresses;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceFilter;
@@ -90,7 +91,7 @@ public class JettyWebServerBuilder implements WebServerBuilder {
     protected Connector buildSocketConnector(InetAddress address, int port) {
         SocketConnector connector = new SocketConnector();
         if (address != null) {
-            connector.setHost(address.getHostAddress());
+            connector.setHost(InetAddresses.toAddrString(address));
         }
         connector.setPort(port);
         return connector;
@@ -99,7 +100,7 @@ public class JettyWebServerBuilder implements WebServerBuilder {
     protected Connector buildSelectChannelConnector(InetAddress address, int port) {
         SelectChannelConnector connector = new SelectChannelConnector();
         if (address != null) {
-            connector.setHost(address.getHostAddress());
+            connector.setHost(InetAddresses.toAddrString(address));
         }
         connector.setPort(port);
         return connector;
@@ -200,7 +201,7 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 
         SslSelectChannelConnector connector = new SslSelectChannelConnector(sslContextFactory);
         if (address != null) {
-            connector.setHost(address.getHostAddress());
+            connector.setHost(InetAddresses.toAddrString(address));
         }
         connector.setPort(port);
         server.addConnector(connector);
