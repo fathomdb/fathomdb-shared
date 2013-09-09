@@ -220,11 +220,10 @@ public class IoUtils {
     }
 
     public static void mkdirs(File dir) throws IOException {
-        if (!dir.mkdirs()) {
-            if (dir.exists()) {
-                return;
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                throw new IOException("Unable to create directory: " + dir);
             }
-            throw new IOException("Unable to create directory: " + dir);
         }
     }
 
