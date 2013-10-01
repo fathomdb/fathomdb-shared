@@ -6,11 +6,11 @@ import com.fathomdb.Configuration;
 import com.google.inject.Module;
 
 public interface ExtensionModule {
-	void addEntities(List<Class<?>> entities);
+    void addEntities(List<Class<?>> entities);
 
-	void addHttpExtensions(HttpConfiguration webConfiguration);
+    void addHttpExtensions(HttpConfiguration webConfiguration);
 
-	Module getOverrideModule();
+    Module getOverrideModule();
 
-	List<Module> getExtraModules(Configuration configuration);
+    List<Module> getExtraModules(Configuration configuration);
 }

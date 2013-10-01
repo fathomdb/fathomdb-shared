@@ -1,5 +1,6 @@
 package com.fathomdb.extensions;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -124,6 +125,10 @@ public class Extensions {
             Module combined = Modules.override(modules).with(overrides);
             return Guice.createInjector(combined);
         }
+    }
+
+    public List<ExtensionModule> getExtensions() {
+        return Collections.unmodifiableList(extensions);
     }
 
 }
