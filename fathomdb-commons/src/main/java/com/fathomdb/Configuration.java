@@ -8,28 +8,29 @@ import java.util.Map;
 import java.util.Set;
 
 public interface Configuration {
-	String get(String key);
+    String get(String key);
 
-	String lookup(String key, String defaultValue);
+    String lookup(String key, String defaultValue);
 
-	boolean lookup(String key, boolean defaultValue);
+    boolean lookup(String key, boolean defaultValue);
 
-	int lookup(String key, int defaultValue);
+    int lookup(String key, int defaultValue);
 
-	String find(String key);
+    String find(String key);
 
-	File getBasePath();
+    File getBasePath();
 
-	File lookupFile(String key, String defaultValue);
+    File lookupFile(String key, String defaultValue);
 
-	Map<String, String> getChildProperties(String prefix);
+    Map<String, String> getChildProperties(String prefix);
 
-	Configuration getChildTree(String prefix);
+    Configuration getChildTree(String prefix);
 
-	Set<String> getKeys();
+    Set<String> getKeys();
 
-	List<InetSocketAddress> lookupList(String key,
-			InetSocketAddress... inetSocketAddress);
+    List<InetSocketAddress> lookupList(String key, InetSocketAddress... inetSocketAddress);
 
-	InetAddress lookup(String key, InetAddress defaultValue);
+    InetAddress lookup(String key, InetAddress defaultValue);
+
+    <E extends Enum<E>> E lookup(String key, E defaultValue);
 }

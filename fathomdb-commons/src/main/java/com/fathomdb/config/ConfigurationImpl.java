@@ -24,256 +24,261 @@ import com.google.common.collect.Sets;
 import com.google.common.net.InetAddresses;
 
 public class ConfigurationImpl implements Configuration {
-	private static final Logger log = LoggerFactory
-			.getLogger(ConfigurationImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfigurationImpl.class);
 
-	final File basePath;
-	final List<Map<String, String>> properties;
+    final File basePath;
+    final List<Map<String, String>> properties;
 
-	public ConfigurationImpl(File basePath, List<Map<String, String>> properties) {
-		this.basePath = basePath;
-		this.properties = properties;
+    public ConfigurationImpl(File basePath, List<Map<String, String>> properties) {
+        this.basePath = basePath;
+        this.properties = properties;
 
-		// properties = loadProperties(applicationProperties);
-	}
+        // properties = loadProperties(applicationProperties);
+    }
 
-	// private Properties loadProperties(Properties applicationProperties) {
-	// Properties systemProperties;
-	// try {
-	// String propertiesString = ResourceUtils.get(Configuration.class,
-	// "system_settings.properties");
-	// systemProperties = new Properties();
-	// systemProperties.load(new StringReader(propertiesString));
-	// } catch (IOException e) {
-	// throw new
-	// IllegalStateException("Error loading resource system_settings.properties");
-	// }
-	//
-	// Properties properties = new Properties(systemProperties);
-	// properties.putAll(applicationProperties);
-	//
-	// return properties;
-	// }
+    // private Properties loadProperties(Properties applicationProperties) {
+    // Properties systemProperties;
+    // try {
+    // String propertiesString = ResourceUtils.get(Configuration.class,
+    // "system_settings.properties");
+    // systemProperties = new Properties();
+    // systemProperties.load(new StringReader(propertiesString));
+    // } catch (IOException e) {
+    // throw new
+    // IllegalStateException("Error loading resource system_settings.properties");
+    // }
+    //
+    // Properties properties = new Properties(systemProperties);
+    // properties.putAll(applicationProperties);
+    //
+    // return properties;
+    // }
 
-	@Override
-	public String lookup(String key, String defaultValue) {
-		for (Map<String, String> propertyMap : properties) {
-			String value = propertyMap.get(key);
-			if (value != null) {
-				return value;
-			}
-		}
-		return defaultValue;
-	}
+    @Override
+    public String lookup(String key, String defaultValue) {
+        for (Map<String, String> propertyMap : properties) {
+            String value = propertyMap.get(key);
+            if (value != null) {
+                return value;
+            }
+        }
+        return defaultValue;
+    }
 
-	@Override
-	public int lookup(String key, int defaultValue) {
-		String s = lookup(key, "" + defaultValue);
-		return Integer.parseInt(s);
-	}
+    @Override
+    public int lookup(String key, int defaultValue) {
+        String s = lookup(key, "" + defaultValue);
+        return Integer.parseInt(s);
+    }
 
-	// public void bindProperties(Binder binder) {
-	// Names.bindProperties(binder, properties);
-	// }
+    // public void bindProperties(Binder binder) {
+    // Names.bindProperties(binder, properties);
+    // }
 
-	@Override
-	public String get(String key) {
-		String value = find(key);
-		if (value == null) {
-			throw new IllegalArgumentException("Required value not found: "
-					+ key);
-		}
-		return value;
-	}
+    @Override
+    public String get(String key) {
+        String value = find(key);
+        if (value == null) {
+            throw new IllegalArgumentException("Required value not found: " + key);
+        }
+        return value;
+    }
 
-	@Override
-	public String find(String key) {
-		String value = lookup(key, (String) null);
-		return value;
-	}
+    @Override
+    public String find(String key) {
+        String value = lookup(key, (String) null);
+        return value;
+    }
 
-	@Override
-	public Map<String, String> getChildProperties(String prefix) {
-		Map<String, String> children = Maps.newHashMap();
+    @Override
+    public Map<String, String> getChildProperties(String prefix) {
+        Map<String, String> children = Maps.newHashMap();
 
-		Set<String> keySet = getKeys();
-		for (String key : keySet) {
-			if (!key.startsWith(prefix)) {
-				continue;
-			}
+        Set<String> keySet = getKeys();
+        for (String key : keySet) {
+            if (!key.startsWith(prefix)) {
+                continue;
+            }
 
-			String suffix = key.substring(prefix.length());
-			children.put(suffix, lookup(key, (String) null));
-		}
+            String suffix = key.substring(prefix.length());
+            children.put(suffix, lookup(key, (String) null));
+        }
 
-		return children;
-	}
+        return children;
+    }
 
-	@Override
-	public Configuration getChildTree(String prefix) {
-		Map<String, String> childProperties = getChildProperties(prefix);
-		List<Map<String, String>> propertyList = Lists.newArrayList();
-		propertyList.add(childProperties);
-		return new ConfigurationImpl(basePath, propertyList);
-	}
+    @Override
+    public Configuration getChildTree(String prefix) {
+        Map<String, String> childProperties = getChildProperties(prefix);
+        List<Map<String, String>> propertyList = Lists.newArrayList();
+        propertyList.add(childProperties);
+        return new ConfigurationImpl(basePath, propertyList);
+    }
 
-	@Override
-	public Set<String> getKeys() {
-		Set<String> keys = Sets.newHashSet();
+    @Override
+    public Set<String> getKeys() {
+        Set<String> keys = Sets.newHashSet();
 
-		for (Map<String, String> propertyMap : properties) {
-			for (Entry<String, String> entry : propertyMap.entrySet()) {
-				String key = entry.getKey();
-				if (entry.getValue() == null) {
-					keys.remove(key);
-				} else {
-					keys.add(key);
-				}
-			}
-		}
+        for (Map<String, String> propertyMap : properties) {
+            for (Entry<String, String> entry : propertyMap.entrySet()) {
+                String key = entry.getKey();
+                if (entry.getValue() == null) {
+                    keys.remove(key);
+                } else {
+                    keys.add(key);
+                }
+            }
+        }
 
-		return keys;
-	}
+        return keys;
+    }
 
-	public static ConfigurationImpl load() {
-		return load(null);
-	}
+    public static ConfigurationImpl load() {
+        return load(null);
+    }
 
-	public static ConfigurationImpl load(String configFilePath) {
-		if (configFilePath == null) {
-			configFilePath = System.getProperty("conf");
-		}
+    public static ConfigurationImpl load(String configFilePath) {
+        if (configFilePath == null) {
+            configFilePath = System.getProperty("conf");
+        }
 
-		if (configFilePath == null) {
-			configFilePath = System.getenv("CONFIGURATION_FILE");
-		}
+        if (configFilePath == null) {
+            configFilePath = System.getenv("CONFIGURATION_FILE");
+        }
 
-		if (configFilePath == null) {
-			configFilePath = new File(new File("."), "configuration.properties")
-					.getAbsolutePath();
-		}
+        if (configFilePath == null) {
+            configFilePath = new File(new File("."), "configuration.properties").getAbsolutePath();
+        }
 
-		File configFile = new File(configFilePath);
+        File configFile = new File(configFilePath);
 
-		List<Map<String, String>> propertiesList = Lists.newArrayList();
+        List<Map<String, String>> propertiesList = Lists.newArrayList();
 
-		{
-			Properties envVariables = new Properties();
-			envVariables.putAll(System.getenv());
-			propertiesList.add(PropertyUtils.toMap(envVariables));
-		}
+        {
+            Properties envVariables = new Properties();
+            envVariables.putAll(System.getenv());
+            propertiesList.add(PropertyUtils.toMap(envVariables));
+        }
 
-		{
+        {
 
-			if (configFile.exists()) {
-				try {
-					Properties properties = new Properties();
-					PropertyUtils.loadProperties(properties, configFile);
-					propertiesList.add(PropertyUtils.toMap(properties));
-					log.info("Loaded configuration file: " + configFile);
-				} catch (IOException e) {
-					throw new IllegalStateException(
-							"Error loading configuration file: " + configFile,
-							e);
-				}
-			} else {
-				log.warn("Configuration file not found: " + configFile);
-			}
-		}
+            if (configFile.exists()) {
+                try {
+                    Properties properties = new Properties();
+                    PropertyUtils.loadProperties(properties, configFile);
+                    propertiesList.add(PropertyUtils.toMap(properties));
+                    log.info("Loaded configuration file: " + configFile);
+                } catch (IOException e) {
+                    throw new IllegalStateException("Error loading configuration file: " + configFile, e);
+                }
+            } else {
+                log.warn("Configuration file not found: " + configFile);
+            }
+        }
 
-		{
-			Properties systemProperties = System.getProperties();
+        {
+            Properties systemProperties = System.getProperties();
 
-			Map<String, String> confProperties = PropertyUtils
-					.getChildProperties(PropertyUtils.toMap(systemProperties),
-							"conf.");
-			if (!confProperties.isEmpty()) {
-				propertiesList.add(confProperties);
-			}
-		}
+            Map<String, String> confProperties = PropertyUtils.getChildProperties(
+                    PropertyUtils.toMap(systemProperties), "conf.");
+            if (!confProperties.isEmpty()) {
+                propertiesList.add(confProperties);
+            }
+        }
 
-		propertiesList = Lists.reverse(propertiesList);
+        propertiesList = Lists.reverse(propertiesList);
 
-		return new ConfigurationImpl(configFile.getParentFile(), propertiesList);
-	}
+        return new ConfigurationImpl(configFile.getParentFile(), propertiesList);
+    }
 
-	public static ConfigurationImpl from(File basePath,
-			List<Map<String, String>> propertiesList) {
-		return new ConfigurationImpl(basePath, propertiesList);
-	}
+    public static ConfigurationImpl from(File basePath, List<Map<String, String>> propertiesList) {
+        return new ConfigurationImpl(basePath, propertiesList);
+    }
 
-	public static ConfigurationImpl from(File basePath, Properties properties) {
-		return new ConfigurationImpl(basePath,
-				Collections.singletonList(PropertyUtils.toMap(properties)));
-	}
+    public static ConfigurationImpl from(File basePath, Properties properties) {
+        return new ConfigurationImpl(basePath, Collections.singletonList(PropertyUtils.toMap(properties)));
+    }
 
-	@Override
-	public File lookupFile(String key, String defaultPath) {
-		String value = lookup(key, defaultPath);
-		if (value == null) {
-			assert defaultPath == null;
-			return null;
-		}
+    @Override
+    public File lookupFile(String key, String defaultPath) {
+        String value = lookup(key, defaultPath);
+        if (value == null) {
+            assert defaultPath == null;
+            return null;
+        }
 
-		if (value.startsWith("~/")) {
-			value = System.getProperty("user.home") + File.separator
-					+ value.substring(2);
-		}
+        if (value.startsWith("~/")) {
+            value = System.getProperty("user.home") + File.separator + value.substring(2);
+        }
 
-		if (value.startsWith("/")) {
-			return new File(value);
-		} else {
-			return new File(getBasePath(), value);
-		}
-	}
+        if (value.startsWith("/")) {
+            return new File(value);
+        } else {
+            return new File(getBasePath(), value);
+        }
+    }
 
-	@Override
-	public File getBasePath() {
-		return basePath;
-	}
+    @Override
+    public File getBasePath() {
+        return basePath;
+    }
 
-	@Override
-	public boolean lookup(String key, boolean defaultValue) {
-		String s = lookup(key, Boolean.toString(defaultValue));
-		return Boolean.parseBoolean(s);
-	}
+    @Override
+    public boolean lookup(String key, boolean defaultValue) {
+        String s = lookup(key, Boolean.toString(defaultValue));
+        return Boolean.parseBoolean(s);
+    }
 
-	@Override
-	public List<InetSocketAddress> lookupList(String key,
-			InetSocketAddress... defaults) {
-		List<InetSocketAddress> ret = Lists.newArrayList();
-		String s = find(key);
-		if (s == null) {
-			ret.addAll(Arrays.asList(defaults));
-		} else {
-			for (String v : Splitter.on(',').split(s)) {
-				InetSocketAddress inetSocketAddress = parseInetSocketAddress(v);
-				ret.add(inetSocketAddress);
-			}
-		}
-		return ret;
-	}
+    @Override
+    public List<InetSocketAddress> lookupList(String key, InetSocketAddress... defaults) {
+        List<InetSocketAddress> ret = Lists.newArrayList();
+        String s = find(key);
+        if (s == null) {
+            ret.addAll(Arrays.asList(defaults));
+        } else {
+            for (String v : Splitter.on(',').split(s)) {
+                InetSocketAddress inetSocketAddress = parseInetSocketAddress(v);
+                ret.add(inetSocketAddress);
+            }
+        }
+        return ret;
+    }
 
-	public static InetSocketAddress parseInetSocketAddress(String s) {
-		int colonIndex = s.lastIndexOf(':');
-		if (colonIndex == -1) {
-			throw new IllegalArgumentException("Cannot parse address: " + s);
-		}
+    public static InetSocketAddress parseInetSocketAddress(String s) {
+        int colonIndex = s.lastIndexOf(':');
+        if (colonIndex == -1) {
+            throw new IllegalArgumentException("Cannot parse address: " + s);
+        }
 
-		InetAddress addr = InetAddresses.forString(s.substring(0, colonIndex)
-				.trim());
-		int port = Integer.valueOf(s.substring(colonIndex + 1));
+        InetAddress addr = InetAddresses.forString(s.substring(0, colonIndex).trim());
+        int port = Integer.valueOf(s.substring(colonIndex + 1));
 
-		return new InetSocketAddress(addr, port);
-	}
+        return new InetSocketAddress(addr, port);
+    }
 
-	@Override
-	public InetAddress lookup(String key, InetAddress defaultValue) {
-		String value = lookup(key, (String) null);
-		if (value == null) {
-			return defaultValue;
-		}
-		return InetAddresses.forString(value);
-	}
+    @Override
+    public InetAddress lookup(String key, InetAddress defaultValue) {
+        String value = lookup(key, (String) null);
+        if (value == null) {
+            return defaultValue;
+        }
+        return InetAddresses.forString(value);
+    }
+
+    @Override
+    public <E extends Enum<E>> E lookup(String key, E defaultValue) {
+        String value = lookup(key, (String) null);
+        if (value == null) {
+            return defaultValue;
+        }
+        Class<Enum<E>> enumClass = (Class<Enum<E>>) defaultValue.getClass();
+        for (Enum<E> e : enumClass.getEnumConstants()) {
+            if (e.name().equalsIgnoreCase(value)) {
+                return (E) e;
+            }
+        }
+
+        throw new IllegalArgumentException("Invalid value: " + key + "=" + value);
+    }
 
 }
