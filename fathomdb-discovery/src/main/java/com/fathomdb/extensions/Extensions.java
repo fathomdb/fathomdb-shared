@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fathomdb.Configuration;
+import com.fathomdb.ConfigurationListener;
 import com.fathomdb.discovery.DiscoveredSubTypes;
 import com.fathomdb.discovery.Discovery;
 import com.google.common.base.Splitter;
@@ -31,7 +32,7 @@ public class Extensions {
         }
 
         if (discovery != null) {
-            loadDiscoveredExtensions(discovery);
+            loadDiscoveredExtensions(discovery, configuration);
         }
     }
 
@@ -60,26 +61,24 @@ public class Extensions {
                 } catch (ClassNotFoundException e) {
                     throw new IllegalStateException("Unable to load extension class: " + extension, e);
                 }
-                ExtensionModule extensionModule;
-                try {
-                    extensionModule = extensionClass.newInstance();
-                } catch (InstantiationException e) {
-                    throw new IllegalStateException("Unable to construct extension class: " + extension, e);
-                } catch (IllegalAccessException e) {
-                    throw new IllegalStateException("Unable to construct extension class: " + extension, e);
-                }
+
+                ExtensionModule extensionModule = ObjectBuilder.newInstance(extensionClass, configuration);
 
                 extensions.add(extensionModule);
             }
         }
     }
 
-    private void loadDiscoveredExtensions(Discovery discovery) {
+    private void loadDiscoveredExtensions(Discovery discovery, Configuration configuration) {
         DiscoveredSubTypes<ExtensionModule> subTypes = discovery.getSubTypesOf(ExtensionModule.class);
 
         int count = 0;
 
         for (ExtensionModule extension : subTypes.getInstances()) {
+            if (extension instanceof ConfigurationListener) {
+                ((ConfigurationListener) extension).setConfiguration(configuration);
+            }
+
             extensions.add(extension);
             log.info("Added extension: {}", extension.getClass().getSimpleName());
             count++;
