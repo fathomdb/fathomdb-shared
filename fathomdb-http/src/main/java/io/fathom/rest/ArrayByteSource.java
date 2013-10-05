@@ -1,4 +1,4 @@
-package org.platformlayer.rest;
+package io.fathom.rest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

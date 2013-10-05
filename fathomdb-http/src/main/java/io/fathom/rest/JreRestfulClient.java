@@ -1,4 +1,11 @@
-package org.platformlayer.rest;
+package io.fathom.rest;
+
+import io.fathom.http.HttpClient;
+import io.fathom.http.HttpMethod;
+import io.fathom.http.HttpRequest;
+import io.fathom.http.HttpResponse;
+import io.fathom.http.HttpStrategy;
+import io.fathom.http.SslConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,12 +16,6 @@ import java.net.URISyntaxException;
 import javax.net.ssl.KeyManager;
 import javax.xml.bind.JAXBException;
 
-import org.platformlayer.http.HttpConfiguration;
-import org.platformlayer.http.HttpMethod;
-import org.platformlayer.http.HttpRequest;
-import org.platformlayer.http.HttpResponse;
-import org.platformlayer.http.HttpStrategy;
-import org.platformlayer.http.SslConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +45,12 @@ public class JreRestfulClient implements RestfulClient {
 	public class JreRequest<T> implements RestfulRequest<T> {
 		HttpMethod method;
 		String relativeUri;
-		HttpPayload postObject;
+		HttpEntity postObject;
 		Class<T> responseClass;
 
 		SslConfiguration sslConfiguration = null;
 
-		JreRequest(HttpMethod method, String relativeUri, HttpPayload postObject, Class<T> responseClass) {
+		JreRequest(HttpMethod method, String relativeUri, HttpEntity postObject, Class<T> responseClass) {
 			super();
 			this.method = method;
 			this.relativeUri = relativeUri;
@@ -70,9 +71,9 @@ public class JreRestfulClient implements RestfulClient {
 				}
 
 				// We rely on httpStrategy implementing caching if it's needed
-				HttpConfiguration http = httpStrategy.buildConfiguration(getSslConfiguration());
+				HttpClient http = httpStrategy.buildConfiguration(getSslConfiguration());
 				HttpRequest httpRequest = http.buildRequest(method, uri);
-				httpRequest.setRequestHeader("Accept", "application/xml");
+				httpRequest.setHeader("Accept", "application/xml");
 
 				if (debug != null) {
 					debug.println(httpRequest.toString());
@@ -81,7 +82,7 @@ public class JreRestfulClient implements RestfulClient {
 				if (postObject != null) {
 					String contentType = postObject.getContentType();
 					if (contentType != null) {
-						httpRequest.setRequestHeader("Content-Type", contentType);
+						httpRequest.setHeader("Content-Type", contentType);
 					}
 
 					httpRequest.setRequestContent(postObject.getContent());
@@ -151,7 +152,7 @@ public class JreRestfulClient implements RestfulClient {
 	}
 
 	@Override
-	public <T> RestfulRequest<T> buildRequest(HttpMethod method, String relativeUri, HttpPayload postObject,
+	public <T> RestfulRequest<T> buildRequest(HttpMethod method, String relativeUri, HttpEntity postObject,
 			Class<T> responseClass) {
 		return new JreRequest<T>(method, relativeUri, postObject, responseClass);
 	}

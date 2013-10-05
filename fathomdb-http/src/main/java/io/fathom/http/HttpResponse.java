@@ -1,4 +1,4 @@
-package org.platformlayer.http;
+package io.fathom.http;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -14,7 +14,7 @@ public interface HttpResponse extends Closeable {
 
 	InputStream getErrorStream() throws IOException;
 
-	String getResponseHeaderField(String string);
+	String getFirstHeader(String string);
 
 	Map<String, List<String>> getHeaderFields();
 

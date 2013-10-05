@@ -1,4 +1,7 @@
-package org.platformlayer.rest;
+package io.fathom.rest;
+
+import io.fathom.xml.DomUtils;
+import io.fathom.xml.JaxbHelper;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -7,8 +10,6 @@ import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
 
-import org.platformlayer.xml.DomUtils;
-import org.platformlayer.xml.JaxbHelper;
 import org.w3c.dom.Node;
 
 import com.google.common.base.Charsets;

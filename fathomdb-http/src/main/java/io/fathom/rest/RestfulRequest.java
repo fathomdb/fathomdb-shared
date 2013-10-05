@@ -1,8 +1,8 @@
-package org.platformlayer.rest;
+package io.fathom.rest;
+
+import io.fathom.http.SslConfiguration;
 
 import javax.net.ssl.KeyManager;
-
-import org.platformlayer.http.SslConfiguration;
 
 public interface RestfulRequest<T> {
 

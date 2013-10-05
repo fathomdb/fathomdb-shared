@@ -1,4 +1,4 @@
-package org.platformlayer.http;
+package io.fathom.http;
 
 import javax.inject.Inject;
 

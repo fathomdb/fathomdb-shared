@@ -1,4 +1,4 @@
-package org.platformlayer.rest;
+package io.fathom.rest;
 
 public class RestClientException extends Exception {
 	private static final long serialVersionUID = 1L;

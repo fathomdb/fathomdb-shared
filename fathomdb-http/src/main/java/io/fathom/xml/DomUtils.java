@@ -1,4 +1,4 @@
-package org.platformlayer.xml;
+package io.fathom.xml;
 
 import java.io.StringWriter;
 
