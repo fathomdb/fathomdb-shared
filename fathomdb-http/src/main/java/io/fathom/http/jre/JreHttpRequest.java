@@ -97,6 +97,7 @@ public class JreHttpRequest implements HttpRequest {
 
     public class JreHttpResponse implements HttpResponse {
         private final int responseCode;
+
         InputStream is;
 
         public JreHttpResponse() throws IOException {
@@ -105,7 +106,6 @@ public class JreHttpRequest implements HttpRequest {
 
         public JreHttpResponse(int responseCode) throws IOException {
             this.responseCode = responseCode;
-            this.is = httpConn.getInputStream();
         }
 
         @Override
@@ -128,12 +128,27 @@ public class JreHttpRequest implements HttpRequest {
         }
 
         @Override
-        public InputStream getInputStream() throws IOException {
+        public synchronized InputStream getInputStream() throws IOException {
+            // NOTE: If the response code is an error, getInputStream throws.
+            // So we need to lazy-load it
+            if (is == null) {
+                is = httpConn.getInputStream();
+            }
+
             return is;
         }
 
         @Override
         public void close() throws IOException {
+            // Do our best to consume the stream, to enable connection pooling
+            if (is == null) {
+                try {
+                    getInputStream();
+                } catch (IOException e) {
+                    // Ignore
+                }
+            }
+
             if (is != null) {
                 is.close();
                 is = null;
