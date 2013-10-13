@@ -8,11 +8,11 @@ import io.fathom.http.SslConfiguration;
 import java.io.IOException;
 import java.net.URI;
 
-public class JreHttpConfiguration implements HttpClient {
+public class JreHttpClient implements HttpClient {
 
     final SslConfiguration sslConfiguration;
 
-    JreHttpConfiguration(SslConfiguration sslConfiguration) {
+    JreHttpClient(SslConfiguration sslConfiguration) {
         super();
         if (sslConfiguration == null) {
             sslConfiguration = SslConfiguration.EMPTY;
@@ -34,12 +34,12 @@ public class JreHttpConfiguration implements HttpClient {
     }
 
     public static HttpClient create() {
-        return new JreHttpConfiguration(SslConfiguration.EMPTY);
+        return new JreHttpClient(SslConfiguration.EMPTY);
     }
 
     @Override
     public HttpClient withSsl(SslConfiguration sslConfiguration) {
-        return new JreHttpConfiguration(sslConfiguration);
+        return new JreHttpClient(sslConfiguration);
     }
 
     @Override

@@ -8,7 +8,7 @@ public class JreHttpStrategy implements HttpStrategy {
 
     @Override
     public HttpClient buildConfiguration(SslConfiguration sslConfiguration) {
-        return new JreHttpConfiguration(sslConfiguration);
+        return new JreHttpClient(sslConfiguration);
     }
 
 }
