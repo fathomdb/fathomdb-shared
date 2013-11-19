@@ -28,4 +28,6 @@ public interface WebServerBuilder {
     void addWar(String key, File file);
 
     void enableRequestLogging();
+
+    void enableSessions();
 }

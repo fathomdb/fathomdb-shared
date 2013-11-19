@@ -19,6 +19,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -47,6 +48,8 @@ public class JettyWebServerBuilder implements WebServerBuilder {
 
     final HandlerCollection handlers;
     final ContextHandlerCollection contexts;
+
+    private boolean useSessions;
 
     public JettyWebServerBuilder() {
         this.server = new Server();
@@ -125,6 +128,9 @@ public class JettyWebServerBuilder implements WebServerBuilder {
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath("/");
 
+        if (useSessions) {
+            context.setSessionHandler(new SessionHandler());
+        }
         contexts.addHandler(decorateContext(context));
 
         return context;
@@ -225,6 +231,11 @@ public class JettyWebServerBuilder implements WebServerBuilder {
         context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
         contexts.addHandler(context);
+    }
+
+    @Override
+    public void enableSessions() {
+        this.useSessions = true;
     }
 
 }
