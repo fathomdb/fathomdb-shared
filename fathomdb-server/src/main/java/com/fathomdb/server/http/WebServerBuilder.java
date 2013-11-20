@@ -27,7 +27,13 @@ public interface WebServerBuilder {
 
     void addWar(String key, File file);
 
+    /**
+     * Enable request logging. Call early (before adding contexts)
+     */
     void enableRequestLogging();
 
+    /**
+     * Enable request logging. Call early (before adding contexts)
+     */
     void enableSessions();
 }
